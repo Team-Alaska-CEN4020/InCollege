@@ -13,23 +13,7 @@ random_number = random.randint(0, 2)
   
 def startupLanding():
     clear_screen()
-    # Comment this code chunk out before submission
-    cursor.execute("SELECT username, password, firstName, lastName FROM users")
-    user_data = cursor.fetchall()
-    if user_data:
-        print("*** testing data only ***")
-        print("Saved User Information:")
-        for row in user_data:
-            print("Username:", row[0], "/ Password:", row[1], " / First Name:", row[2], "/ Last Name:", row[3])
-
-    cursor.execute("SELECT title, description, employer, location, salary, firstname, lastname FROM jobs")
-    job_data = cursor.fetchall()
-    if job_data:
-      print("Saved Jobs Information:")
-      for row in job_data:
-        print("Title:", row[0], "/ Description:", row[1], " / Employer:", row[2], "/ Location:", row[3], "/ Salary:", row[4], "/ FirstName:", row[5], "/LastName:", row[6])
-    print("*** end of testing data ***\n")
-    # Up to this point needs to be commented out before submission
+    
   
     #User stories
     cursor.execute("SELECT story FROM stories")
