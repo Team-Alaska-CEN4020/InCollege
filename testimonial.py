@@ -21,6 +21,8 @@ def testimonialStory():
     randomStoryNum = random.randint(0, storyCount)
     
     # get and print the wrapped story found at the randomized index
+    # the fetchall from the database returns a datatype of 'tuple' 
+    # that we pull the 0th index of to get the actual text, then its wrapped
     cursor.execute("SELECT story FROM stories")
     storyQuery = cursor.fetchall()
     storyTuple = storyQuery[randomStoryNum]

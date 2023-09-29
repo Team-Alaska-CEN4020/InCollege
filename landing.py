@@ -7,6 +7,8 @@ from userStories import *
 from testimonial import *
 from usefulLinks import *
 from UI import *
+from important import *
+import globalVars
 
 def clear_screen():
   """ not working at the moment refactor for later story
@@ -30,6 +32,7 @@ def startupLanding():
         print("(4)  Look up a user")
         print("(5)  Watch Video")
         print("(6)  Useful Links")
+        print("(0)  inCollege Important Links")
 
         uInput = input("Input Selection (Q to quit): ")
 
@@ -46,6 +49,8 @@ def startupLanding():
             videoPlay()
         elif uInput == '6':
             usefulLinksMenu()
+        elif uInput == '0':
+            importantLinks()
         elif uInput == 'Q' or 'q':
             exitInput = 1
             spacer()
