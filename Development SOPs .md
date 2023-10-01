@@ -83,15 +83,15 @@ git merge Testing
 
 ### Step 5: Moving 'test_*.xxx' Files to 'TestFiles' Folder
 
-5.1. Move 'test_E#*.xxx' files from the 'Testing' branch into the 'TestFilesE#' folder.
+5.1. Move 'test_*.xxx' files from the 'Testing' branch into the 'TestFiles' folder.
 5.2 example - all test for features from E2 to be renamed test_E2xx.py and pushed to TestFilesE2 folder. and all new test files for all new features of test_E3xx.py to be pushed to TestFilesE3
 
 ```bash
 mkdir TestFileE#
-mv test_E#*.xxx TestFiles#/
+mv test_*.xxx TestFiles/
 ```
 
-5.2. Commit the changes.
+5.3. Commit the changes.
 
 ```bash
 git add .
