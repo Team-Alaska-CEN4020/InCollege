@@ -1,6 +1,4 @@
 ### Libraries ###
-
-
 #import os
 
 ### External Files ###
@@ -11,11 +9,6 @@ from usefulLinks import *
 from UI import *
 from important import *
 import globalVars
-import random  # Import the random module
-
-
-
-
 
 def clear_screen():
   """ not working at the moment refactor for later story
@@ -24,7 +17,7 @@ def clear_screen():
   elif os.name == 'nt':  # For Windows
         os.system('cls')
   """
-
+  
 def startupLanding():
     clear_screen()
     
@@ -32,8 +25,7 @@ def startupLanding():
     #User stories
     cursor.execute("SELECT story FROM stories")
     userStory = cursor.fetchall()
-    # Generate a random number to select a user story
-    random_number = random.randint(0, len(userStory) - 1)
+  
     print("User Stories: ")
     print(userStory[random_number])
     print("\n")
