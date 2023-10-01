@@ -22,7 +22,7 @@ def usefulLinksMenu():
             busSolutions()
         elif uInput == '4':
             directory()
-        elif uInput == 'Q' or 'q':
+        elif uInput == 'Q' or uInput == 'q':
             exitInput = 1
             spacer()
         else:
