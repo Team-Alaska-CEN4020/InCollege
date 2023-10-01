@@ -1,7 +1,14 @@
 import sys
-sys.path.append('/home/runner/InCollege/')
-import pytest
 import os
+
+# Get the directory of the current script
+current_script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Add the parent directory to sys.path
+parent_directory = os.path.join(current_script_directory, '..')
+sys.path.append(parent_directory)
+
+import pytest
 from landing import startupLanding
 from UserCreateLogin import *
 from userStories import *
@@ -39,10 +46,12 @@ def test_createUser(capsys, monkeypatch):
     captured = capsys.readouterr()
 
     # Define the expected output based on user input
-    expected_output = "User account created successfully."
+    expected_output = "Congratulations! Your account has been successfully registered."
+    expected_output1 = "Welcome User!"
 
     # Assert that the captured output matches the expected output
     assert expected_output in captured.out
+    assert expected_output1 in captured.out
 
 if __name__ == '__main__':
     pytest.main()
