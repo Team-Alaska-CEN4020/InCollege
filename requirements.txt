@@ -1,0 +1,7 @@
+# This file specifies the requirements for your project.
+
+# Python version 3.x is required.
+python>=3.0,<4.0
+
+# pytest is required for running tests.
+pytest>=6.0,<7.0
