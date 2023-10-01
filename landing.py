@@ -37,7 +37,7 @@ def startupLanding():
     print("Delete Users: (3)")
     print("Look up a user: (4)")
     print("Watch Video: (5)")
-=======
+
     # Call up a story to display
     testimonialStory()
     
@@ -54,7 +54,6 @@ def startupLanding():
         print("(0)  inCollege Important Links")
 
         uInput = input("Input Selection (Q to quit): ")
->>>>>>> Epic3-menus
 
         # Once option is picked we then will choose which function that needs to be done
         if uInput == '1':
