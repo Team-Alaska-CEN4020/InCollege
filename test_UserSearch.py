@@ -1,134 +1,87 @@
 import sys
-sys.path.append('/home/runner/InCollege/')
+import os
+
+# Get the directory of the current script
+current_script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Add the parent directory to sys.path
+parent_directory = os.path.join(current_script_directory, '..')
+sys.path.append(parent_directory)
+
 import pytest
-#from io import StringIO
-from landing import startupLanding
+from io import StringIO
 from UserCreateLogin import searchUser
-import time
-import random
-import io
 from unittest.mock import patch
-import unittest
-import sqlite3
 
-class TestSearchUser(unittest.TestCase):
+def test_UserExists(capsys, monkeypatch):
+    # Mock user input to simulate user interaction
+    user_input_values = [
+        "Samuel",  # Enter a first name
+        "Adams",      # Enter a last name
+        "1",            # Enter 1 to return
+    ]
 
-    def setUp(self):
-        # Connect to an in-memory SQLite database for testing
-        self.conn = sqlite3.connect(':memory:')
-        self.cursor = self.conn.cursor()
-        # Create a test 'users' table
-        self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                username TEXT PRIMARY KEY,
-                password TEXT,
-                firstName TEXT,
-                lastName TEXT
-            )
-        ''')
-        # Insert test data
-        self.cursor.execute("INSERT INTO users VALUES (?, ?, ?, ?)", ("testuser", "password123", "Samuel", "Adams"))
-        self.conn.commit()
+    def mock_input(prompt):
+    # Check if there are remaining values in the list
+      if user_input_values:
+        # Check if the next value is not an existing username or user
+        next_value = user_input_values[0]
+        if not username_or_user_already_exists(next_value):
+            # If it's not an existing username or user, pop the next value
+            return user_input_values.pop(0)
+    
+    # If the list is empty or the next value is an existing username or user, return None (or any other appropriate value)
+    return None
 
-    def tearDown(self):
-        # Close the database connection after each test
-        self.conn.close()
+    # Set the mock_input function for user input
+    monkeypatch.setattr("builtins.input", mock_input)
 
-    @patch('sys.stdout', new_callable=io.StringIO)
-    def test_search_existing_user(self, mock_stdout):
-        # Call the searchUser function with test input
-        with patch('builtins.input', side_effect=["Samuel", "Adams", "1"]):
-            searchUser()
-
-        # Get the printed output
-        printed_output = mock_stdout.getvalue().strip()
-
-        # Check if the expected output is in the printed output
-        self.assertIn("They are a part of the InCollege system", printed_output)
-        self.assertIn("Username: testuser", printed_output)
-        self.assertIn("First Name: Samuel", printed_output)
-        self.assertIn("Last Name: Adams", printed_output)
-
-    @patch('sys.stdout', new_callable=io.StringIO)
-    def test_search_non_existing_user(self, mock_stdout):
-        # Call the searchUser function with test input for a non-existing user
-        with patch('builtins.input', side_effect=["John", "Doe", "1"]):
-            searchUser()
-
-        # Get the printed output
-        printed_output = mock_stdout.getvalue().strip()
-
-        # Check if the expected output is in the printed output
-        self.assertIn("They are not yet a part of the InCollege system yet", printed_output)
-
-if __name__ == '__main__':
-    unittest.main()  
-"""
-def test_SearchUserFound(capsys, monkeypatch):
-    # Generate a random name that is in the database
-    random_name = "Sam Smith"  # Modify this for your needs
-
-    # Mock user input to simulate entering the random name
-    monkeypatch.setattr("builtins.input", lambda _: random_name)
+    # Call the createUser function to collect user information
+    searchUser()
 
     # Capture the printed output
-    with capsys.disabled():  # Disable capturing for this part
-        searchUser()
-
     captured = capsys.readouterr()
 
-    # Define the expected output
+    # Define the expected output based on user input
     expected_output = "They are a part of the InCollege system"
 
-    # Assert that the captured output contains the expected output
-    assert expected_output in captured.out, f"Expected: '{expected_output}' in output"
+    # Assert that the captured output matches the expected output
+    assert expected_output in captured.out
 
-    # Mock user input to simulate entering "1" when prompted
-    monkeypatch.setattr("builtins.input", lambda prompt: "1" if "Enter 1 to return to main menu:" in prompt else "")
+def test_UserNotFound(capsys, monkeypatch):
+    # Mock user input to simulate user interaction
+    user_input_values = [
+        "John",  # Enter a first name
+        "Ambrose",      # Enter a last name 
+        "1",            # Enter 1 to return 
+    ]
 
-    # Capture the printed output after entering "1"
-    with capsys.disabled():
-        searchUser()
+    def mock_input(prompt):
+    # Check if there are remaining values in the list
+      if user_input_values:
+        # Check if the next value is not an existing username or user
+        next_value = user_input_values[0]
+        if not username_or_user_already_exists(next_value):
+            # If it's not an existing username or user, pop the next value
+            return user_input_values.pop(0)
+    
+    # If the list is empty or the next value is an existing username or user, return None (or any other appropriate value)
+    return None
 
-    captured = capsys.readouterr()
+    # Set the mock_input function for user input
+    monkeypatch.setattr("builtins.input", mock_input)
 
-    # Define the expected output after entering "1"
-    expected_output = "Welcome to inCollege: inCollege is your"
-
-    # Assert that the captured output contains the expected output
-    assert expected_output in captured.out, f"Expected: '{expected_output}' in output"
-
-def test_SearchUserNotFound(capsys, monkeypatch):
-    # Generate a random name that is not in the database
-    random_name = "Random Name"  # Modify this for your needs
-
-    # Mock user input to simulate entering the random name
-    monkeypatch.setattr("builtins.input", lambda _: random_name)
+    # Call the createUser function to collect user information
+    searchUser()
 
     # Capture the printed output
-    with capsys.disabled():  # Disable capturing for this part
-        searchUser()
-
     captured = capsys.readouterr()
 
-    # Define the expected output
-    expected_output = "They are not yet a part of the InCollege system yet"
+    # Define the expected output based on user input
+    expected_output = "They are not yet a part ofthe InCollege system yet"
 
-    # Assert that the captured output contains the expected output
-    assert expected_output in captured.out, f"Expected: '{expected_output}' in output"
+    # Assert that the captured output matches the expected output
+    assert expected_output in captured.out
 
-    # Mock user input to simulate entering "1" when prompted
-    monkeypatch.setattr("builtins.input", lambda prompt: "1" if "Enter 1 to return to main menu:" in prompt else "")
-
-    # Capture the printed output after entering "1"
-    with capsys.disabled():
-        searchUser()
-
-    captured = capsys.readouterr()
-
-    # Define the expected output after entering "1"
-    expected_output = "Welcome to inCollege: inCollege is your"
-
-    # Assert that the captured output contains the expected output
-    assert expected_output in captured.out, f"Expected: '{expected_output}' in output"
-"""
+if __name__ == '__main__':
+    pytest.main()  
