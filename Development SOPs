@@ -91,7 +91,7 @@ mkdir TestFileE#
 mv test_*.xxx TestFiles/
 ```
 
-5.2. Commit the changes.
+5.3. Commit the changes.
 
 ```bash
 git add .
