@@ -19,7 +19,6 @@ def clear_screen():
   """
   
 def startupLanding():
-<<<<<<< HEAD
     clear_screen()
     
   
