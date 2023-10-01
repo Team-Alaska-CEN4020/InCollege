@@ -43,7 +43,7 @@ def importantLinks():
             brandPolicy()
         elif uInput == '0':
             Languages()
-        elif uInput == 'Q' or 'q':
+        elif uInput == 'Q' or uInput == 'q':
             exitInput = 1
             spacer()
         else:
