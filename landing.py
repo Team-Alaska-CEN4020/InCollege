@@ -1,17 +1,25 @@
+### Libraries ###
+#import os
+
+### External Files ###
 from UserCreateLogin import *
 from userStories import *
-
-import os
-import random
-
-#Note: Video function is in userStories file
+from testimonial import *
+from usefulLinks import *
+from UI import *
+from important import *
+import globalVars
 
 def clear_screen():
-  os.system('clear')
-
-random_number = random.randint(0, 2)
+  """ not working at the moment refactor for later story
+  if os.name == 'posix':  # For Unix/Linux/MacOS
+        os.system('clear')
+  elif os.name == 'nt':  # For Windows
+        os.system('cls')
+  """
   
 def startupLanding():
+<<<<<<< HEAD
     clear_screen()
     
   
@@ -30,19 +38,43 @@ def startupLanding():
     print("Delete Users: (3)")
     print("Look up a user: (4)")
     print("Watch Video: (5)")
+=======
+    # Call up a story to display
+    testimonialStory()
+    
+    # User menu loop
+    exitInput = 0
+    while exitInput == 0:
+        header('Welcome to inCollege')
+        print("(1)  Login")
+        print("(2)  Sign up")
+        print("(3)  Delete Users")
+        print("(4)  Look up a user")
+        print("(5)  Watch Video")
+        print("(6)  Useful Links")
+        print("(0)  inCollege Important Links")
 
-    uInput = int(input("Please select either 1, 2, 3, 4, or 5 based on which option you would like to do: "))
+        uInput = input("Input Selection (Q to quit): ")
+>>>>>>> Epic3-menus
 
-    # Once option is picked we then will choose which function that needs to be done
-    if uInput == 1:
-        UserLogin()
-    elif uInput == 2:
-        createUser()
-    elif uInput == 3:
-        deleteUser()
-    elif uInput == 4:
-        searchUser()
-    elif uInput == 5:
-      videoPlay()
-    else:
-        print("Invalid option")
+        # Once option is picked we then will choose which function that needs to be done
+        if uInput == '1':
+            UserLogin()
+        elif uInput == '2':
+            createUser()
+        elif uInput == '3':
+            deleteUser()
+        elif uInput == '4':
+            searchUser()
+        elif uInput == '5':
+            videoPlay()
+        elif uInput == '6':
+            usefulLinksMenu()
+        elif uInput == '0':
+            importantLinks()
+        elif uInput == 'Q' or 'q':
+            exitInput = 1
+            spacer()
+        else:
+            print("Invalid Option Try Again")
+            spacer()

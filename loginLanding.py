@@ -1,4 +1,5 @@
 from database import *
+from UI import *
 import time
 #intialize a stack to navigate through the program 
 #navigation_stack = []
@@ -6,35 +7,28 @@ import time
 def userHome():
     from landing import startupLanding
   
-    loopBreaker = True 
-    while loopBreaker:
-        print("\nWelcome User!")
+    exitInput = 0 
+    while exitInput == 0:
+        header("Welcome User!")
         print("Please select the number of the service you would like to use:")
-        print("Search for a job / internship (1)")
-        print("Find someone that they know (2)")
-        print("Learn a new skill (3)")
-        print("Return to previous page (4)")
+        print("(1)  Search for a job / internship")
+        print("(2)  Find someone that they know")
+        print("(3)  Learn a new skill")
     
-        option = int(input("Please select your option: ")) 
+        uInput = input("Input Selection (Q to quit and return): ")
       
-        if option == 1:
+        if uInput == '1':
           searchForJob()
-        elif option == 2:
+        elif uInput == '2':
           findSomeoneTheyKnow()
-        elif option == 3:
+        elif uInput == '3':
           learnASkill()
-        elif option == 4:
-          startupLanding()
-          #print("returning to previous page")
-          #return navigation_stack.pop()  
+        elif uInput == 'Q' or 'q':
+          exitInput = 1
+          spacer() 
         else:
-            print("Invalid input. Exiting program")
-        yesNo = input("Would you like to continue (yes/no): ")
-        if yesNo.lower() == "yes":
-            continue
-        else:
-            loopBreaker = False
-            return
+            print("Invalid Option. Try Again")
+            spacer()
 
 # Option functions to fill out once we understand what we need to do for them 
 def searchForJob():

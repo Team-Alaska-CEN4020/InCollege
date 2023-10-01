@@ -1,6 +1,7 @@
 from database import *
 from loginLanding import userHome
 import re
+import globalVars
 
 import time
 
@@ -93,10 +94,23 @@ def createUser():
           
     firstName = input("Please enter your first name: ")
     lastName = input("Please enter your last name: ")
+    
+    # default user account settings to store into users entry on DB
+    defaultEmail = True
+    defaultSMS = True
+    defaultAdTarget = True
+    defaultLanguage = 0
   
-    cursor.execute("INSERT INTO users (username, password, firstName, lastName) VALUES (?, ?, ?, ?)", (username, storePassword, firstName, lastName))
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage))
     conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
     print("Congratulations! Your account has been successfully registered.")
+    
+    #updating global user variables
+    globalVars.isLoggedIn = True
+    globalVars.username = username
+    globalVars.userFirstName = firstName
+    globalVars.userLastName = lastName
+    
     userHome()
 
 
@@ -104,13 +118,14 @@ def UserLogin():
     while True: 
         username = input("\nPlease enter your username: ")
         
-        cursor.execute("SELECT username, password FROM users WHERE username=?", (username,))
+        cursor.execute("SELECT * FROM users WHERE username=?", (username,))
         # Retrieve user data from the database
         user_data = cursor.fetchone()  
         
         if not user_data:  # If the username is not found in the database
             print("The username you have entered does not exist. Please try again.")
             continue
+        globalVars.currentUser = username
 
         # Get the correct password from the retrieved data
         correct_password = user_data[1]  
@@ -121,6 +136,16 @@ def UserLogin():
             if password == correct_password:  
                 print("You have successfully logged in.")
                 counter = False
+                
+                #update the global user variables and settings
+                globalVars.isLoggedIn = True
+                globalVars.username = user_data[0]
+                globalVars.userFirstName = user_data[2]
+                globalVars.userLastName = user_data[3]
+                globalVars.userSettingMarketingEmail = user_data[4]
+                globalVars.userSettingMarketingSMS = user_data[5]
+                globalVars.userSettingAdvertisementTargeted = user_data[6]
+                globalVars.userSettingLanguage = user_data[7]
                 userHome()
             else:
                 print("Incorrect username/password. Please try again.")
