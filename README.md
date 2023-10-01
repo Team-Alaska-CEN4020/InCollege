@@ -1,5 +1,3 @@
-# README.md
-
 # InCollege Documentation
 
 Welcome to the documentation for InCollege, a command-line application for a fictitious college social platform. This documentation provides detailed information on how to use, configure, and contribute to the InCollege project.
