@@ -1,3 +1,13 @@
+import sys
+import os
+
+# Get the directory of the current script
+current_script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Add the parent directory to sys.path
+parent_directory = os.path.join(current_script_directory, '..')
+sys.path.append(parent_directory)
+
 import pytest
 from io import StringIO
 from landing import startupLanding
