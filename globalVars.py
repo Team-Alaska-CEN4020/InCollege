@@ -6,3 +6,5 @@ userSettingMarketingEmail = True
 userSettingMarketingSMS = True
 userSettingAdvertisementTargeted = True
 userSettingLanguage = 0     # 0=English, 1=Spanish
+userMajor = None
+userUniversity = None 

@@ -15,7 +15,7 @@ cursor.execute('''
         university TEXT
     )
 ''')
-
+#######University and major column not forming, need to work on that##########
 
 
 # Create a table to store user stories if it doesn't exist
@@ -41,17 +41,17 @@ cursor.execute('''
 
 ##################################EPIC 4 ############################################
 #Creating Friends table 
-from friendFunctions import get_user_info, disconnect_option, get_user_id_by_username, accept_request_option, reject_request_option
+from friendFunctions import get_user_info, disconnect_option, get_username_by_username, accept_request_option, reject_request_option
 
 
 
 # Create a table to store friend connections if it doesn't exist
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS friends (
-        user_id INTEGER,
+        username TEXT,
         friend_id INTEGER,
         status TEXT,
-        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (username) REFERENCES users(id),
         FOREIGN KEY (friend_id) REFERENCES users(id)
     )
 ''')
@@ -83,8 +83,8 @@ def send_friend_request(sender_id, receiver_id):
 # Define a function to accept a friend request
 def accept_friend_request(sender_id, receiver_id):
     cursor.execute('UPDATE friend_requests SET status = "accepted" WHERE sender_id = ? AND receiver_id = ?', (sender_id, receiver_id))
-    cursor.execute('INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, "connected")', (sender_id, receiver_id))
-    cursor.execute('INSERT INTO friends (user_id, friend_id, status) VALUES (?, ?, "connected")', (receiver_id, sender_id))
+    cursor.execute('INSERT INTO friends (username, friend_id, status) VALUES (?, ?, "connected")', (sender_id, receiver_id))
+    cursor.execute('INSERT INTO friends (username, friend_id, status) VALUES (?, ?, "connected")', (receiver_id, sender_id))
     cursor.execute('UPDATE users SET friends = friends + 1 WHERE id = ?', (sender_id,))
     cursor.execute('UPDATE users SET friends = friends + 1 WHERE id = ?', (receiver_id,))
     conn.commit()
@@ -95,24 +95,24 @@ def reject_friend_request(sender_id, receiver_id):
     conn.commit()
 
 # Define a function to disconnect from a friend
-def disconnect_from_friend(user_id, friend_id):
-    cursor.execute('DELETE FROM friends WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?)', (user_id, friend_id, friend_id, user_id))
-    cursor.execute('UPDATE users SET friends = friends - 1 WHERE id = ? OR id = ?', (user_id, friend_id))
+def disconnect_from_friend(username, friend_id):
+    cursor.execute('DELETE FROM friends WHERE (username = ? AND friend_id = ?) OR (username = ? AND friend_id = ?)', (username, friend_id, friend_id, username))
+    cursor.execute('UPDATE users SET friends = friends - 1 WHERE id = ? OR id = ?', (username, friend_id))
     conn.commit()
 
 # Define a function to get a user's pending friend requests
-def get_pending_friend_requests(user_id):
-    cursor.execute('SELECT sender_id FROM friend_requests WHERE receiver_id = ? AND status = "pending"', (user_id,))
+def get_pending_friend_requests(username):
+    cursor.execute('SELECT sender_id FROM friend_requests WHERE receiver_id = ? AND status = "pending"', (username,))
     requests = cursor.fetchall()
     return [request[0] for request in requests]
 
 # Define a function to get a user's friends
-def get_user_friends(user_id):
-    cursor.execute('SELECT user_id, friend_id FROM friends WHERE (user_id = ? OR friend_id = ?) AND status = "connected"', (user_id, user_id))
+def get_user_friends(username):
+    cursor.execute('SELECT username, friend_id FROM friends WHERE (username = ? OR friend_id = ?) AND status = "connected"', (username, username))
     friend_records = cursor.fetchall()
     friends = []
     for record in friend_records:
-        if record[0] == user_id:
+        if record[0] == username:
             friends.append(record[1])
         else:
             friends.append(record[0])

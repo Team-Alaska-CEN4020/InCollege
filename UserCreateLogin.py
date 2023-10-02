@@ -151,7 +151,9 @@ def UserLogin():
                 globalVars.userSettingAdvertisementTargeted = user_data[6]
                 globalVars.userSettingLanguage = user_data[7]
                 globalVars.userMajor = user_data[8]
-                #globalVars.userUniversity = user_data[9]
+                #globalVars.userUniversity = user_data[9] 
+                
+                #JORDAN PLEASE HELP WITH THIS^^ IT IS CREATING A TUPLE OUT OF INDEX RANGE ERROR
 
                 userHome()
             else:
