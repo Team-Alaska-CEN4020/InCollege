@@ -94,6 +94,8 @@ def createUser():
           
     firstName = input("Please enter your first name: ")
     lastName = input("Please enter your last name: ")
+    major = input("Enter your major: ")
+    uni= input("Enter your univeristy: ")
     
     # default user account settings to store into users entry on DB
     defaultEmail = True
@@ -110,6 +112,8 @@ def createUser():
     globalVars.username = username
     globalVars.userFirstName = firstName
     globalVars.userLastName = lastName
+    globalVars.userMajor = major
+    globalVars.userUniversity = uni
     
     userHome()
 
@@ -146,6 +150,9 @@ def UserLogin():
                 globalVars.userSettingMarketingSMS = user_data[5]
                 globalVars.userSettingAdvertisementTargeted = user_data[6]
                 globalVars.userSettingLanguage = user_data[7]
+                globalVars.userMajor = user_data[8]
+                #globalVars.userUniversity = user_data[9]
+
                 userHome()
             else:
                 print("Incorrect username/password. Please try again.")

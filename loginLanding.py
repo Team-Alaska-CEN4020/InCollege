@@ -1,6 +1,8 @@
 from database import *
 from UI import *
 import time
+from friendFunctions import *
+from networks import * 
 #intialize a stack to navigate through the program 
 #navigation_stack = []
 
@@ -14,6 +16,9 @@ def userHome():
         print("(1)  Search for a job / internship")
         print("(2)  Find someone that they know")
         print("(3)  Learn a new skill")
+        print("(4)  Show My Network")
+        print("(5)  Send Friend Request")
+        print("(6)  Pending Friend Requests")
     
         uInput = input("Input Selection (Q to quit and return): ")
       
@@ -23,6 +28,12 @@ def userHome():
           findSomeoneTheyKnow()
         elif uInput == '3':
           learnASkill()
+        elif uInput == '4':
+          showMyNetwork()
+        elif uInput == '5':
+          sendFriendRequest()
+        elif uInput == '6':
+          viewFriendRequests()
         elif uInput == 'Q' or 'q':
           exitInput = 1
           spacer() 
