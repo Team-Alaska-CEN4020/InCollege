@@ -32,7 +32,7 @@ def showMyNetwork(user_id):
 
 def sendFriendRequest(user_id):
     username = input("Enter the username of the person you want to send a friend request to: ")
-    friend_id = get_user_id_by_username(username)
+    friend_id = get_username_by_username(username)
     
     if friend_id is not None:
         # Check if the user is already friends with the person
