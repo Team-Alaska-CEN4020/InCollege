@@ -103,7 +103,7 @@ def createUser():
     defaultAdTarget = True
     defaultLanguage = 0
   
-    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage))
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, major , university) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni))
     conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
     print("Congratulations! Your account has been successfully registered.")
     
@@ -151,8 +151,9 @@ def UserLogin():
                 globalVars.userSettingAdvertisementTargeted = user_data[6]
                 globalVars.userSettingLanguage = user_data[7]
                 globalVars.userMajor = user_data[8]
-                #globalVars.userUniversity = user_data[9] 
                 
+                #globalVars.userUniversity = user_data[9] 
+
                 #JORDAN PLEASE HELP WITH THIS^^ IT IS CREATING A TUPLE OUT OF INDEX RANGE ERROR
 
                 userHome()

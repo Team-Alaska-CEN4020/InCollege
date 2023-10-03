@@ -37,15 +37,19 @@ cursor.execute('''
     )
 ''')
 
+# conn.commit()
+# MAX_ACCOUNTS = 10
+# MAX_JOBS = 5
+
 
 
 ##################################EPIC 4 ############################################
-#Creating Friends table 
+# #Creating Friends table 
 from friendFunctions import get_user_info, disconnect_option, get_username_by_username, accept_request_option, reject_request_option
 
 
 
-# Create a table to store friend connections if it doesn't exist
+# # Create a table to store friend connections if it doesn't exist
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS friends (
         username TEXT,
@@ -56,7 +60,7 @@ cursor.execute('''
     )
 ''')
 
-# Create a table to store pending friend requests if it doesn't exist
+# # Create a table to store pending friend requests if it doesn't exist
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS friend_requests (
         sender_id INTEGER,
@@ -67,7 +71,7 @@ cursor.execute('''
     )
 ''')
 
-# Add a 'friends' column to the 'users' table to store the count of friends
+# # Add a 'friends' column to the 'users' table to store the count of friends
 # cursor.execute('''
 #     ALTER TABLE users
 #     ADD COLUMN friends INTEGER DEFAULT 0
@@ -75,7 +79,7 @@ cursor.execute('''
 
 conn.commit()
 
-# Define a function to send a friend request
+# # Define a function to send a friend request
 def send_friend_request(sender_id, receiver_id):
     cursor.execute('INSERT INTO friend_requests (sender_id, receiver_id, status) VALUES (?, ?, "pending")', (sender_id, receiver_id))
     conn.commit()

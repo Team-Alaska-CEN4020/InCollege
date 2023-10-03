@@ -120,10 +120,12 @@ def storeJob(title, description, employer, location, salary, firstName, lastName
 
 
 def findSomeoneTheyKnow():
-    firstname = input("\nEnter a first name to search: ")
+    #firstname = input("\nEnter a first name to search: ")
     lastname = input("Enter a last name: ")
+    major = input("Enter their major: ")
+    university = input("Enter their University: ")
     
-    cursor.execute("SELECT * FROM users WHERE firstName=? AND lastName=?",(firstname, lastname))
+    cursor.execute("SELECT * FROM users WHERE lastName=? OR major=? OR university=?  ",(lastname , major , university))
     user = cursor.fetchone()
     
     loopBreaker = True
@@ -132,9 +134,10 @@ def findSomeoneTheyKnow():
     if user:
         while loopBreaker:
             print("They are a part of the InCollege system")
-            print("Username: " + user[0])
-            print("First Name: "  + user[2])
-            print("Last Name: " + user[3])
+            print("Username" + user[1])
+            print("Last Name" + user[3])
+            print("Major: "  + user[8])
+            print("Last Name: " + user[9])
         
             loopBreaker = False
             time.sleep(3)
