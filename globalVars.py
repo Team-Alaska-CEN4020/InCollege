@@ -1,3 +1,4 @@
+# User Information
 isLoggedIn = False
 userID = None
 username = None
@@ -9,3 +10,7 @@ userSettingAdvertisementTargeted = True
 userSettingLanguage = 0     # 0=English, 1=Spanish
 userMajor = None
 userUniversity = None 
+
+# Application Information
+maxActiveAccounts = 10
+maxJobPostings = 5

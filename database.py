@@ -4,80 +4,10 @@ import sqlite3
 conn = sqlite3.connect('your_database.db')
 cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 
-# Create a table to store user data if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password TEXT,
-        firstName TEXT,
-        lastName TEXT, 
-        major TEXT,
-        university TEXT
-    )
-''')
-#######University and major column not forming, need to work on that##########
-
-
-# Create a table to store user stories if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS stories (
-        story TEXT
-    )
-''')
-
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS jobs (
-        title TEXT,
-        description TEXT,
-        employer TEXT,
-        location TEXT,
-        salary TEXT,
-        firstname TEXT,
-        lastname TEXT
-    )
-''')
-
-# conn.commit()
-# MAX_ACCOUNTS = 10
-# MAX_JOBS = 5
-
-
 
 ##################################EPIC 4 ############################################
 # #Creating Friends table 
-from friendFunctions import get_user_info, disconnect_option, get_username_by_username, accept_request_option, reject_request_option
-
-
-
-# # Create a table to store friend connections if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS friends (
-        username TEXT,
-        friend_id INTEGER,
-        status TEXT,
-        FOREIGN KEY (username) REFERENCES users(id),
-        FOREIGN KEY (friend_id) REFERENCES users(id)
-    )
-''')
-
-# # Create a table to store pending friend requests if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS friend_requests (
-        sender_id INTEGER,
-        receiver_id INTEGER,
-        status TEXT,
-        FOREIGN KEY (sender_id) REFERENCES users(id),
-        FOREIGN KEY (receiver_id) REFERENCES users(id)
-    )
-''')
-
-# # Add a 'friends' column to the 'users' table to store the count of friends
-# cursor.execute('''
-#     ALTER TABLE users
-#     ADD COLUMN friends INTEGER DEFAULT 0
-# ''')
-
-conn.commit()
+from friendFunctions import *
 
 # # Define a function to send a friend request
 def send_friend_request(sender_id, receiver_id):
@@ -123,5 +53,4 @@ def get_user_friends(username):
     return friends
 # SQL command to create a 'users' table with 'username' and 'password' columns if it doesn't exist
 conn.commit()
-MAX_ACCOUNTS = 10
-MAX_JOBS = 5
+

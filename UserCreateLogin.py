@@ -56,7 +56,7 @@ def createUser():
     cursor.execute("SELECT COUNT(*) FROM users")
     account_count = cursor.fetchone()[0]
 
-    if account_count >= MAX_ACCOUNTS:
+    if account_count >= globalVars.maxActiveAccounts:
         print("All permitted accounts have been created. Please come back later.")
         choice = input("Do you want to delete an existing account? (yes/no): ")
         if choice.lower() == "yes":
