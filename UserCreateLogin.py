@@ -2,11 +2,15 @@ from database import *
 from loginLanding import userHome
 import re
 import globalVars
+import time
+from UI import *
 
 import time
 
 def searchUser():
     from landing import startupLanding
+    spacer()
+    header('User Search')
     firstname = input("\nEnter a first name to search: ")
     lastname = input("Enter a last name: ")
     
@@ -15,28 +19,19 @@ def searchUser():
     
     loopBreaker = True
     loopBreak = True
-  
+    
+    header('Search Results')
     if user:
         while loopBreaker:
-            print("They are a part of the InCollege system")
-            print("Username: " + user[0])
-            print("First Name: "  + user[2])
-            print("Last Name: " + user[3])
+            print(user[2] + " " + user[3] + " is already an inCollege member!")
         
             loopBreaker = False
             time.sleep(3)
             startupLanding()
     
     else:
-        print("They are not yet a part ofthe InCollege system yet")  
-        while loopBreak:
-            uInput = input("Enter 1 to return to main menu: ")
-            if uInput == "1":
-                loopBreak = False
-                startupLanding()
-            else:
-                uInput = input("Enter 1 to return to main menu please: ")
-                startupLanding()
+        print("They are not yet an inCollege member.")  
+        time.sleep(3)
 
 def deleteUser():
   from landing import startupLanding

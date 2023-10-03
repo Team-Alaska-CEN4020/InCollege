@@ -11,10 +11,11 @@ def userHome():
   
     exitInput = 0 
     while exitInput == 0:
+        spacer()
         header("Welcome User!")
         print("Please select the number of the service you would like to use:")
         print("(1)  Search for a job / internship")
-        print("(2)  Find someone that they know")
+        print("(2)  Find someone you know")
         print("(3)  Learn a new skill")
         print("(4)  Show My Network")
         print("(5)  Send Friend Request")
@@ -34,7 +35,7 @@ def userHome():
           sendFriendRequest()
         elif uInput == '6':
           viewFriendRequests()
-        elif uInput == 'Q' or 'q':
+        elif uInput == 'Q' or uInput =='q':
           exitInput = 1
           spacer() 
         else:
@@ -44,30 +45,32 @@ def userHome():
 # Option functions to fill out once we understand what we need to do for them 
 def searchForJob():
     #print("Searching for a job is under construction")
-    print("\nWelcome to Job Search!\n1) post a job\n2) go back to the previous page")
-    choice = int(input("Please select an option: "))
+    spacer()
+    header('Welcome to Job Search')
+    print("(1)  Post a Job")
+    uInput = input("Input Selection (Q to quit): ")
   
-    if(choice == 1):
-      print("\nEnter the following information about the job: ")
-      title = input("Enter the job title: ")
-      description = input("Enter the job description: ")
-      employer = input("Enter the employer: ")
-      location = input("Enter the location: ")
-      salary = input("Enter the job's salary: ")
-      firstname = input("Enter your first name: ")
-      lastname = input("Enter your last name: ")
+    exitInput = 0
+    while exitInput == 0:
+      if uInput == '1':
+        print("\nEnter the following information about the job: ")
+        title = input("Enter the job title: ")
+        description = input("Enter the job description: ")
+        employer = input("Enter the employer: ")
+        location = input("Enter the location: ")
+        salary = input("Enter the job's salary: ")
+        firstname = input("Enter your first name: ")
+        lastname = input("Enter your last name: ")
 
-      storeJob(title, description, employer, location, salary, firstname, lastname)
+        storeJob(title, description, employer, location, salary, firstname, lastname)
+    
+      elif uInput == 'Q' or uInput == 'q':
+        exitInput = 1
+        spacer()
 
-      
-    elif(choice == 2):
-      print("returning to job search")
-      userHome()
-    else:
-      while(choice!= 1 and choice != 2):
-        print("invalid input")
-        print("1) post a job\n2) go back to the previous page")
-        choice = input("Please select an option: ")
+      else:
+        print("Invalid Option Try again")
+
 
   
 def learnASkill():

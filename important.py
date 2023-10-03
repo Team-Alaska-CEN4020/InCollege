@@ -48,7 +48,6 @@ def importantLinks():
             spacer()
         else:
             print("Invalid Option Try Again")
-            spacer()
 
 
 def copyrightNotice():
