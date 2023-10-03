@@ -1,4 +1,5 @@
 isLoggedIn = False
+userID = None
 username = None
 userFirstName = None
 userLastName = None

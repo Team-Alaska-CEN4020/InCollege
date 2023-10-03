@@ -127,7 +127,7 @@ def UserLogin():
         globalVars.currentUser = username
 
         # Get the correct password from the retrieved data
-        correct_password = user_data[1]  
+        correct_password = user_data[2]  
         counter = True
         while counter:
             password = input("Please enter your password: ")
@@ -138,18 +138,15 @@ def UserLogin():
                 
                 #update the global user variables and settings
                 globalVars.isLoggedIn = True
-                globalVars.username = user_data[0]
-                globalVars.userFirstName = user_data[2]
-                globalVars.userLastName = user_data[3]
-                globalVars.userSettingMarketingEmail = user_data[4]
-                globalVars.userSettingMarketingSMS = user_data[5]
-                globalVars.userSettingAdvertisementTargeted = user_data[6]
-                globalVars.userSettingLanguage = user_data[7]
-                globalVars.userMajor = user_data[8]
-                
-                #globalVars.userUniversity = user_data[9] 
-
-                #JORDAN PLEASE HELP WITH THIS^^ IT IS CREATING A TUPLE OUT OF INDEX RANGE ERROR
+                globalVars.userID = user_data[0]
+                globalVars.username = user_data[1]
+                globalVars.userFirstName = user_data[3]
+                globalVars.userLastName = user_data[4]
+                globalVars.userSettingMarketingEmail = user_data[5]
+                globalVars.userSettingMarketingSMS = user_data[6]
+                globalVars.userSettingAdvertisementTargeted = user_data[7]
+                globalVars.userSettingLanguage = user_data[8]
+                globalVars.userMajor = user_data[10]
 
                 userHome()
             else:
