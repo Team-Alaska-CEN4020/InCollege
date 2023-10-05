@@ -69,3 +69,41 @@ def viewFriendRequests():
         print("\nYou have not received any friend requests.")
 
     input("Press Enter to Continue...")
+
+def getFriends():
+    spacer()
+    header('Your Network')
+
+    try:
+        cursor.execute("""
+            SELECT f.friendUserID, u.firstName, u.lastName, u.userUniversity, u.userMajor
+            FROM friends AS f
+            JOIN users AS u ON f.friendUserID = u.userID
+            WHERE f.userID = ? AND f.friendshipStatus = 1 AND f.isDeleted = 0
+        """, (globalVars.userID,))
+        friendsList = cursor.fetchall()
+
+        if friendsList:
+            for friend in friendsList:
+                print(f"Friend ID: {friend[0]}")
+                print(f"Name: {friend[1]} {friend[2]}")
+                print(f"University: {friend[3]}")
+                print(f"Major: {friend[4]}")
+                print("\n")
+            # Prompt user to disconnect from a friend
+            while True:
+                userResponse = input("Enter the ID of a friend you want to disconnect from (or 'Q' to quit): ")
+                if userResponse.upper() == 'Q':
+                    break
+                try:
+                    selectedFriendID = int(userResponse)
+                    updateFriendDisconnect(selectedFriendID)
+                except ValueError:
+                    print("Invalid input. Please enter a valid Friend ID or 'Q' to quit.")
+
+        else:
+            print("No one is in your network at the moment.")
+    except Exception as e:
+        print(f"Error occurred while fetching friends: {e}")
+
+    input("Press Enter to Continue...")

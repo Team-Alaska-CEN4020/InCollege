@@ -30,4 +30,3 @@ def testimonialStory():
     storyWrapped = textwrap.fill(storyText, width=80)
     print(storyWrapped)
     print("")
-    spacer()

@@ -29,6 +29,19 @@ def insertFriend(friendID):
     try:
         cursor.execute("INSERT INTO friends (userID, friendUserID, friendshipStatus, isDeleted) VALUES (?, ?, 1, 0)", (globalVars.userID, friendID,))
         conn.commit()
+        cursor.execute("INSERT INTO friends (userID, friendUserID, friendshipStatus, isDeleted) VALUES (?, ?, 1, 0)", (friendID, globalVars.userID,))
+        conn.commit()
         print(f"Friend request from userID {friendID} accepted!")
     except Exception as e:
         print(f"Error occurred while adding friend: {e}")
+
+def updateFriendDisconnect(friendID):
+    try:
+        # Set friendshipStatus to 0 for both user and friend
+        cursor.execute("UPDATE friends SET friendshipStatus = 0 WHERE userID = ? AND friendUserID = ? AND isDeleted = 0", (globalVars.userID, friendID,))
+        conn.commit()
+        cursor.execute("UPDATE friends SET friendshipStatus = 0 WHERE userID = ? AND friendUserID = ? AND isDeleted = 0", (friendID, globalVars.userID,))
+        conn.commit()
+        print(f"You have disconnected from friend with ID: {friendID}")
+    except Exception as e:
+        print(f"Error occurred while disconnecting friend: {e}")

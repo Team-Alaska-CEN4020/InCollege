@@ -31,7 +31,7 @@ def userHome():
         elif uInput == '3':
           learnASkill()
         elif uInput == '4':
-          print("fix this\n")# TODO FIX THIS
+          getFriends()
         elif uInput == '5':
           userSearch()
         elif uInput == '6':
