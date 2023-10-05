@@ -3,7 +3,6 @@ import time
 from database import *
 from UI import *
 from friendFunctions import *
-from networks import * 
 from userSearch import *
 
 
@@ -32,9 +31,9 @@ def userHome():
         elif uInput == '3':
           learnASkill()
         elif uInput == '4':
-          showMyNetwork()
+          print("fix this\n")# TODO FIX THIS
         elif uInput == '5':
-          sendFriendRequest()
+          userSearch()
         elif uInput == '6':
           viewFriendRequests()
         elif uInput == 'Q' or uInput =='q':

@@ -1,6 +1,6 @@
 # User Information
 isLoggedIn = False
-userID = None
+userID = 0
 username = None
 userFirstName = None
 userLastName = None
