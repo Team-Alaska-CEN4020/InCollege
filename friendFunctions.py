@@ -17,8 +17,8 @@ def viewFriendRequests():
     sentRequests = cursor.fetchall()
 
     # Print all friend requests sent by the current user
-    if sentRequests:
-        print("\nFriend Requests Sent:")
+    print("\nFriend Requests Sent:")
+    if sentRequests:    
         for req in sentRequests:
             print(f"To User ID: {req[1]}, Name: {req[2]} {req[3]}")
     else:
@@ -34,44 +34,38 @@ def viewFriendRequests():
     receivedRequests = cursor.fetchall()
 
     # Print all friend requests received by the current user
-    print("\n")
-    header("Friend Requests Received")
+    print("\nFriend Requests Received:")
     if receivedRequests:
         for req in receivedRequests:
             print("ID:        \t", req[1])
-            print("First Name:\t", req[2])
-            print("Last Name: \t", req[3])
+            print("Name:      \t", req[2], " ", req[3])
             print("University:\t", req[4].upper())
             print("Major:     \t", req[3].capitalize())
             print("\n")
+        
+        # Asks user if they want to accept any requests
+        while True:
+            userResponse = input("Enter the ID of a user whose friend request you want to ACCEPT (or 'Q' to quit): ")
+            if userResponse.upper() == 'Q':
+                break
+            try:
+                selectedUserID = int(userResponse)
+                updateFriendRequest(selectedUserID,1)  
+            except ValueError:
+                print("Invalid input. Please enter a valid user ID or 'Q' to quit.")
+        
+        # Asks user if they want to reject any requests
+        while True:
+            userResponse = input("Enter the ID of a user whose friend request you want to REJECT (or 'Q' to to quit): ")
+            if userResponse.upper() == 'Q':
+                break
+            try:
+                selectedUserID = int(userResponse)
+                updateFriendRequest(selectedUserID,2)  
+            except ValueError:
+                print("Invalid input. Please enter a valid user ID or 'Q' to finish rejecting.")
+    
     else:
         print("\nYou have not received any friend requests.")
 
     input("Press Enter to Continue...")
-    
-
-# fix later
-# def showMyNetwork(user_id):
-#     connected_friends = get_user_friends(user_id)
-    
-#     if not connected_friends:
-#         print("You don't have any connected friends.")
-#     else:
-#         print("Your connected friends:")
-#         for friend_id in connected_friends:
-#             friend_info = get_user_info(friend_id)
-#             print(f"- Name: {friend_info['firstName']} {friend_info['lastName']}")
-#             print(f"  Username: {friend_info['username']}")
-#             print(f"  Major: {friend_info['major']}")
-#             print(f"  University: {friend_info['university']}")
-#             print(f"  Status: Connected")
-#             print("  (D) Disconnect from this friend")
-
-#         choice = input("Enter the option (Q to quit): ")
-#         if choice == 'Q' or choice == 'q':
-#             return
-#         elif choice == 'D' or choice == 'd':
-#             disconnect_option(user_id, connected_friends)
-#         else:
-#             print("Invalid Option. Try Again.")
-#             

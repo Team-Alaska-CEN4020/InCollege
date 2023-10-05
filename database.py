@@ -1,10 +1,34 @@
 import sqlite3
+import globalVars
 # SQLite database setup
 # Connect to the SQLite database (creates 'user_data.db' if it doesn't exist)
 conn = sqlite3.connect('your_database.db')
 cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 
-def insertFriendRequests(fromID, toID):
+def insertFriendRequest(fromID, toID):
     #note: for reqStatus, 0 = requested, 1 = accepted, 2 = rejected. Rejected requests should also have isDeleted flagged as 1
     cursor.execute("INSERT INTO friendRequests (fromUserID, toUserID, reqStatus) VALUES (?,?,?)",(fromID, toID, 0))
     conn.commit()
+
+def updateFriendRequest(userID, status):
+    # Update the friendRequest table
+    cursor.execute("SELECT * FROM friendRequests WHERE fromUserID = ? AND toUserID = ? AND isDeleted = 0 AND reqStatus = 0", (userID, globalVars.userID,))
+    if not cursor.fetchone():
+        print("Invalid user ID or no pending request from this user.")
+        return
+
+    cursor.execute("UPDATE friendRequests SET reqStatus = ? WHERE fromUserID = ? AND toUserID = ?", (status, userID, globalVars.userID,))
+    conn.commit()
+
+    if status == 1:
+        insertFriend(userID)
+    elif status == 2:
+        print(f"Friend request from userID {userID} rejected!")
+
+def insertFriend(friendID):
+    try:
+        cursor.execute("INSERT INTO friends (userID, friendUserID, friendshipStatus, isDeleted) VALUES (?, ?, 1, 0)", (globalVars.userID, friendID,))
+        conn.commit()
+        print(f"Friend request from userID {friendID} accepted!")
+    except Exception as e:
+        print(f"Error occurred while adding friend: {e}")

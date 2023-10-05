@@ -119,5 +119,5 @@ def userSearchMajor():
 
 def friendRequest(toUserID):
     print("sending friend request to ID:" + str(toUserID)) # replace with function call to DB to add request
-    insertFriendRequests(globalVars.userID, toUserID)
+    insertFriendRequest(globalVars.userID, toUserID)
     time.sleep(3)
