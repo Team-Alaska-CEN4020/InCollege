@@ -1,37 +1,12 @@
-from database import *
-from loginLanding import userHome
+### Header ###
 import re
 import globalVars
 import time
+from database import *
 from UI import *
+from loginLanding import *
 
-import time
-
-def searchUser():
-    from landing import startupLanding
-    spacer()
-    header('User Search')
-    firstname = input("\nEnter a first name to search: ")
-    lastname = input("Enter a last name: ")
-    
-    cursor.execute("SELECT * FROM users WHERE firstName=? AND lastName=?",(firstname, lastname))
-    user = cursor.fetchone()
-    
-    loopBreaker = True
-    loopBreak = True
-    
-    header('Search Results')
-    if user:
-        while loopBreaker:
-            print(user[2] + " " + user[3] + " is already an inCollege member!")
-        
-            loopBreaker = False
-            time.sleep(3)
-            startupLanding()
-    
-    else:
-        print("They are not yet an inCollege member.")  
-        time.sleep(3)
+### Functions ###
 
 def deleteUser():
   from landing import startupLanding

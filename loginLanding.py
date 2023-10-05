@@ -1,10 +1,12 @@
+import globalVars
+import time
 from database import *
 from UI import *
-import time
 from friendFunctions import *
 from networks import * 
-#intialize a stack to navigate through the program 
-#navigation_stack = []
+from userSearch import *
+
+
 
 def userHome():
     from landing import startupLanding
@@ -26,7 +28,7 @@ def userHome():
         if uInput == '1':
           searchForJob()
         elif uInput == '2':
-          findSomeoneTheyKnow()
+          userSearch()
         elif uInput == '3':
           learnASkill()
         elif uInput == '4':
@@ -111,7 +113,7 @@ def storeJob(title, description, employer, location, salary, firstName, lastName
   cursor.execute("SELECT COUNT(*) FROM jobs")
   job_count = cursor.fetchone()[0]
 
-  if job_count >= MAX_ACCOUNTS:
+  if job_count >= globalVars.maxJobPostings:
     print("All permitted jobs have been created. Please come back later.")
     userHome()
 
@@ -120,40 +122,3 @@ def storeJob(title, description, employer, location, salary, firstName, lastName
   conn.commit()
   print("Job stored in database")
   userHome()
-
-
-def findSomeoneTheyKnow():
-    #firstname = input("\nEnter a first name to search: ")
-    lastname = input("Enter a last name: ")
-    major = input("Enter their major: ")
-    university = input("Enter their University: ")
-    
-    cursor.execute("SELECT * FROM users WHERE lastName=? OR major=? OR university=?  ",(lastname , major , university))
-    user = cursor.fetchone()
-    
-    loopBreaker = True
-    loopBreak = True
-  
-    if user:
-        while loopBreaker:
-            print("They are a part of the InCollege system")
-            print("Username" + user[1])
-            print("Last Name" + user[3])
-            print("Major: "  + user[8])
-            print("Last Name: " + user[9])
-        
-            loopBreaker = False
-            time.sleep(3)
-            userHome()
-    
-    else:
-        print("They are not yet a part ofthe InCollege system yet")  
-        while loopBreak:
-            uInput = input("Enter 1 to return to main menu: ")
-            if uInput == "1":
-                loopBreak = False
-                userHome()
-            else:
-                uInput = input("Enter 1 to return to main menu please: ")
-                userHome()
-
