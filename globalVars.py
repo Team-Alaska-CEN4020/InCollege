@@ -11,6 +11,6 @@ userSettingLanguage = 0     # 0=English, 1=Spanish
 userMajor = None
 userUniversity = None 
 
-# Application Information
+# Application Information and Limits
 maxActiveAccounts = 10
 maxJobPostings = 5
