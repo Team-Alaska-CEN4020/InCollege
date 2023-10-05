@@ -21,7 +21,7 @@ def userSearch():
         elif uInput == '2':
             userSearchUni()
         elif uInput == '3':
-            print() # build and replace with userSearchMajor
+            userSearchMajor()
         elif uInput == 'Q' or uInput == 'q':
             menuLooper = False
         else:
@@ -55,7 +55,7 @@ def userSearchUni():
     header('Search by University')
     uniInput = input("Enter the acronym of your University (ie. USF): ").upper()
 
-    cursor.execute("SELECT userID, firstName, LastName, userMajor FROM users WHERE userUniversity=? and isDeleted=0", (uniInput,))
+    cursor.execute("SELECT userID, firstName, LastName, userMajor FROM users WHERE UPPER(userUniversity)=? and isDeleted=0", (uniInput,))
     results = cursor.fetchall()
     print("\n")
     header('Search Results')
@@ -65,7 +65,27 @@ def userSearchUni():
     for row in results:
         print("First Name:\t", row[1])
         print("Last Name: \t", row[2])
-        print("Major:     \t", row[3])
+        print("Major:     \t", row[3].capitalize())
+        print("\n")
+    
+    input("Press Enter to Continue...")
+
+def userSearchMajor():
+    spacer()
+    header('Search by Major')
+    majorInput = input("Enter the name of your major: ").upper()
+
+    cursor.execute("SELECT userID, firstName, LastName, userUniversity FROM users WHERE UPPER(userMajor)=? and isDeleted=0", (majorInput,))
+    results = cursor.fetchall()
+    print("\n")
+    header('Search Results')
+    print("Results Found: ", len(results))
+    print("\n")
+
+    for row in results:
+        print("First Name:\t", row[1])
+        print("Last Name: \t", row[2])
+        print("Univerity: \t", row[3].upper())
         print("\n")
     
     input("Press Enter to Continue...")
