@@ -151,3 +151,57 @@ def test_user_search_major_friend(monkeypatch, capsys):
         assert "══════════════" in updated_output 
         assert "Results Found:  0\n\n" in updated_output
         assert "Invalid input. Please enter a valid user ID or 'N' to skip.\n" in updated_output
+
+
+##########
+# friend test functions        
+##########
+
+import pytest
+from unittest.mock import patch
+import io, os, sys
+from important import *
+from friendFunctions import *
+
+# Mock the 'cursor' object and 'updateFriendDisconnect' function
+mock_cursor = Mock()
+mock_update_friend_disconnect = Mock()
+
+# Assuming 'cursor' and 'updateFriendDisconnect' are part of your 'your_network' module
+with patch('your_network.cursor', mock_cursor), \
+     patch('your_network.updateFriendDisconnect', mock_update_friend_disconnect):
+
+    @patch('builtins.input', side_effect=['1', 'Q'])
+    def test_getFriends_with_friends(self, mock_input):
+        # Mock the database query result to simulate having friends
+        mock_cursor.fetchall.return_value = [(1, 'John', 'Doe', 'University A', 'Major A')]
+
+        # Call the getFriends function
+        getFriends()
+
+        # Assertions for the scenario with friends
+        expected_output = "Friend ID: 1\nName: John Doe\nUniversity: University A\nMajor: Major A"
+        self.assertEqual(mock_update_friend_disconnect.call_count, 1)  # Ensure updateFriendDisconnect is called once
+        self.assertIn(expected_output, self.stdout.getvalue())  # Capture the printed output and check for the expected content
+
+    @patch('builtins.input', side_effect=['Q'])
+    def test_getFriends_without_friends(self, mock_input):
+        # Mock the database query result to simulate having no friends
+        mock_cursor.fetchall.return_value = []
+
+        # Call the getFriends function
+        getFriends()
+
+        # Assertions for the scenario without friends
+        self.assertEqual(mock_update_friend_disconnect.call_count, 0)  # Ensure updateFriendDisconnect is not called
+        self.assertIn("No one is in your network at the moment.", self.stdout.getvalue())  # Check for the expected message
+
+    @patch('builtins.input', side_effect=['Q'])
+    @patch('your_network.cursor', side_effect=Exception("Database error"))
+    def test_getFriends_database_error(self, mock_cursor, mock_input):
+        # Call the getFriends function
+        getFriends()
+
+        # Assertions for the database error scenario
+        self.assertEqual(mock_update_friend_disconnect.call_count, 0)  # Ensure updateFriendDisconnect is not called
+        self.assertIn("Error occurred while fetching friends:", self.stdout.getvalue())  # Check for the expected error message
