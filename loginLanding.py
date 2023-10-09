@@ -1,29 +1,42 @@
+import globalVars
+import time
 from database import *
 from UI import *
-import time
-#intialize a stack to navigate through the program 
-#navigation_stack = []
+from friendFunctions import *
+from userSearch import *
+
+
 
 def userHome():
     from landing import startupLanding
   
     exitInput = 0 
     while exitInput == 0:
+        spacer()
         header("Welcome User!")
         print("Please select the number of the service you would like to use:")
         print("(1)  Search for a job / internship")
-        print("(2)  Find someone that they know")
+        print("(2)  Find someone you know")
         print("(3)  Learn a new skill")
+        print("(4)  Show My Network")
+        print("(5)  Send Friend Request")
+        print("(6)  Pending Friend Requests")
     
         uInput = input("Input Selection (Q to quit and return): ")
       
         if uInput == '1':
           searchForJob()
         elif uInput == '2':
-          findSomeoneTheyKnow()
+          userSearch()
         elif uInput == '3':
           learnASkill()
-        elif uInput == 'Q' or 'q':
+        elif uInput == '4':
+          getFriends()
+        elif uInput == '5':
+          userSearch()
+        elif uInput == '6':
+          viewFriendRequests()
+        elif uInput == 'Q' or uInput =='q':
           exitInput = 1
           spacer() 
         else:
@@ -33,30 +46,32 @@ def userHome():
 # Option functions to fill out once we understand what we need to do for them 
 def searchForJob():
     #print("Searching for a job is under construction")
-    print("\nWelcome to Job Search!\n1) post a job\n2) go back to the previous page")
-    choice = int(input("Please select an option: "))
+    spacer()
+    header('Welcome to Job Search')
+    print("(1)  Post a Job")
+    uInput = input("Input Selection (Q to quit): ")
   
-    if(choice == 1):
-      print("\nEnter the following information about the job: ")
-      title = input("Enter the job title: ")
-      description = input("Enter the job description: ")
-      employer = input("Enter the employer: ")
-      location = input("Enter the location: ")
-      salary = input("Enter the job's salary: ")
-      firstname = input("Enter your first name: ")
-      lastname = input("Enter your last name: ")
+    exitInput = 0
+    while exitInput == 0:
+      if uInput == '1':
+        print("\nEnter the following information about the job: ")
+        title = input("Enter the job title: ")
+        description = input("Enter the job description: ")
+        employer = input("Enter the employer: ")
+        location = input("Enter the location: ")
+        salary = input("Enter the job's salary: ")
+        firstname = input("Enter your first name: ")
+        lastname = input("Enter your last name: ")
 
-      storeJob(title, description, employer, location, salary, firstname, lastname)
+        storeJob(title, description, employer, location, salary, firstname, lastname)
+    
+      elif uInput == 'Q' or uInput == 'q':
+        exitInput = 1
+        spacer()
 
-      
-    elif(choice == 2):
-      print("returning to job search")
-      userHome()
-    else:
-      while(choice!= 1 and choice != 2):
-        print("invalid input")
-        print("1) post a job\n2) go back to the previous page")
-        choice = input("Please select an option: ")
+      else:
+        print("Invalid Option Try again")
+
 
   
 def learnASkill():
@@ -97,7 +112,7 @@ def storeJob(title, description, employer, location, salary, firstName, lastName
   cursor.execute("SELECT COUNT(*) FROM jobs")
   job_count = cursor.fetchone()[0]
 
-  if job_count >= MAX_ACCOUNTS:
+  if job_count >= globalVars.maxJobPostings:
     print("All permitted jobs have been created. Please come back later.")
     userHome()
 
@@ -106,37 +121,3 @@ def storeJob(title, description, employer, location, salary, firstName, lastName
   conn.commit()
   print("Job stored in database")
   userHome()
-
-
-def findSomeoneTheyKnow():
-    firstname = input("\nEnter a first name to search: ")
-    lastname = input("Enter a last name: ")
-    
-    cursor.execute("SELECT * FROM users WHERE firstName=? AND lastName=?",(firstname, lastname))
-    user = cursor.fetchone()
-    
-    loopBreaker = True
-    loopBreak = True
-  
-    if user:
-        while loopBreaker:
-            print("They are a part of the InCollege system")
-            print("Username: " + user[0])
-            print("First Name: "  + user[2])
-            print("Last Name: " + user[3])
-        
-            loopBreaker = False
-            time.sleep(3)
-            userHome()
-    
-    else:
-        print("They are not yet a part ofthe InCollege system yet")  
-        while loopBreak:
-            uInput = input("Enter 1 to return to main menu: ")
-            if uInput == "1":
-                loopBreak = False
-                userHome()
-            else:
-                uInput = input("Enter 1 to return to main menu please: ")
-                userHome()
-

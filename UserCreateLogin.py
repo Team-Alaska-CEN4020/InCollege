@@ -1,42 +1,12 @@
-from database import *
-from loginLanding import userHome
+### Header ###
 import re
 import globalVars
-
 import time
+from database import *
+from UI import *
+from loginLanding import *
 
-def searchUser():
-    from landing import startupLanding
-    firstname = input("\nEnter a first name to search: ")
-    lastname = input("Enter a last name: ")
-    
-    cursor.execute("SELECT * FROM users WHERE firstName=? AND lastName=?",(firstname, lastname))
-    user = cursor.fetchone()
-    
-    loopBreaker = True
-    loopBreak = True
-  
-    if user:
-        while loopBreaker:
-            print("They are a part of the InCollege system")
-            print("Username: " + user[0])
-            print("First Name: "  + user[2])
-            print("Last Name: " + user[3])
-        
-            loopBreaker = False
-            time.sleep(3)
-            startupLanding()
-    
-    else:
-        print("They are not yet a part ofthe InCollege system yet")  
-        while loopBreak:
-            uInput = input("Enter 1 to return to main menu: ")
-            if uInput == "1":
-                loopBreak = False
-                startupLanding()
-            else:
-                uInput = input("Enter 1 to return to main menu please: ")
-                startupLanding()
+### Functions ###
 
 def deleteUser():
   from landing import startupLanding
@@ -61,7 +31,7 @@ def createUser():
     cursor.execute("SELECT COUNT(*) FROM users")
     account_count = cursor.fetchone()[0]
 
-    if account_count >= MAX_ACCOUNTS:
+    if account_count >= globalVars.maxActiveAccounts:
         print("All permitted accounts have been created. Please come back later.")
         choice = input("Do you want to delete an existing account? (yes/no): ")
         if choice.lower() == "yes":
@@ -94,6 +64,8 @@ def createUser():
           
     firstName = input("Please enter your first name: ")
     lastName = input("Please enter your last name: ")
+    major = input("Enter your major: ")
+    uni= input("Enter your univeristy: ")
     
     # default user account settings to store into users entry on DB
     defaultEmail = True
@@ -101,7 +73,7 @@ def createUser():
     defaultAdTarget = True
     defaultLanguage = 0
   
-    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage))
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, major , university) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni))
     conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
     print("Congratulations! Your account has been successfully registered.")
     
@@ -110,6 +82,8 @@ def createUser():
     globalVars.username = username
     globalVars.userFirstName = firstName
     globalVars.userLastName = lastName
+    globalVars.userMajor = major
+    globalVars.userUniversity = uni
     
     userHome()
 
@@ -128,7 +102,7 @@ def UserLogin():
         globalVars.currentUser = username
 
         # Get the correct password from the retrieved data
-        correct_password = user_data[1]  
+        correct_password = user_data[2]  
         counter = True
         while counter:
             password = input("Please enter your password: ")
@@ -139,13 +113,16 @@ def UserLogin():
                 
                 #update the global user variables and settings
                 globalVars.isLoggedIn = True
-                globalVars.username = user_data[0]
-                globalVars.userFirstName = user_data[2]
-                globalVars.userLastName = user_data[3]
-                globalVars.userSettingMarketingEmail = user_data[4]
-                globalVars.userSettingMarketingSMS = user_data[5]
-                globalVars.userSettingAdvertisementTargeted = user_data[6]
-                globalVars.userSettingLanguage = user_data[7]
+                globalVars.userID = user_data[0]
+                globalVars.username = user_data[1]
+                globalVars.userFirstName = user_data[3]
+                globalVars.userLastName = user_data[4]
+                globalVars.userSettingMarketingEmail = user_data[5]
+                globalVars.userSettingMarketingSMS = user_data[6]
+                globalVars.userSettingAdvertisementTargeted = user_data[7]
+                globalVars.userSettingLanguage = user_data[8]
+                globalVars.userMajor = user_data[10]
+
                 userHome()
             else:
                 print("Incorrect username/password. Please try again.")

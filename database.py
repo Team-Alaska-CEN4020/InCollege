@@ -1,39 +1,47 @@
 import sqlite3
+import globalVars
 # SQLite database setup
 # Connect to the SQLite database (creates 'user_data.db' if it doesn't exist)
 conn = sqlite3.connect('your_database.db')
 cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 
-# Create a table to store user data if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        username TEXT PRIMARY KEY,
-        password TEXT,
-        firstName TEXT,
-        lastName TEXT
-    )
-''')
+def insertFriendRequest(fromID, toID):
+    #note: for reqStatus, 0 = requested, 1 = accepted, 2 = rejected. Rejected requests should also have isDeleted flagged as 1
+    cursor.execute("INSERT INTO friendRequests (fromUserID, toUserID, reqStatus) VALUES (?,?,?)",(fromID, toID, 0))
+    conn.commit()
 
-# Create a table to store user stories if it doesn't exist
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS stories (
-        story TEXT
-    )
-''')
+def updateFriendRequest(userID, status):
+    # Update the friendRequest table
+    cursor.execute("SELECT * FROM friendRequests WHERE fromUserID = ? AND toUserID = ? AND isDeleted = 0 AND reqStatus = 0", (userID, globalVars.userID,))
+    if not cursor.fetchone():
+        print("Invalid user ID or no pending request from this user.")
+        return
 
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS jobs (
-        title TEXT,
-        description TEXT,
-        employer TEXT,
-        location TEXT,
-        salary TEXT,
-        firstname TEXT,
-        lastname TEXT
-    )
-''')
+    cursor.execute("UPDATE friendRequests SET reqStatus = ? WHERE fromUserID = ? AND toUserID = ?", (status, userID, globalVars.userID,))
+    conn.commit()
 
-# SQL command to create a 'users' table with 'username' and 'password' columns if it doesn't exist
-conn.commit()  # Commit the changes to the database
-MAX_ACCOUNTS = 5  # Maximum number of allowed accounts
-MAX_JOBS = 5
+    if status == 1:
+        insertFriend(userID)
+    elif status == 2:
+        print(f"Friend request from userID {userID} rejected!")
+
+def insertFriend(friendID):
+    try:
+        cursor.execute("INSERT INTO friends (userID, friendUserID, friendshipStatus, isDeleted) VALUES (?, ?, 1, 0)", (globalVars.userID, friendID,))
+        conn.commit()
+        cursor.execute("INSERT INTO friends (userID, friendUserID, friendshipStatus, isDeleted) VALUES (?, ?, 1, 0)", (friendID, globalVars.userID,))
+        conn.commit()
+        print(f"Friend request from userID {friendID} accepted!")
+    except Exception as e:
+        print(f"Error occurred while adding friend: {e}")
+
+def updateFriendDisconnect(friendID):
+    try:
+        # Set friendshipStatus to 0 for both user and friend
+        cursor.execute("UPDATE friends SET friendshipStatus = 0 WHERE userID = ? AND friendUserID = ? AND isDeleted = 0", (globalVars.userID, friendID,))
+        conn.commit()
+        cursor.execute("UPDATE friends SET friendshipStatus = 0 WHERE userID = ? AND friendUserID = ? AND isDeleted = 0", (friendID, globalVars.userID,))
+        conn.commit()
+        print(f"You have disconnected from friend with ID: {friendID}")
+    except Exception as e:
+        print(f"Error occurred while disconnecting friend: {e}")
