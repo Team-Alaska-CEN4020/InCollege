@@ -1,6 +1,11 @@
+import io, os, sys
+current_script_directory = os.path.dirname(os.path.abspath(__file__))
+
+parent_directory = os.path.join(current_script_directory, '..')
+sys.path.append(parent_directory)
+
 import pytest
 from unittest.mock import *
-import io, os, sys
 from important import *
 from friendFunctions import *
 
