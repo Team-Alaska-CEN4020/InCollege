@@ -1,14 +1,15 @@
-import pytest
-import unittest
-from unittest.mock import patch
-from io import StringIO
-from important import Languages
 import os, sys
 
 current_script_directory = os.path.dirname(os.path.abspath(__file__))
 
 parent_directory = os.path.join(current_script_directory, '..')
 sys.path.append(parent_directory)
+
+import pytest
+import unittest
+from unittest.mock import patch
+from io import StringIO
+from important import Languages
 
 def mock_environment():
     with patch('important.globalVars.userSettingLanguage', 0), \
