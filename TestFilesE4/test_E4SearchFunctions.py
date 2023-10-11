@@ -1,15 +1,15 @@
-import pytest
-import unittest
-from unittest.mock import patch
-from io import StringIO
 import os, sys
-import sqlite3
-from userSearch import *
-
 current_script_directory = os.path.dirname(os.path.abspath(__file__))
 
 parent_directory = os.path.join(current_script_directory, '..')
 sys.path.append(parent_directory)
+
+import pytest
+import unittest
+from unittest.mock import patch
+from io import StringIO
+import sqlite3
+from userSearch import *
 
 def test_user_search_name(monkeypatch, capsys):
     with patch('sys.stdout', new_callable=StringIO) as mock_stdout, \
