@@ -1,3 +1,10 @@
+import os, sys
+
+current_script_directory = os.path.dirname(os.path.abspath(__file__))
+
+parent_directory = os.path.join(current_script_directory, '..')
+sys.path.append(parent_directory)
+
 import pytest
 from friendFunctions import viewFriendRequests  # Replace 'your_module' with the actual module containing the function
 from unittest.mock import patch, MagicMock
