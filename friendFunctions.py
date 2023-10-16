@@ -70,6 +70,46 @@ def viewFriendRequests():
 
     input("Press Enter to Continue...")
 
+
+
+# def getFriends():
+#     spacer()
+#     header('Your Network')
+
+#     try:
+#         cursor.execute("""
+#             SELECT f.friendUserID, u.firstName, u.lastName, u.userUniversity, u.userMajor
+#             FROM friends AS f
+#             JOIN users AS u ON f.friendUserID = u.userID
+#             WHERE f.userID = ? AND f.friendshipStatus = 1 AND f.isDeleted = 0
+#         """, (globalVars.userID,))
+#         friendsList = cursor.fetchall()
+
+#         if friendsList:
+#             for friend in friendsList:
+#                 print(f"Friend ID: {friend[0]}")
+#                 print(f"Name: {friend[1]} {friend[2]}")
+#                 print(f"University: {friend[3]}")
+#                 print(f"Major: {friend[4]}")
+#                 print("\n")
+#             # Prompt user to disconnect from a friend
+#             while True:
+#                 userResponse = input("Enter the ID of a friend you want to disconnect from (or 'Q' to quit): ")
+#                 if userResponse.upper() == 'Q':
+#                     break
+#                 try:
+#                     selectedFriendID = int(userResponse)
+#                     updateFriendDisconnect(selectedFriendID)
+#                 except ValueError:
+#                     print("Invalid input. Please enter a valid Friend ID or 'Q' to quit.")
+
+#         else:
+#             print("No one is in your network at the moment.")
+#     except Exception as e:
+#         print(f"Error occurred while fetching friends: {e}")
+
+#     input("Press Enter to Continue...")
+
 def getFriends():
     spacer()
     header('Your Network')
@@ -89,7 +129,13 @@ def getFriends():
                 print(f"Name: {friend[1]} {friend[2]}")
                 print(f"University: {friend[3]}")
                 print(f"Major: {friend[4]}")
+                print("Press 1 to View Profile:")
                 print("\n")
+
+                uInput = input("Input Selection (Q to quit and return): ")
+                if uInput == '1':
+                    interactWithFriend()
+
             # Prompt user to disconnect from a friend
             while True:
                 userResponse = input("Enter the ID of a friend you want to disconnect from (or 'Q' to quit): ")
@@ -105,5 +151,88 @@ def getFriends():
             print("No one is in your network at the moment.")
     except Exception as e:
         print(f"Error occurred while fetching friends: {e}")
+
+    #input("Press Enter to Continue...")
+
+###########################################Epic-5 FUNCTIONS###############################################
+
+def interactWithFriend(friendID):
+    spacer()
+    header('Friend Profile')
+
+    # Query the database to retrieve and display the friend's profile details based on their User ID        
+    cursor.execute("SELECT * FROM users WHERE userID = ? AND marketingEmail = 1", (friendID,))
+    friend_data = cursor.fetchone()
+
+    if friend_data:
+        print(f"User ID: {friend_data[0]}")
+        print(f"Username: {friend_data[1]}")
+        print(f"Name: {friend_data[2]} {friend_data[3]}")
+        print(f"University: {friend_data[4].upper()}")
+        print(f"Major: {friend_data[5].capitalize()}")
+        # Add more profile details here as needed
+    else:
+        print("\nFriend not found in the database.")
+
+    input("Press Enter to Continue...")
+
+
+
+
+def viewFriendProfiles():
+    spacer()
+    header('View Friend Profiles')
+
+    # Query to get a list of your friends
+    cursor.execute("""
+        SELECT u.userID, u.username, u.firstName, u.lastName
+        FROM friends AS f
+        JOIN users AS u ON f.friendUserID = u.userID
+        WHERE f.userID = ? AND f.friendshipStatus = 1 AND f.isDeleted = 0
+    """, (globalVars.userID,))
+    friends = cursor.fetchall()
+
+    if not friends:
+        print("\nYou don't have any friends to view profiles.")
+        input("Press Enter to Continue...")
+        return
+
+    # Display your list of friends
+    print("Your Friends:")
+    for i, friend in enumerate(friends, start=1):
+        print(f"{i}. User ID: {friend[0]}, Username: {friend[1]}, Name: {friend[2]} {friend[3]}")
+
+    # Ask the user to select a friend to view their profile
+    while True:
+        userResponse = input("\nEnter the number of the friend whose profile you want to view (or 'Q' to quit): ")
+        if userResponse.upper() == 'Q':
+            break
+        try:
+            selected_index = int(userResponse)
+            if 1 <= selected_index <= len(friends):
+                selected_friend = friends[selected_index - 1]
+                viewUserProfile(selected_friend[0])  # Call a function to view the selected friend's profile
+            else:
+                print("Invalid input. Please enter a valid number or 'Q' to quit.")
+        except ValueError:
+            print("Invalid input. Please enter a valid number or 'Q' to quit.")
+
+    input("Press Enter to Continue...")
+
+def viewUserProfile(userID):
+    # Query the database to retrieve and display the user's profile details based on their User ID
+    cursor.execute("SELECT * FROM users WHERE userID = ?", (userID,))
+    user_data = cursor.fetchone()
+
+    if user_data:
+        print("\nUser Profile:")
+        print(f"User ID: {user_data[0]}")
+        print(f"Username: {user_data[1]}")
+        print(f"Name: {user_data[2]} {user_data[3]}")
+        print(f"University: {user_data[4].upper()}")
+        print(f"Major: {user_data[5].capitalize()}")
+        # Add more profile details here as needed
+    else:
+        print("\nUser not found in the database.")
 
     input("Press Enter to Continue...")
