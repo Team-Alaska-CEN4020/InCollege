@@ -121,7 +121,12 @@ def displayProfile(profile):
     print(f"About: {profile[5]}\n")
 
     # Fetch experience and education from their respective tables based on the user's ID
-    cursor.execute("SELECT * FROM experience WHERE userID = ?", (globalVars.userID,))
+    #cursor.execute("SELECT * FROM experience WHERE userID = ?", (globalVars.userID,))
+    cursor.execute("""
+        SELECT e.experienceID, e.userID, e.jobTitle, e.employer, e.dateStarted, e.dateEnded, e.location, e.description
+        FROM experience as e
+        JOIN users as u ON e.userID = u.userID 
+        WHERE e.userID = ?""", (globalVars.userID,))
     experience_data = cursor.fetchall()
 
     if experience_data:
@@ -134,15 +139,19 @@ def displayProfile(profile):
             print("    Location:", exp[6])
             print("    Description:", exp[7])
 
-    cursor.execute("SELECT * FROM education WHERE userID = ?", (globalVars.userID,))
+    cursor.execute("""
+        SELECT edu.userID, edu.schoolName, edu.degree, edu.yearsAttended, u.userID
+        FROM education as edu
+        JOIN users as u ON edu.userID = u.userID 
+        WHERE edu.userID = ?""", (globalVars.userID,))
     education_data = cursor.fetchall()
 
     if education_data:
         print("\nEducation:")
         for edu in education_data:
-            print("  - School Name:", edu[2])
-            print("    Degree:", edu[3])
-            print("    Years Attended:", edu[4])
+            print("  - School Name:", edu[1])
+            print("    Degree:", edu[2])
+            print("    Years Attended:", edu[3])
 
 
 
