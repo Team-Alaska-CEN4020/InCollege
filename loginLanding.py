@@ -6,7 +6,7 @@ from friendFunctions import *
 from userSearch import *
 conn = sqlite3.connect('your_database.db')
 cursor = conn.cursor()  # Create a cursor object to execute SQL commands
-from profileFunctions import *
+from profileFunctions import createProfile, displayProfile, editProfile
 
 
 def userHome():

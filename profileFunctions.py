@@ -114,6 +114,7 @@ cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 #         conn.commit()
 
 ##############################^^^^^^^^^^^^DELETE IF SATISFIED WITHT HE BELOW CODE^^^^^^^^^^^#############################
+
 def createProfile():
     from loginLanding import userHome
 
@@ -140,13 +141,12 @@ def createProfile():
         university = profile_data[3]  # Use the existing university
         paragraph = profile_data[4]  # Use the existing About
 
-        # Prompt the user for updated information or skip/quit options
-        print("Profile Details:")
-
         # Function to update profile data
         def update_profile(column_name, current_value, message):
             while True:
+                
                 user_input = input(
+                    f"(Profile Incomplete! Please complete in order to proceed.) "
                     f"{message} (currently '{current_value}' or press Enter to skip/Q to quit): ").strip()
                 if user_input.upper() == 'Q':
                     userHome()
@@ -157,10 +157,15 @@ def createProfile():
                     conn.commit()
                 break
 
-        update_profile("title", title, "Enter your title")
-        update_profile("major", major, "Enter your major")
-        update_profile("university", university, "Enter your university")
-        update_profile("About", paragraph, "Enter a paragraph about yourself")
+        # Prompt the user for updated information or skip/quit options
+        if title is None:
+            update_profile("title", title, "Enter your title")
+        if major is None:
+            update_profile("major", major, "Enter your major")
+        if university is None:
+            update_profile("university", university, "Enter your university")
+        if paragraph is None:
+            update_profile("About", paragraph, "Enter a paragraph about yourself")
 
         # Ask the user if they want to update experience and education
         update_experience = input("Do you want to update your work experience (yes/no)? ").strip()
@@ -173,7 +178,6 @@ def createProfile():
 
         print("Your profile has been updated successfully!")
         userHome()
-
 
 
 
@@ -303,11 +307,15 @@ def displayProfile(profile):
     spacer()
     header(
         f'Your Profile, {globalVars.userFirstName} {globalVars.userLastName}')
+    if profile and None in profile[1:]:
+            print(f"Title: {profile[2]}")
+            print(f"Major: {profile[3]}")
+            print(f"University: {profile[4]}")
+            print(f"About: {profile[5]}\n")
+    else:
+        print("Profile Incomplete! Please complete to proceed.")
+    spacer()
 
-    print(f"Title: {profile[2]}")
-    print(f"Major: {profile[3]}")
-    print(f"University: {profile[4]}")
-    print(f"About: {profile[5]}\n")
 
     # Fetch experience and education from their respective tables based on the user's ID
     # cursor.execute("SELECT * FROM experience WHERE userID = ?", (globalVars.userID,))
