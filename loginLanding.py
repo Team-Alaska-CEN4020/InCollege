@@ -27,10 +27,9 @@ def userHome():
 
         uInput = input("Input Selection (Q to quit and return): ")
 
-        if uInput == '1':  # UI edited for Epic-5
+        if uInput == '1':  
+            # UI edited for Epic-5
             userProfile()
-            # userSearch()
-            # createProfile()
         if uInput == '2':
             searchForJob()
         elif uInput == '3':
@@ -75,9 +74,11 @@ def userProfile():
 
     if (not existing_profile) or (not experience_existing) or (not education_existing):
         # If no profile exists, create one
+        #If no education or experience exists then users get to continue from where they left off
         createProfile()
     else:
-        while True:
+        menuLooper = True
+        while menuLooper:
             spacer()
             header(f'Welcome, {globalVars.userFirstName}!')
 
@@ -95,7 +96,7 @@ def userProfile():
                 editProfile(existing_profile)
             elif option == '3':
                 # Go back to the main menu
-                break
+                menuLooper = False
             else:
                 print("Invalid option. Please choose a valid option.")
                 
