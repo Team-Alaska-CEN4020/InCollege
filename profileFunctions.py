@@ -113,7 +113,7 @@ cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 #                        (globalVars.userID, edu_data['School Name'], edu_data['Degree'], edu_data['Years Attended']))
 #         conn.commit()
 
-
+##############################^^^^^^^^^^^^DELETE IF SATISFIED WITHT HE BELOW CODE^^^^^^^^^^^#############################
 def createProfile():
     from loginLanding import userHome
 
