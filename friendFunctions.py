@@ -86,7 +86,6 @@ def getFriends():
         friendsList = cursor.fetchall()
 
         if friendsList:
-            #counterNum = 0
             userFriendID = []
             for friend in friendsList:
                 print(f"Friend ID: {friend[0]}")
@@ -94,9 +93,7 @@ def getFriends():
                 print(f"University: {friend[3]}")
                 print(f"Major: {friend[4]}")
                 userFriendID.append(friend[0])
-                #print(f"Press {counterNum+1} to View Profile:")
                 print("\n")
-                #counterNum = counterNum+1
             while True: 
                 spacer()
                 print("Please select from the following menu options: ")
@@ -106,12 +103,10 @@ def getFriends():
                 choice = input("Please enter (1/2/3): ")
 
                 if choice == '1':
-                    #print("Please enter the Friend ID number to View Profile:")
                     uInput = int(input("Please enter the Friend ID number to View Profile:"))
                     for id in userFriendID:
                         if uInput == id:
                             showFriendProfile(id)
-                    #spacer()
                     continue
 
                 elif choice == '2': 
@@ -128,8 +123,7 @@ def getFriends():
                     continue
                 elif choice == '3' :
                     spacer()
-                    return 
-                    
+                    return           
 
         else:
             print("No one is in your network at the moment.")
