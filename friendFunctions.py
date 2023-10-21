@@ -117,7 +117,7 @@ def getFriends():
                             break
                         try:
                             selectedFriendID = int(userResponse)
-                            updateFriendDisconnect(selectedFriendID)
+                            updateFriendDisconnect(selectedFriendID) 
                         except ValueError:
                             print("Invalid input. Please enter a valid Friend ID or 'Q' to quit.")
                     continue
@@ -138,12 +138,10 @@ def getFriends():
 
 def showFriendProfile(friendID):
     spacer()
-    header('Friend Profile')
 
     try: 
 
         # Query the database to retrieve and display the friend's profile details based on their User ID        
-        #cursor.execute("SELECT * FROM users WHERE userID = ? AND marketingEmail = 1", (friendID,))
         cursor.execute("SELECT * FROM profiles WHERE userID = ?", (friendID,))
         friend_data = cursor.fetchone()
 
@@ -151,7 +149,7 @@ def showFriendProfile(friendID):
         user_name = cursor.fetchone()
 
         header(
-            f"{user_name[3]} {user_name[4]}'s Profile:\n")
+            f"{user_name[3]} {user_name[4]}'s Profile:")
 
         if friend_data:
             print(f"Title: {friend_data[2]}")
@@ -160,7 +158,6 @@ def showFriendProfile(friendID):
             print(f"About: {friend_data[5]}")
 
             # Fetch experience and education from their respective tables based on the user's ID
-            #cursor.execute("SELECT * FROM experience WHERE userID = ?", (globalVars.userID,))
             cursor.execute("""
                 SELECT e.experienceID, e.userID, e.jobTitle, e.employer, e.dateStarted, e.dateEnded, e.location, e.description
                 FROM experience as e
@@ -192,8 +189,7 @@ def showFriendProfile(friendID):
                     print("    Degree:", edu[2])
                     print("    Years Attended:", edu[3])
         else:
-            print("\nFriend not found in the database.")
+            print("\nFriend does not have a profile yet.")
 
     except Exception as e:
         print(f"Error occurred while fetching friends profiles: {e}")
-    #input("Press Enter to Continue...")

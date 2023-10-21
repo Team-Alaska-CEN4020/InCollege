@@ -15,7 +15,7 @@ def userHome():
     exitInput = 0
     while exitInput == 0:
         spacer()
-        header("Welcome User!")
+        header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")
         print("(2)  Search for a job / internship")
@@ -63,7 +63,17 @@ def userProfile():
                    (globalVars.userID,))
     existing_profile = cursor.fetchone()
 
-    if not existing_profile:
+    # Check if an experience exists for the logged-in user in the experience table
+    cursor.execute("SELECT * FROM experience WHERE userID = ?",
+                   (globalVars.userID,))
+    experience_existing = cursor.fetchone()
+
+    # Check if an education exists for the logged-in user in the education table
+    cursor.execute("SELECT * FROM education WHERE userID = ?",
+                   (globalVars.userID,))
+    education_existing = cursor.fetchone()
+
+    if (not existing_profile) or (not experience_existing) or (not education_existing):
         # If no profile exists, create one
         createProfile()
     else:

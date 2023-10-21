@@ -7,24 +7,57 @@ conn = sqlite3.connect('your_database.db')
 cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 
 
-
 def createProfile():
-    spacer()
-    header('Create your InCollege profile')
+    from loginLanding import userHome
+    while True:
+        spacer()
+        header('Create your InCollege profile')
+        cursor.execute("SELECT userID FROM profiles WHERE userID=?", (globalVars.userID,))
+        profile_exists = cursor.fetchone()
+        if not profile_exists:
+            profileDetails()
+            uInput = input("Would you like to continue (Y/N): ")
+            if uInput.upper()!='Y':
+                userHome()
+        
+        cursor.execute("SELECT userID FROM experience WHERE userID=?", (globalVars.userID,))
+        experience_exists = cursor.fetchone()
+        if not experience_exists:
+            experienceDetails()
+            uInput1 = input("Would you like to continue (Y/N): ")
+            if uInput1.upper()!='Y':
+                userHome()
 
+        cursor.execute("SELECT userID FROM education WHERE userID=?", (globalVars.userID,))
+        education_exists = cursor.fetchone()
+        if not education_exists:
+            educationDetails()
+            print("Your profile has been created successfully!")
+            userHome()
+
+    
+
+
+def profileDetails():
+    print("Profile Details:")
     # Take inputs for profile data
-    title = input(
-        "Enter your title (e.g., '3rd year Computer Science student'): ")
+    title = input("Enter your title (e.g., '3rd year Computer Science student'): ")
     major = input("Enter your major: ")
     major = formatMajor(major)
     university = input("Enter your university: ")
     university = formatUniversity(university)
     paragraph = input("Enter a paragraph about yourself: ")
 
-    # Initialize lists for experience and education
-    experience = []
-    education = []
+    # Insert the profile data into the profiles table
+    cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, ?, ?, ?, ?)""",
+                   (globalVars.userID, title, major, university, paragraph))
 
+    conn.commit()
+    
+
+
+def experienceDetails():
+    experience = []
     # Capture up to three work experience details
     for i in range(3):
         print(f"Work Experience {i + 1}:")
@@ -50,6 +83,17 @@ def createProfile():
         if add_more.lower() != 'yes':
             break
 
+    # Insert experience data into its table
+    for exp_data in experience:
+        cursor.execute("""INSERT INTO experience (userID, jobTitle, employer, dateStarted, dateEnded, location, description) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                       (globalVars.userID, exp_data['Job Title'], exp_data['Employer'], exp_data['Date Started'], exp_data['Date Ended'], exp_data['Location'], exp_data['Description']))
+        conn.commit()
+
+
+
+
+def educationDetails():
+    education = []
     # Capture up to three education details
     for i in range(3):
         print(f"Education {i + 1}:")
@@ -68,32 +112,11 @@ def createProfile():
         add_more = input("Do you want to add more education (yes/no)? ")
         if add_more.lower() != 'yes':
             break
-
-    # Insert the profile data into the profiles table
-    cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, ?, ?, ?, ?)""",
-                   (globalVars.userID, title, major, university, paragraph))
-
-    conn.commit()
-
-    # Retrieve the auto-generated profileID
-    profile_id = cursor.lastrowid
-
-    # Insert experience and education data into their respective tables
-    for exp_data in experience:
-        cursor.execute("""INSERT INTO experience (userID, jobTitle, employer, dateStarted, dateEnded, location, description) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                       (globalVars.userID, exp_data['Job Title'], exp_data['Employer'], exp_data['Date Started'], exp_data['Date Ended'], exp_data['Location'], exp_data['Description']))
-        conn.commit()
-
+    # Insert education data into its table
     for edu_data in education:
         cursor.execute("""INSERT INTO education (userID, schoolName, degree, yearsAttended) VALUES (?, ?, ?, ?)""",
                        (globalVars.userID, edu_data['School Name'], edu_data['Degree'], edu_data['Years Attended']))
         conn.commit()
-
-    print("Your profile has been created successfully!")
-
-
-
-
 
 
 
