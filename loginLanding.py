@@ -30,7 +30,7 @@ def userHome():
         if uInput == '1':  
             # UI edited for Epic-5
             userProfile()
-        if uInput == '2':
+        elif uInput == '2':
             searchForJob()
         elif uInput == '3':
             userSearch()
