@@ -1,5 +1,3 @@
-from userSearch import *
-#from UserCreateLogin import *
 import globalVars
 from UI import *
 from database import *
@@ -122,7 +120,9 @@ def createProfile():
         header('Create your InCollege profile')
         cursor.execute("SELECT userID FROM profiles WHERE userID=?", (globalVars.userID,))
         profile_exists = cursor.fetchone()
-        if not profile_exists:
+        cursor.execute("SELECT * FROM profiles WHERE userID=?", (globalVars.userID,))
+        profile_data = cursor.fetchone()
+        if (not profile_exists) or (profile_data[2]==None) or (profile_data[3]==None) or (profile_data[4]==None) or (profile_data[5]==None) :
             # Insert an initial row with NULL values for the user's profile
             cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, NULL, NULL, NULL, NULL)""",
                        (globalVars.userID,))
@@ -154,53 +154,41 @@ def profileDetails():
     from loginLanding import userHome
     print("Profile Details:")
     # Take inputs for profile data
-    cursor.execute("SELECT title FROM profiles WHERE userID=?", (globalVars.userID,))
-    title_exists = cursor.fetchone()
+    cursor.execute("SELECT * FROM profiles WHERE userID=?", (globalVars.userID,))
+    profile_details = cursor.fetchone()
 
-    cursor.execute("SELECT major FROM profiles WHERE userID=?", (globalVars.userID,))
-    major_exists = cursor.fetchone()
+    while True:
+        if profile_details[2] == None: 
+            title = input("Incomplete profile details. Please enter your title (e.g., '3rd year Computer Science student'): ")
+            cursor.execute("UPDATE profiles SET title = ? WHERE userID = ?", (title, globalVars.userID))
+            conn.commit()
+            uInput = input("Would you like to continue? (Y/N): ")
+            if uInput.upper() != 'Y':
+                userHome()
 
-    cursor.execute("SELECT university FROM profiles WHERE userID=?", (globalVars.userID,))
-    uni_exists = cursor.fetchone()
+        if profile_details[3] == None: 
+            major = input("Incomplete profile details. Please enter your major: ")
+            major = formatMajor(major)
+            cursor.execute("UPDATE profiles SET major = ? WHERE userID = ?", (major, globalVars.userID))
+            conn.commit()
+            uInput = input("Would you like to continue? (Y/N): ")
+            if uInput.upper() != 'Y':
+                userHome()
+        
+        if profile_details[4] == None: 
+            university = input("Incomplete profile details. Please enter your university: ")
+            university = formatUniversity(university)
+            cursor.execute("UPDATE profiles SET university = ? WHERE userID = ?", (university, globalVars.userID))
+            conn.commit()
+            uInput = input("Would you like to continue? (Y/N): ")
+            if uInput.upper() != 'Y':
+                userHome()
 
-    cursor.execute("SELECT About FROM profiles WHERE userID=?", (globalVars.userID,))
-    about_exists = cursor.fetchone()
-
-    if title_exists == None: 
-        title = input("Incomplete profile details. Please enter your title (e.g., '3rd year Computer Science student'): ")
-        cursor.execute("UPDATE profiles SET title = ? WHERE userID = ?", (title, globalVars.userID))
-        uInput = input("Would you like to continue? (Y/N): ")
-        if uInput != 'Y':
-            userHome()
-
-    elif major_exists == None: 
-        major = input("Incomplete profile details. Please enter your major: ")
-        major = formatMajor(major)
-        cursor.execute("UPDATE profiles SET major = ? WHERE userID = ?", (major, globalVars.userID))
-        uInput = input("Would you like to continue? (Y/N): ")
-        if uInput != 'Y':
-            userHome()
-    
-    elif uni_exists == None: 
-        university = input("Incomplete profile details. Please enter your university: ")
-        university = formatUniversity(university)
-        cursor.execute("UPDATE profiles SET university = ? WHERE userID = ?", (university, globalVars.userID))
-        uInput = input("Would you like to continue? (Y/N): ")
-        if uInput != 'Y':
-            userHome()
-
-    elif about_exists == None: 
-        paragraph = input("Incomplete profile details. Please enter a paragraph about yourself: ")
-        cursor.execute("UPDATE profiles SET About = ? WHERE userID = ?", (paragraph, globalVars.userID))
-        uInput = input("Would you like to continue? (Y/N): ")
-        if uInput != 'Y':
-            userHome()
-
-    # Insert the profile data into the profiles table
-    #cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, ?, ?, ?, ?)""",
-    #               (globalVars.userID, title, major, university, paragraph))
-
-    #conn.commit()
+        if profile_details[5] == None: 
+            paragraph = input("Incomplete profile details. Please enter a paragraph about yourself: ")
+            cursor.execute("UPDATE profiles SET About = ? WHERE userID = ?", (paragraph, globalVars.userID))
+            conn.commit()
+            return
     
 
 
@@ -236,8 +224,6 @@ def experienceDetails():
         cursor.execute("""INSERT INTO experience (userID, jobTitle, employer, dateStarted, dateEnded, location, description) VALUES (?, ?, ?, ?, ?, ?, ?)""",
                        (globalVars.userID, exp_data['Job Title'], exp_data['Employer'], exp_data['Date Started'], exp_data['Date Ended'], exp_data['Location'], exp_data['Description']))
         conn.commit()
-
-
 
 
 def educationDetails():
@@ -343,11 +329,22 @@ def editProfile(existing_profile):
     paragraph = input(
         "Enter an updated paragraph about yourself (or press Enter to keep it the same): ")
 
-    # Update the profile data in the profiles table
-    cursor.execute("UPDATE profiles SET title = ?, major = ?, university = ?, About = ? WHERE userID = ?",
-                   (title or existing_profile[2], major or existing_profile[3],
-                    university or existing_profile[4], paragraph or existing_profile[5], globalVars.userID))
-    conn.commit()
+    # Update the profile data in the profiles table depending on which piece of data the user wanted to change
+    if title != "":
+        cursor.execute("UPDATE profiles SET title = ? WHERE userID = ?", (title, globalVars.userID))
+        conn.commit()
+
+    if major != "":
+        cursor.execute("UPDATE profiles SET major = ? WHERE userID = ?", (major, globalVars.userID))
+        conn.commit()
+
+    if university != "":
+        cursor.execute("UPDATE profiles SET university = ? WHERE userID = ?", (university, globalVars.userID))
+        conn.commit()
+
+    if paragraph != "":
+        cursor.execute("UPDATE profiles SET About = ? WHERE userID = ?", (paragraph, globalVars.userID))
+        conn.commit()
 
     print("Your profile has been updated successfully!")
 
@@ -386,21 +383,48 @@ def updateExperience(user_id):
     # Choose an entry to update
     exp_id_to_update = input(
         "Enter the experience ID you want to update (or press Enter to skip): ")
-    if exp_id_to_update:
+    if exp_id_to_update != "":
         # Take inputs for the updated experience
-        job_title = input("Enter the updated job title: ")
-        employer = input("Enter the updated employer: ")
-        date_started = input("Enter the updated date started: ")
-        date_ended = input("Enter the updated date ended: ")
-        location = input("Enter the updated location: ")
-        description = input("Enter the updated job description: ")
+        job_title = input("Enter the updated job title(or press Enter to keep it the same): ")
+        employer = input("Enter the updated employer(or press Enter to keep it the same): ")
+        date_started = input("Enter the updated date started(or press Enter to keep it the same): ")
+        date_ended = input("Enter the updated date ended(or press Enter to keep it the same): ")
+        location = input("Enter the updated location(or press Enter to keep it the same): ")
+        description = input("Enter the updated job description(or press Enter to keep it the same): ")
 
+        # Update the experience entry in the table depending on which piece of data the user wanted to change
+        if job_title != "":
+            cursor.execute("UPDATE experience SET jobTitle = ? WHERE experienceID = ?", (job_title, exp_id_to_update))
+            conn.commit()
+
+        if employer != "":
+            cursor.execute("UPDATE experience SET employer = ? WHERE experienceID = ?", (employer, exp_id_to_update))
+            conn.commit()
+
+        if date_started != "":
+            cursor.execute("UPDATE experience SET dateStarted = ? WHERE experienceID = ?", (date_started, exp_id_to_update))
+            conn.commit()
+
+        if date_ended != "":
+            cursor.execute("UPDATE experience SET dateEnded = ? WHERE experienceID = ?", (date_ended, exp_id_to_update))
+            conn.commit()
+
+        if location != "":
+            cursor.execute("UPDATE experience SET location = ? WHERE experienceID = ?", (location, exp_id_to_update))
+            conn.commit()
+
+        if description != "":
+            cursor.execute("UPDATE experience SET description = ? WHERE experienceID = ?", (description, exp_id_to_update))
+            conn.commit()
+
+
+        '''
         # Update the experience entry in the table
         cursor.execute("UPDATE experience SET jobTitle = ?, employer = ?, dateStarted = ?, dateEnded = ?, location = ?, description = ? WHERE experienceID = ?",
                        (job_title, employer, date_started, date_ended, location, description, exp_id_to_update))
         conn.commit()
-
-    print("Experience updated successfully!")
+        '''
+        print("Experience updated successfully!")
 
 
 def updateEducation(user_id):
@@ -424,15 +448,30 @@ def updateEducation(user_id):
     # Choose an entry to update
     edu_id_to_update = input(
         "Enter the education ID you want to update (or press Enter to skip): ")
-    if edu_id_to_update:
+    if edu_id_to_update != "":
         # Take inputs for the updated education
-        school_name = input("Enter the updated school name: ")
-        degree = input("Enter the updated degree: ")
-        years_attended = input("Enter the updated years attended: ")
+        school_name = input("Enter the updated school name(or press Enter to keep it the same): ")
+        degree = input("Enter the updated degree(or press Enter to keep it the same): ")
+        years_attended = input("Enter the updated years attended(or press Enter to keep it the same): ")
 
+        # Update the education entry in the table depending on which piece of data the user wanted to change
+        if school_name != "":
+            cursor.execute("UPDATE education SET schoolName = ? WHERE educationID = ?", (school_name, edu_id_to_update))
+            conn.commit()
+
+        if degree != "":
+            cursor.execute("UPDATE education SET degree = ? WHERE educationID = ?", (degree, edu_id_to_update))
+            conn.commit()
+
+        if years_attended != "":
+            cursor.execute("UPDATE education SET yearsAttended = ? WHERE educationID = ?", (years_attended, edu_id_to_update))
+            conn.commit()
+        
+        
+        '''
         # Update the education entry in the table
         cursor.execute("UPDATE education SET schoolName = ?, degree = ?, yearsAttended = ? WHERE educationID = ?",
                        (school_name, degree, years_attended, edu_id_to_update))
         conn.commit()
-
-    print("Education updated successfully!")
+        '''
+        print("Education updated successfully!")
