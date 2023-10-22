@@ -90,10 +90,10 @@ def userProfile():
 
             if option == '1':
                 # Display the user's profile
-                displayProfile(existing_profile)
+                displayProfile()
             elif option == '2':
                 # Edit the user's profile
-                editProfile(existing_profile)
+                editProfile()
             elif option == '3':
                 # Go back to the main menu
                 menuLooper = False

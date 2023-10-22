@@ -13,11 +13,16 @@ def createProfile():
         profile_exists = cursor.fetchone()
         cursor.execute("SELECT * FROM profiles WHERE userID=?", (globalVars.userID,))
         profile_data = cursor.fetchone()
-        if (not profile_exists) or (profile_data[2]==None) or (profile_data[3]==None) or (profile_data[4]==None) or (profile_data[5]==None) :
+        if (not profile_exists) :
             # Insert an initial row with NULL values for the user's profile
             cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, NULL, NULL, NULL, NULL)""",
                        (globalVars.userID,))
             conn.commit()
+            profileDetails()
+            uInput = input("Would you like to continue (Y/N): ")
+            if uInput.upper()!='Y':
+                userHome()
+        elif (profile_data[2]==None) or (profile_data[3]==None) or (profile_data[4]==None) or (profile_data[5]==None) :
             profileDetails()
             uInput = input("Would you like to continue (Y/N): ")
             if uInput.upper()!='Y':
@@ -155,10 +160,14 @@ def formatUniversity(university):
     return formatted_university
 
 
-def displayProfile(profile):
+def displayProfile():
     spacer()
     header(
         f'Your Profile, {globalVars.userFirstName} {globalVars.userLastName}')
+    
+    cursor.execute("SELECT * FROM profiles WHERE userID = ?",
+                   (globalVars.userID,))
+    profile = cursor.fetchone()
     if profile and None in profile[1:]:
             print(f"Title: {profile[2]}")
             print(f"Major: {profile[3]}")
@@ -201,12 +210,12 @@ def displayProfile(profile):
             print("    Years Attended:", edu[3])
 
 
-def editProfile(existing_profile):
+def editProfile():
     spacer()
     header(f'Edit Your Profile, {globalVars.userFirstName}!')
 
     # Display the user's current profile data
-    displayProfile(existing_profile)
+    displayProfile()
 
     # Take inputs for updated profile data
     title = input(
