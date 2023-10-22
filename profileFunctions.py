@@ -117,125 +117,101 @@ cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 
 def createProfile():
     from loginLanding import userHome
-
-    # Check if the user has a profile in the database
-    cursor.execute("SELECT userID FROM profiles WHERE userID=?", (globalVars.userID,))
-    profile_exists = cursor.fetchone()
-
-    if not profile_exists:
-        # Insert an initial row with NULL values for the user's profile
-        cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, NULL, NULL, NULL, NULL)""",
-                       (globalVars.userID,))
-        conn.commit()
-
-    spacer()
-    header('Create your InCollege profile')
-
     while True:
-        cursor.execute("SELECT userID, title, major, university, About FROM profiles WHERE userID=?", (globalVars.userID,))
-        profile_data = cursor.fetchone()
+        spacer()
+        header('Create your InCollege profile')
+        cursor.execute("SELECT userID FROM profiles WHERE userID=?", (globalVars.userID,))
+        profile_exists = cursor.fetchone()
+        if not profile_exists:
+            # Insert an initial row with NULL values for the user's profile
+            cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, NULL, NULL, NULL, NULL)""",
+                       (globalVars.userID,))
+            conn.commit()
+            profileDetails()
+            uInput = input("Would you like to continue (Y/N): ")
+            if uInput.upper()!='Y':
+                userHome()
+        
+        cursor.execute("SELECT userID FROM experience WHERE userID=?", (globalVars.userID,))
+        experience_exists = cursor.fetchone()
+        if not experience_exists:
+            experienceDetails()
+            uInput1 = input("Would you like to continue (Y/N): ")
+            if uInput1.upper()!='Y':
+                userHome()
 
-        # Get the profile details
-        title = profile_data[1]  # Use the existing title
-        major = profile_data[2]  # Use the existing major
-        university = profile_data[3]  # Use the existing university
-        paragraph = profile_data[4]  # Use the existing About
+        cursor.execute("SELECT userID FROM education WHERE userID=?", (globalVars.userID,))
+        education_exists = cursor.fetchone()
+        if not education_exists:
+            educationDetails()
+            print("Your profile has been created successfully!")
+            userHome()
 
-        # Function to update profile data
-        def update_profile(column_name, current_value, message):
-            while True:
-                
-                user_input = input(
-                    f"(Profile Incomplete! Please complete in order to proceed.) "
-                    f"{message} (currently '{current_value}' or press Enter to skip/Q to quit): ").strip()
-                if user_input.upper() == 'Q':
-                    userHome()
-                    return
-                if user_input:
-                    cursor.execute(
-                        f"UPDATE profiles SET {column_name} = ? WHERE userID = ?", (user_input, globalVars.userID))
-                    conn.commit()
-                break
-
-        # Prompt the user for updated information or skip/quit options
-        if title is None:
-            update_profile("title", title, "Enter your title")
-        if major is None:
-            update_profile("major", major, "Enter your major")
-        if university is None:
-            update_profile("university", university, "Enter your university")
-        if paragraph is None:
-            update_profile("About", paragraph, "Enter a paragraph about yourself")
-
-        # Ask the user if they want to update experience and education
-        update_experience = input("Do you want to update your work experience (yes/no)? ").strip()
-        if update_experience.lower() == 'yes':
-            experienceDetails()  # Call the function to update experience
-
-        update_education = input("Do you want to update your education (yes/no)? ").strip()
-        if update_education.lower() == 'yes':
-            educationDetails()  # Call the function to update education
-
-        print("Your profile has been updated successfully!")
-        userHome()
-
-
+    
 
 
 def profileDetails():
+    from loginLanding import userHome
     print("Profile Details:")
     # Take inputs for profile data
-    title = input(
-        "Enter your title (e.g., '3rd year Computer Science student') or press (Enter to skip/ Q to quit): ").strip()
-    if title.upper() == 'Q':
-        return
-    title = title if title else None  # Set to None if user pressed Enter
+    cursor.execute("SELECT title FROM profiles WHERE userID=?", (globalVars.userID,))
+    title_exists = cursor.fetchone()
 
-    major = input("Enter your major or  press (Enter to skip/ Q to quit): ").strip()
-    if major.upper() == 'Q':
-        return
-    major = major if major else None  # Set to None if user pressed Enter
+    cursor.execute("SELECT major FROM profiles WHERE userID=?", (globalVars.userID,))
+    major_exists = cursor.fetchone()
 
-    university = input("Enter your university  press (Enter to skip/ Q to quit): ").strip()
-    if university.upper() == 'Q':
-        return
-    university = university if university else None  # Set to None if user pressed Enter
+    cursor.execute("SELECT university FROM profiles WHERE userID=?", (globalVars.userID,))
+    uni_exists = cursor.fetchone()
 
-    paragraph = input(
-        "Enter a paragraph about yourself  press (Enter to skip/ Q to quit): ").strip()
-    if paragraph.upper() == 'Q':
-        return
-    paragraph = paragraph if paragraph else None  # Set to None if user pressed Enter
+    cursor.execute("SELECT About FROM profiles WHERE userID=?", (globalVars.userID,))
+    about_exists = cursor.fetchone()
 
-    # Check if the user has a profile in the database
-    cursor.execute(
-        "SELECT userID FROM profiles WHERE userID=?", (globalVars.userID,))
-    profile_exists = cursor.fetchone()
-    if profile_exists:
-        # Update the profile data in the profiles table
-        cursor.execute(
-            """UPDATE profiles SET title = ?, major = ?, university = ?, About = ? WHERE userID = ?""",
-            (title, major, university, paragraph, globalVars.userID))
-    else:
-        # Insert the profile data into the profiles table
-        cursor.execute(
-            """INSERT INTO profiles (userID, title, major, university, About) VALUES (?, ?, ?, ?, ?)""",
-            (globalVars.userID, title, major, university, paragraph))
+    if title_exists == None: 
+        title = input("Incomplete profile details. Please enter your title (e.g., '3rd year Computer Science student'): ")
+        cursor.execute("UPDATE profiles SET title = ? WHERE userID = ?", (title, globalVars.userID))
+        uInput = input("Would you like to continue? (Y/N): ")
+        if uInput != 'Y':
+            userHome()
 
-    conn.commit()
+    elif major_exists == None: 
+        major = input("Incomplete profile details. Please enter your major: ")
+        major = formatMajor(major)
+        cursor.execute("UPDATE profiles SET major = ? WHERE userID = ?", (major, globalVars.userID))
+        uInput = input("Would you like to continue? (Y/N): ")
+        if uInput != 'Y':
+            userHome()
+    
+    elif uni_exists == None: 
+        university = input("Incomplete profile details. Please enter your university: ")
+        university = formatUniversity(university)
+        cursor.execute("UPDATE profiles SET university = ? WHERE userID = ?", (university, globalVars.userID))
+        uInput = input("Would you like to continue? (Y/N): ")
+        if uInput != 'Y':
+            userHome()
+
+    elif about_exists == None: 
+        paragraph = input("Incomplete profile details. Please enter a paragraph about yourself: ")
+        cursor.execute("UPDATE profiles SET About = ? WHERE userID = ?", (paragraph, globalVars.userID))
+        uInput = input("Would you like to continue? (Y/N): ")
+        if uInput != 'Y':
+            userHome()
+
+    # Insert the profile data into the profiles table
+    #cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, ?, ?, ?, ?)""",
+    #               (globalVars.userID, title, major, university, paragraph))
+
+    #conn.commit()
+    
 
 
 def experienceDetails():
     experience = []
     # Capture up to three work experience details
     for i in range(3):
-        print(f"Work Experience {i + 1} or press (Enter to skip/ Q to quit):")
+        print(f"Work Experience {i + 1}:")
         job_title = input("Enter the job title: ")
-        if not job_title:
-            break
-
         employer = input("Enter the employer: ")
-        date_started = input("Enter the date started (MM/DD/YYYY): ")
+        date_started = input("Enter the date started(MM/DD/YYYY): ")
         date_ended = input("Enter the date ended (MM/DD/YYYY): ")
         location = input("Enter the location: ")
         description = input("Enter the job description: ")
@@ -262,15 +238,14 @@ def experienceDetails():
         conn.commit()
 
 
+
+
 def educationDetails():
     education = []
     # Capture up to three education details
     for i in range(3):
-        print(f"Education {i + 1} or press (Enter to skip/ Q to quit):")
+        print(f"Education {i + 1}:")
         school_name = input("Enter the school name: ")
-        if not school_name:
-            break
-
         degree = input("Enter the degree: ")
         years_attended = input("Enter the years attended: ")
 
