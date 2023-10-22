@@ -42,8 +42,8 @@ def userHome():
             userSearch()
         elif uInput == '7':
             viewFriendRequests()
-        elif uInput == 'Q' or uInput == 'q':
-            exitInput = 1
+        elif uInput.upper() == 'Q':
+            exitInput=1
             spacer()
         else:
             print("Invalid Option. Try Again")
@@ -129,7 +129,7 @@ def searchForJob():
             storeJob(title, description, employer,
                      location, salary, firstname, lastname)
 
-        elif uInput == 'Q' or uInput == 'q':
+        elif uInput.upper() == 'Q':
             exitInput = 1
             spacer()
 

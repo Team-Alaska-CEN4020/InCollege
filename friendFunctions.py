@@ -151,7 +151,9 @@ def showFriendProfile(friendID):
         header(
             f"{user_name[3]} {user_name[4]}'s Profile:")
 
-        if friend_data:
+        if (not friend_data) or (friend_data[2]==None) or (friend_data[3]==None) or (friend_data[4]==None) or (friend_data[5]==None):
+            print("\nFriend does not have a profile yet.")
+        else:
             print(f"Title: {friend_data[2]}")
             print(f"Major: {friend_data[3]}")
             print(f"University: {friend_data[4]}")
@@ -174,6 +176,8 @@ def showFriendProfile(friendID):
                     print("    Date Ended:", exp[5])
                     print("    Location:", exp[6])
                     print("    Description:", exp[7])
+            else:
+                print(f"{user_name[3]} {user_name[4]} has not updated their experience yet.")
 
             cursor.execute("""
                 SELECT edu.userID, edu.schoolName, edu.degree, edu.yearsAttended, u.userID
@@ -188,8 +192,8 @@ def showFriendProfile(friendID):
                     print("  - School Name:", edu[1])
                     print("    Degree:", edu[2])
                     print("    Years Attended:", edu[3])
-        else:
-            print("\nFriend does not have a profile yet.")
+            else:
+                print(f"{user_name[3]} {user_name[4]} has not updated their education yet.")
 
     except Exception as e:
         print(f"Error occurred while fetching friends profiles: {e}")

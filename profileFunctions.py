@@ -4,115 +4,6 @@ from database import *
 conn = sqlite3.connect('your_database.db')
 cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 
-
-# def createProfile():
-#     from loginLanding import userHome
-#     while True:
-#         spacer()
-#         header('Create your InCollege profile')
-#         cursor.execute("SELECT userID FROM profiles WHERE userID=?", (globalVars.userID,))
-#         profile_exists = cursor.fetchone()
-#         if not profile_exists:
-#             profileDetails()
-#             uInput = input("Would you like to continue (Y/N): ")
-#             if uInput.upper()!='Y':
-#                 userHome()
-
-#         cursor.execute("SELECT userID FROM experience WHERE userID=?", (globalVars.userID,))
-#         experience_exists = cursor.fetchone()
-#         if not experience_exists:
-#             experienceDetails()
-#             uInput1 = input("Would you like to continue (Y/N): ")
-#             if uInput1.upper()!='Y':
-#                 userHome()
-
-#         cursor.execute("SELECT userID FROM education WHERE userID=?", (globalVars.userID,))
-#         education_exists = cursor.fetchone()
-#         if not education_exists:
-#             educationDetails()
-#             print("Your profile has been created successfully!")
-#             userHome()
-
-
-# def profileDetails():
-#     print("Profile Details:")
-#     # Take inputs for profile data
-#     title = input("Enter your title (e.g., '3rd year Computer Science student'): ")
-#     major = input("Enter your major: ")
-#     major = formatMajor(major)
-#     university = input("Enter your university: ")
-#     university = formatUniversity(university)
-#     paragraph = input("Enter a paragraph about yourself: ")
-
-#     # Insert the profile data into the profiles table
-#     cursor.execute("""INSERT INTO profiles (userID, title, major, university, About) VALUES (?, ?, ?, ?, ?)""",
-#                    (globalVars.userID, title, major, university, paragraph))
-
-#     conn.commit()
-
-
-# def experienceDetails():
-#     experience = []
-#     # Capture up to three work experience details
-#     for i in range(3):
-#         print(f"Work Experience {i + 1}:")
-#         job_title = input("Enter the job title: ")
-#         employer = input("Enter the employer: ")
-#         date_started = input("Enter the date started(MM/DD/YYYY): ")
-#         date_ended = input("Enter the date ended (MM/DD/YYYY): ")
-#         location = input("Enter the location: ")
-#         description = input("Enter the job description: ")
-
-#         # Store the work experience details as a dictionary
-#         exp_data = {
-#             'Job Title': job_title,
-#             'Employer': employer,
-#             'Date Started': date_started,
-#             'Date Ended': date_ended,
-#             'Location': location,
-#             'Description': description
-#         }
-#         experience.append(exp_data)
-
-#         add_more = input("Do you want to add more work experience (yes/no)? ")
-#         if add_more.lower() != 'yes':
-#             break
-
-#     # Insert experience data into its table
-#     for exp_data in experience:
-#         cursor.execute("""INSERT INTO experience (userID, jobTitle, employer, dateStarted, dateEnded, location, description) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-#                        (globalVars.userID, exp_data['Job Title'], exp_data['Employer'], exp_data['Date Started'], exp_data['Date Ended'], exp_data['Location'], exp_data['Description']))
-#         conn.commit()
-
-
-# def educationDetails():
-#     education = []
-#     # Capture up to three education details
-#     for i in range(3):
-#         print(f"Education {i + 1}:")
-#         school_name = input("Enter the school name: ")
-#         degree = input("Enter the degree: ")
-#         years_attended = input("Enter the years attended: ")
-
-#         # Store the education details as a dictionary
-#         edu_data = {
-#             'School Name': school_name,
-#             'Degree': degree,
-#             'Years Attended': years_attended
-#         }
-#         education.append(edu_data)
-
-#         add_more = input("Do you want to add more education (yes/no)? ")
-#         if add_more.lower() != 'yes':
-#             break
-#     # Insert education data into its table
-#     for edu_data in education:
-#         cursor.execute("""INSERT INTO education (userID, schoolName, degree, yearsAttended) VALUES (?, ?, ?, ?)""",
-#                        (globalVars.userID, edu_data['School Name'], edu_data['Degree'], edu_data['Years Attended']))
-#         conn.commit()
-
-##############################^^^^^^^^^^^^DELETE IF SATISFIED WITHT HE BELOW CODE^^^^^^^^^^^#############################
-
 def createProfile():
     from loginLanding import userHome
     while True:
@@ -278,8 +169,6 @@ def displayProfile(profile):
     spacer()
 
 
-    # Fetch experience and education from their respective tables based on the user's ID
-    # cursor.execute("SELECT * FROM experience WHERE userID = ?", (globalVars.userID,))
     cursor.execute("""
         SELECT e.experienceID, e.userID, e.jobTitle, e.employer, e.dateStarted, e.dateEnded, e.location, e.description
         FROM experience as e
@@ -418,12 +307,6 @@ def updateExperience(user_id):
             conn.commit()
 
 
-        '''
-        # Update the experience entry in the table
-        cursor.execute("UPDATE experience SET jobTitle = ?, employer = ?, dateStarted = ?, dateEnded = ?, location = ?, description = ? WHERE experienceID = ?",
-                       (job_title, employer, date_started, date_ended, location, description, exp_id_to_update))
-        conn.commit()
-        '''
         print("Experience updated successfully!")
 
 
@@ -468,10 +351,4 @@ def updateEducation(user_id):
             conn.commit()
         
         
-        '''
-        # Update the education entry in the table
-        cursor.execute("UPDATE education SET schoolName = ?, degree = ?, yearsAttended = ? WHERE educationID = ?",
-                       (school_name, degree, years_attended, edu_id_to_update))
-        conn.commit()
-        '''
         print("Education updated successfully!")
