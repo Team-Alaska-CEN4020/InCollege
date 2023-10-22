@@ -70,6 +70,8 @@ def viewFriendRequests():
 
     input("Press Enter to Continue...")
 
+
+
 def getFriends():
     spacer()
     header('Your Network')
@@ -84,26 +86,114 @@ def getFriends():
         friendsList = cursor.fetchall()
 
         if friendsList:
+            userFriendID = []
             for friend in friendsList:
                 print(f"Friend ID: {friend[0]}")
                 print(f"Name: {friend[1]} {friend[2]}")
                 print(f"University: {friend[3]}")
                 print(f"Major: {friend[4]}")
+                userFriendID.append(friend[0])
                 print("\n")
-            # Prompt user to disconnect from a friend
-            while True:
-                userResponse = input("Enter the ID of a friend you want to disconnect from (or 'Q' to quit): ")
-                if userResponse.upper() == 'Q':
-                    break
-                try:
-                    selectedFriendID = int(userResponse)
-                    updateFriendDisconnect(selectedFriendID)
-                except ValueError:
-                    print("Invalid input. Please enter a valid Friend ID or 'Q' to quit.")
+            while True: 
+                spacer()
+                print("Please select from the following menu options: ")
+                print("1. View a friend's profile")
+                print("2. Disconnect from a friend")
+                print ("3. Return to previous menu ")
+                choice = input("Please enter (1/2/3): ")
+
+                if choice == '1':
+                    uInput = int(input("Please enter the Friend ID number to View Profile:"))
+                    for id in userFriendID:
+                        if uInput == id:
+                            showFriendProfile(id)
+                    continue
+
+                elif choice == '2': 
+                    # Prompt user to disconnect from a friend
+                    while True:
+                        userResponse = input("Enter the ID of a friend you want to disconnect from (or 'Q' to quit): ")
+                        if userResponse.upper() == 'Q':
+                            break
+                        try:
+                            selectedFriendID = int(userResponse)
+                            updateFriendDisconnect(selectedFriendID) 
+                        except ValueError:
+                            print("Invalid input. Please enter a valid Friend ID or 'Q' to quit.")
+                    continue
+                elif choice == '3' :
+                    spacer()
+                    return           
 
         else:
             print("No one is in your network at the moment.")
+        
     except Exception as e:
         print(f"Error occurred while fetching friends: {e}")
 
-    input("Press Enter to Continue...")
+
+
+###########################################Epic-5 FUNCTIONS###############################################
+
+
+def showFriendProfile(friendID):
+    spacer()
+
+    try: 
+
+        # Query the database to retrieve and display the friend's profile details based on their User ID        
+        cursor.execute("SELECT * FROM profiles WHERE userID = ?", (friendID,))
+        friend_data = cursor.fetchone()
+
+        cursor.execute("SELECT * FROM users WHERE userID = ?", (friendID,))
+        user_name = cursor.fetchone()
+
+        header(
+            f"{user_name[3]} {user_name[4]}'s Profile:")
+
+        if (not friend_data) or (friend_data[2]==None) or (friend_data[3]==None) or (friend_data[4]==None) or (friend_data[5]==None):
+            print("\nFriend does not have a profile yet.")
+        else:
+            print(f"Title: {friend_data[2]}")
+            print(f"Major: {friend_data[3]}")
+            print(f"University: {friend_data[4]}")
+            print(f"About: {friend_data[5]}")
+
+            # Fetch experience and education from their respective tables based on the user's ID
+            cursor.execute("""
+                SELECT e.experienceID, e.userID, e.jobTitle, e.employer, e.dateStarted, e.dateEnded, e.location, e.description
+                FROM experience as e
+                JOIN users as u ON e.userID = u.userID 
+                WHERE e.userID = ?""", (friendID,))
+            experience_data = cursor.fetchall()
+
+            if experience_data:
+                print("Experience:")
+                for exp in experience_data:
+                    print("  - Job Title:", exp[2])
+                    print("    Employer:", exp[3])
+                    print("    Date Started:", exp[4])
+                    print("    Date Ended:", exp[5])
+                    print("    Location:", exp[6])
+                    print("    Description:", exp[7])
+            else:
+                print(f"{user_name[3]} {user_name[4]} has not updated their experience yet.")
+
+            cursor.execute("""
+                SELECT edu.userID, edu.schoolName, edu.degree, edu.yearsAttended, u.userID
+                FROM education as edu
+                JOIN users as u ON edu.userID = u.userID 
+                WHERE edu.userID = ?""", (friendID,))
+            education_data = cursor.fetchall()
+
+            if education_data:
+                print("\nEducation:")
+                for edu in education_data:
+                    print("  - School Name:", edu[1])
+                    print("    Degree:", edu[2])
+                    print("    Years Attended:", edu[3])
+            else:
+                print(f"{user_name[3]} {user_name[4]} has not updated their education yet.")
+
+    except Exception as e:
+        print(f"Error occurred while fetching friends profiles: {e}")

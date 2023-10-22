@@ -42,7 +42,7 @@ def startupLanding():
             usefulLinksMenu()
         elif uInput == '0':
             importantLinks()
-        elif uInput == 'Q' or uInput == 'q':
+        elif uInput.upper() == 'Q':
             exitInput = 1
         else:
             print("Invalid Option. Try Again")
