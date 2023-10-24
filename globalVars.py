@@ -13,4 +13,4 @@ userUniversity = None
 
 # Application Information and Limits
 maxActiveAccounts = 10
-maxJobPostings = 5
+maxJobPostings = 10
