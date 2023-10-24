@@ -3,48 +3,59 @@ import time
 from database import *
 from UI import *
 
-def searchForJob():
-    # print("Searching for a job is under construction")
-    spacer()
-    header('Welcome to Job Search')
-    print("(1)  Post a Job")
-    uInput = input("Input Selection (Q to quit): ")
-
-    exitInput = 0
-    while exitInput == 0:
-        if uInput == '1':
-            print("\nEnter the following information about the job: ")
-            title = input("Enter the job title: ")
-            description = input("Enter the job description: ")
-            employer = input("Enter the employer: ")
-            location = input("Enter the location: ")
-            salary = input("Enter the job's salary: ")
-            firstname = input("Enter your first name: ")
-            lastname = input("Enter your last name: ")
-
-            storeJob(title, description, employer,
-                     location, salary, firstname, lastname)
-
-        elif uInput.upper() == 'Q':
-            exitInput = 1
-            spacer()
-
-        else:
-            print("Invalid Option Try again")
-
-
-def storeJob(title, description, employer, location, salary, firstName, lastName):
+def searchPostJob():
 	from loginLanding import userHome
-	cursor.execute("SELECT COUNT(*) FROM jobs")
-	job_count = cursor.fetchone()[0]
+	exitInput = True
+	while exitInput:
+		spacer()
+		header('Welcome to Job Search')
+		print("(1) Show all jobs")
+		print("(2)  Post a Job")
+		uInput = input("Input Selection (Q to quit): ")
+		#if uInput == '1':
+		#	print("under construction right now")
+		#	exitInput = False
+		if uInput == '2':
+			createJob()
+		elif uInput.upper() == 'Q' or uInput == '1':
+			print("under construction right now")
+			spacer()
+			exitInput = False
+			#break
+		else:
+			print("Invalid Option. Try again")
+			time.sleep(2)
+
+
+def createJob():
+	loopBreaker = True
+	while loopBreaker: 
+		spacer()
+		cursor.execute("SELECT COUNT(jobID) FROM jobs")
+		job_count = cursor.fetchone()[0]
 	
-	if job_count >= globalVars.maxJobPostings:
-		print("All permitted jobs have been created. Please come back later.")
-		userHome()
+		print(f"JobID count : {job_count}")
+		if job_count >= globalVars.maxJobPostings:
+			print("All permitted jobs have been created. Please come back later.")
+			#searchPostJob()
+			time.sleep(2)
+			return
+	
 
-	cursor.execute("INSERT INTO jobs (title, description, employer, location, salary, firstname, lastname) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                   (title, description, employer, location, salary, firstName, lastName))
+		title = input("Enter the title of of your job: ")
+		description = input("Enter a description of the job: ")
+		employerName = input("Enter the name of the company for the job: ")
+		location = input("Enter the location for the job: ")
+		salary = float(input("Enter the yearly salary for the job: "))
 
-	conn.commit()
-	print("Job stored in database")
-	userHome()
+		cursor.execute("INSERT INTO jobs (posterID, jobTitle, jobDescription, employer, location, salary, posterFirstName, posterLastName) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+					(globalVars.userID, title, description, employerName, location, salary, globalVars.userFirstName, globalVars.userLastName))
+		conn.commit()
+
+		print("Your job has been posted to the job Board!")
+		continuePosting = input("Would you like to post more jobs? (Y/N): ")
+		if continuePosting.upper() != 'Y':
+			time.sleep(2)
+			loopBreaker = False
+		else: 
+			continue

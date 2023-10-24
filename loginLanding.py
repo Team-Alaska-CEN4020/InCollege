@@ -32,7 +32,7 @@ def userHome():
             # UI edited for Epic-5
             userProfile()
         elif uInput == '2':
-            searchForJob()
+            searchPostJob()
         elif uInput == '3':
             userSearch()
         elif uInput == '4':
