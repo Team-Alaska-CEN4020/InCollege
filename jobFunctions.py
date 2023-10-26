@@ -20,7 +20,7 @@ def searchPostJob():
 		#	exitInput = False
 		if uInput == '2':
 			createJob()
-		elif uInput.upper() == 'Q' or uInput == '1':
+		elif  uInput == '1':
 			titles = showAllJobs()
 			spacer()
 			if titles:
@@ -62,6 +62,8 @@ def searchPostJob():
 				print("Invalid Option. Will now exit job search")
 				exitInput = False
 			#break
+		elif uInput == 'Q':
+			exitInput = False
 		else:
 			print("Invalid Option. Try again")
 			time.sleep(2)
