@@ -3,6 +3,8 @@ import time
 from database import *
 from UI import *
 
+connection = sqlite3.connect('your_database.db')
+cursor = connection.cursor()
 
 def searchPostJob():
 	from loginLanding import userHome
@@ -99,36 +101,17 @@ def createJob():
 			continue
 
 def showAllJobs():
-	# Connecting to database
-	database_path = "your_database.db"
-	table_name = "jobs"
-	column_name = "jobTitle"
-
-	connection = sqlite3.connect(database_path)
-	cursor = connection.cursor()
-
-	query = f"SELECT {column_name} FROM {table_name}"
+	query = f"SELECT jobTitle FROM jobs"
 
 	cursor.execute(query)
 	titles = [row[0] for row in cursor.fetchall()]
 
-	cursor.close()
-	connection.close()
-
 	return titles
 
 def showJobDetails(ID_value):
-	database_path = "your_database.db"
-	table_name = "jobs"
-	connection = sqlite3.connect(database_path)
-	cursor = connection.cursor()
-
-	query = f"SELECT jobTitle, jobDescription, employer, location, salary FROM {table_name} WHERE jobID = ?"
+	query = f"SELECT jobTitle, jobDescription, employer, location, salary FROM jobs WHERE jobID = ?"
 	cursor.execute(query, (ID_value,))
 
 	row_data = cursor.fetchone()
 
-	cursor.close()
-	connection.close()
-	
 	return row_data
