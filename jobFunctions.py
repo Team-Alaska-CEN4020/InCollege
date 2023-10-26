@@ -70,9 +70,19 @@ def searchPostJob():
 				exitInput = False
 
 		elif uInput == '3':
-			print("Applied to jobs under construction")
+			spacer()
+			applications(globalVars.userID)
+			time.sleep(5)
 		elif uInput == '4':
 			print("Not Applied to jobs under construction")
+			spacer()
+			missingJobTitles = noApplications(globalVars.userID)
+			
+			if missingJobTitles:
+				print(f"Jobs that you have not not applied to!:\n{missingJobTitles}")
+			else:
+				print(f"You have applied to all jobs!")
+			time.sleep(5)
 		elif uInput == '5':
 			spacer()
 			print("Displaying all Saved Jobs:")
@@ -162,3 +172,39 @@ def displaySavedJobs(user_ID):
 def deleteJob(user_id, jobTitle):
 	cursor.execute('DELETE FROM savedJobs WHERE userID = ? and jobTitle = ?', (user_id, jobTitle))
 	connection.commit()
+
+def applications(user_id):
+	query = """
+			SELECT jobs.jobTitle
+			FROM applicant
+			INNER JOIN jobs ON applicant.jobID = jobs.jobID
+			WHERE applicant.userID = ?"""
+	cursor.execute(query, (user_id,))
+	connection.commit()
+
+	allJobsApps = [row[0] for row in cursor.fetchall()]
+
+	if allJobsApps:
+		formatted_list = "\n".join([f"{i+1}.) {job_id}" for i, job_id in enumerate(allJobsApps)])
+		print(f"Jobs that you have applied to!\n{formatted_list}")
+
+def noApplications(user_id):
+	query = """
+			SELECT jobs.jobTitle
+			FROM jobs
+			WHERE jobs.jobID NOT IN (
+				SELECT applicant.jobID
+				FROM applicant
+				WHERE applicant.userID = ?
+			) AND jobs.jobID IN (
+				SELECT jobID
+				FROM jobs
+			)
+		"""
+	
+	cursor.execute(query, (user_id,))
+
+	missing_jobTitles = [row[0] for row in cursor.fetchall()]
+
+	formatted_list = "\n".join(f"{i + 1}.) {title}" for i, title in enumerate(missing_jobTitles))
+	return formatted_list
