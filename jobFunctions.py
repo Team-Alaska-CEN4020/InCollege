@@ -28,19 +28,26 @@ def searchPostJob():
 			else:
 				print("No Jobs available")
 			
-			detailInput = int(input("Please select any number to find out more details on a job: "))
+			detailInput = int(input("Please select any number to find out more details on a job or input 0 to quit: "))
 
-			detailData = showJobDetails(detailInput)
-			spacer()
-			if detailData:
-				print("Job Details for this Job:")
-				print("Job Title: ", detailData[0])
-				print("Job Description: ", detailData[1])
-				print("Employer: ", detailData[2])
-				print("Location: ", detailData[3])
-				print("Salary: ", detailData[4])
+			if detailInput != 0:
+				detailData = showJobDetails(detailInput)
+				spacer()
+				if detailData:
+					print("Job Details for this Job:")
+					print("Job Title: ", detailData[0])
+					print("Job Description: ", detailData[1])
+					print("Employer: ", detailData[2])
+					print("Location: ", detailData[3])
+					print("Salary: ", detailData[4])
+				else:
+					print("Incorrect input!")
+			elif detailInput == 0:
+				exitInput = False
+				break
 			else:
-				print("Incorrect input!")
+				print("Invalid Option. Will now exit job search")
+				exitInput = False
 
 			applyInput = int(input("Please enter 1 to apply to this job or 2 to exit: "))
 
@@ -50,7 +57,7 @@ def searchPostJob():
 			elif applyInput == 2:
 				exitInput = False
 			else:
-				print("invalid Option. Will now exit job search")
+				print("Invalid Option. Will now exit job search")
 				exitInput = False
 			#break
 		else:
