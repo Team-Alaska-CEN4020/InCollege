@@ -3,6 +3,7 @@ import time
 from database import *
 from UI import *
 
+
 def searchPostJob():
 	from loginLanding import userHome
 	exitInput = True
@@ -18,9 +19,39 @@ def searchPostJob():
 		if uInput == '2':
 			createJob()
 		elif uInput.upper() == 'Q' or uInput == '1':
-			print("under construction right now")
+			titles = showAllJobs()
 			spacer()
-			exitInput = False
+			if titles:
+				print("Available Jobs:\n")
+				for i, title in enumerate(titles, start=1):
+					print(str(i)+ ".) "+ title)
+			else:
+				print("No Jobs available")
+			
+			detailInput = int(input("Please select any number to find out more details on a job: "))
+
+			detailData = showJobDetails(detailInput)
+			spacer()
+			if detailData:
+				print("Job Details for this Job:")
+				print("Job Title: ", detailData[0])
+				print("Job Description: ", detailData[1])
+				print("Employer: ", detailData[2])
+				print("Location: ", detailData[3])
+				print("Salary: ", detailData[4])
+			else:
+				print("Incorrect input!")
+
+			applyInput = int(input("Please enter 1 to apply to this job or 2 to exit: "))
+
+			if applyInput == 1:
+				print("Under construction")
+				exitInput = False
+			elif applyInput == 2:
+				exitInput = False
+			else:
+				print("invalid Option. Will now exit job search")
+				exitInput = False
 			#break
 		else:
 			print("Invalid Option. Try again")
@@ -59,3 +90,38 @@ def createJob():
 			loopBreaker = False
 		else: 
 			continue
+
+def showAllJobs():
+	# Connecting to database
+	database_path = "your_database.db"
+	table_name = "jobs"
+	column_name = "jobTitle"
+
+	connection = sqlite3.connect(database_path)
+	cursor = connection.cursor()
+
+	query = f"SELECT {column_name} FROM {table_name}"
+
+	cursor.execute(query)
+	titles = [row[0] for row in cursor.fetchall()]
+
+	cursor.close()
+	connection.close()
+
+	return titles
+
+def showJobDetails(ID_value):
+	database_path = "your_database.db"
+	table_name = "jobs"
+	connection = sqlite3.connect(database_path)
+	cursor = connection.cursor()
+
+	query = f"SELECT jobTitle, jobDescription, employer, location, salary FROM {table_name} WHERE jobID = ?"
+	cursor.execute(query, (ID_value,))
+
+	row_data = cursor.fetchone()
+
+	cursor.close()
+	connection.close()
+	
+	return row_data
