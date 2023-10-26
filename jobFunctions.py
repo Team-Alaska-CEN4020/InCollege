@@ -13,7 +13,11 @@ def searchPostJob():
 		spacer()
 		header('Welcome to Job Search')
 		print("(1) Show all jobs")
-		print("(2)  Post a Job")
+		print("(2) Post a Job")
+		print("(3) Jobs Applied To")
+		print("(4) Jobs Not Applied To")
+		print("(5) Jobs Saved")
+
 		uInput = input("Input Selection (Q to quit): ")
 		#if uInput == '1':
 		#	print("under construction right now")
@@ -37,31 +41,51 @@ def searchPostJob():
 				spacer()
 				if detailData:
 					print("Job Details for this Job:")
-					print("Job Title: ", detailData[0])
-					print("Job Description: ", detailData[1])
-					print("Employer: ", detailData[2])
-					print("Location: ", detailData[3])
-					print("Salary: ", detailData[4])
-				else:
-					print("Incorrect input!")
+					print("Job Title: ", detailData[1])
+					print("Job Description: ", detailData[2])
+					print("Employer: ", detailData[3])
+					print("Location: ", detailData[4])
+					print("Salary: ", detailData[5])
+
+					applyInput = int(input("Please enter 1 to apply to this job, 2 to save Job or 3 to exit: "))
+
+					if applyInput == 1:
+						print("Under construction")
+						exitInput = False
+					elif applyInput == 2:
+						spacer()
+						print("Saving job!")
+						saveJob(globalVars.userID, detailData[0], detailData[1])
+					elif applyInput == 3:
+						exitInput = False
+					else:
+						print("Invalid Option. Will now exit job search")
+						exitInput = False
+
 			elif detailInput == 0:
 				exitInput = False
 				break
 			else:
-				print("Invalid Option. Will now exit job search")
+				print("Invalid Option. Exiting job search")
 				exitInput = False
 
-			applyInput = int(input("Please enter 1 to apply to this job or 2 to exit: "))
+		elif uInput == '3':
+			print("Applied to jobs under construction")
+		elif uInput == '4':
+			print("Not Applied to jobs under construction")
+		elif uInput == '5':
+			spacer()
+			print("Displaying all Saved Jobs:")
+			displaySavedJobs(globalVars.userID)
 
-			if applyInput == 1:
-				print("Under construction")
-				exitInput = False
-			elif applyInput == 2:
-				exitInput = False
+			djInput = input("Please enter a job title you would like to delete or enter 0 to exit: ")
+			if djInput != '0':
+				deleteJob(globalVars.userID, djInput)
 			else:
-				print("Invalid Option. Will now exit job search")
-				exitInput = False
-			#break
+				print("Invalid Option. Exiting job search")
+
+
+
 		elif uInput == 'Q':
 			exitInput = False
 		else:
@@ -111,9 +135,30 @@ def showAllJobs():
 	return titles
 
 def showJobDetails(ID_value):
-	query = f"SELECT jobTitle, jobDescription, employer, location, salary FROM jobs WHERE jobID = ?"
+	query = f"SELECT jobID, jobTitle, jobDescription, employer, location, salary FROM jobs WHERE jobID = ?"
 	cursor.execute(query, (ID_value,))
 
 	row_data = cursor.fetchone()
 
 	return row_data
+
+def saveJob(user_ID, job_ID, job_Title):
+	try: 
+		cursor.execute("INSERT INTO savedJobs (userID, jobID, jobTitle) VALUES (?, ?, ?)", (user_ID, job_ID, job_Title))
+		connection.commit()
+	except sqlite3.Error as e:
+		print("error inserting data:", e)
+
+def displaySavedJobs(user_ID):
+	cursor.execute('SELECT jobTitle FROM savedJobs WHERE userID = ?', (user_ID,))
+	saved_jobs = cursor.fetchall()
+	if saved_jobs:
+		for i, title in enumerate(saved_jobs, start=1):
+			print(f"{i}.) Job Title: {title[0]}")
+	else:
+		print("No saved jobs found for this user.")
+	return saved_jobs
+
+def deleteJob(user_id, jobTitle):
+	cursor.execute('DELETE FROM savedJobs WHERE userID = ? and jobTitle = ?', (user_id, jobTitle))
+	connection.commit()
