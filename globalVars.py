@@ -1,3 +1,6 @@
+#Global Variables 
+
+
 # User Information
 isLoggedIn = False
 userID = 0
