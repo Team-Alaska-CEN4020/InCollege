@@ -22,57 +22,17 @@ def searchPostJob():
 		#if uInput == '1':
 		#	print("under construction right now")
 		#	exitInput = False
-		if uInput == '2':
+		if  uInput == '1':
+			showJobApply()
+
+		elif uInput == '2':
 			createJob()
-		elif  uInput == '1':
-			titles = showAllJobs()
-			spacer()
-			if titles:
-				print("Available Jobs:\n")
-				for i, title in enumerate(titles, start=1):
-					print(str(i)+ ".) "+ title)
-			else:
-				print("No Jobs available")
-			
-			detailInput = int(input("Please select any number to find out more details on a job or input 0 to quit: "))
-
-			if detailInput != 0:
-				detailData = showJobDetails(detailInput)
-				spacer()
-				if detailData:
-					print("Job Details for this Job:")
-					print("Job Title: ", detailData[1])
-					print("Job Description: ", detailData[2])
-					print("Employer: ", detailData[3])
-					print("Location: ", detailData[4])
-					print("Salary: ", detailData[5])
-
-					applyInput = int(input("Please enter 1 to apply to this job, 2 to save Job or 3 to exit: "))
-
-					if applyInput == 1:
-						print("Under construction")
-						exitInput = False
-					elif applyInput == 2:
-						spacer()
-						print("Saving job!")
-						saveJob(globalVars.userID, detailData[0], detailData[1])
-					elif applyInput == 3:
-						exitInput = False
-					else:
-						print("Invalid Option. Will now exit job search")
-						exitInput = False
-
-			elif detailInput == 0:
-				exitInput = False
-				break
-			else:
-				print("Invalid Option. Exiting job search")
-				exitInput = False
 
 		elif uInput == '3':
 			spacer()
 			applications(globalVars.userID)
 			time.sleep(5)
+
 		elif uInput == '4':
 			spacer()
 			missingJobTitles = noApplications(globalVars.userID)
@@ -82,6 +42,7 @@ def searchPostJob():
 			else:
 				print(f"You have applied to all jobs!")
 			time.sleep(5)
+
 		elif uInput == '5':
 			spacer()
 			print("Displaying all Saved Jobs:")
@@ -92,8 +53,6 @@ def searchPostJob():
 				deleteJob(globalVars.userID, djInput)
 			else:
 				print("Invalid Option. Exiting job search")
-
-
 
 		elif uInput == 'Q':
 			exitInput = False
@@ -143,6 +102,53 @@ def showAllJobs():
 
 	return titles
 
+
+def showJobApply():
+	menuLooper = True
+	while menuLooper:
+		titles = showAllJobs()
+		spacer()
+		if titles:
+			print("Available Jobs:\n")
+			for i, title in enumerate(titles, start=1):
+				print(str(i)+ ".) "+ title)
+		else:
+			print("No Jobs available")
+		
+		detailInput = int(input("Please select any number to find out more details on a job or input 0 to quit: "))
+
+		if detailInput != 0:
+			detailData = showJobDetails(detailInput)
+			spacer()
+			if detailData:
+				print("Job Details for this Job:")
+				print("Job Title: ", detailData[1])
+				print("Job Description: ", detailData[2])
+				print("Employer: ", detailData[3])
+				print("Location: ", detailData[4])
+				print("Salary: ", detailData[5])
+
+				applyInput = int(input("Please enter 1 to apply to this job, 2 to save Job or 3 to exit: "))
+				if applyInput == 1:
+					print("Under construction")
+					return
+				elif applyInput == 2:
+					spacer()
+					print("Saving job!")
+					saveJob(globalVars.userID, detailData[0], detailData[1])
+					return
+				elif applyInput == 3:
+					return
+				else:
+					print("Invalid Option. Will now exit job search")
+
+		elif detailInput == 0:
+			menuLooper = False
+		else:
+			print("Invalid Option.")
+			menuLooper = False
+
+
 def showJobDetails(ID_value):
 	query = f"SELECT jobID, jobTitle, jobDescription, employer, location, salary FROM jobs WHERE jobID = ?"
 	cursor.execute(query, (ID_value,))
@@ -152,11 +158,11 @@ def showJobDetails(ID_value):
 	return row_data
 
 def saveJob(user_ID, job_ID, job_Title): 
-	cursor.execute("SELECT userID, jobID, COUNT(jobID) as job_count FROM savedJobs WHERE userID = ? and jobID = ? GROUP BY userID, jobID", (user_ID, job_ID))
+	cursor.execute("SELECT COUNT(jobTitle) FROM savedJobs WHERE userID = ? AND jobID = ?",(user_ID, job_ID,))
 	result = cursor.fetchone()
 	job_count = result[0]
 
-	if job_count > 1:
+	if job_count > 0:
 		print("You already have this job saved!")
 		time.sleep(3)
 		return
