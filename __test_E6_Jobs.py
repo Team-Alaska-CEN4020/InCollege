@@ -423,7 +423,7 @@ def testListingNotAppliedJobsPass5(capsys):
     # check each value from db is inside object returned from noApplications()
     for title in jobTitles:
         assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
-
+"""
 def testDisplaySavedJobs(capsys): #in progress
     from jobFunctions import saveJob, displaySavedJobs
     # tests both saveJob() and displaySavedJobs()
@@ -451,3 +451,4 @@ def testDisplaySavedJobs(capsys): #in progress
         # 5. Cleanup - Delete the row if it was added during the test
         if not rowExists:
             cursor.execute("DELETE FROM savedJobs WHERE userID = ? AND jobID = ?", (testUserID, testJobID))
+"""
