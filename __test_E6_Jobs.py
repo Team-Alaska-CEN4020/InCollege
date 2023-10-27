@@ -263,3 +263,191 @@ def testListingAppliedJobsPass5(capsys):
     for jobTitle in jobTitles:
         matches = [item for item in printedItems if jobTitle in item]
         assert matches, f"Job title {jobTitle} not found in printed items"
+
+def testListingNotAppliedJobsPass1(capsys):
+    from jobFunctions import noApplications
+    # test will grab a random userid from DB make a list of all jobIDs not applied for then check 
+    # noApplications takes in a userID, we need to find a random userID with an applied for job
+    cursor.execute("SELECT userID FROM users ORDER BY RANDOM() LIMIT 1")
+    results = cursor.fetchone()
+    testUserID = results[0]
+
+    # find all the job titles our test user is not applied to
+    query = """
+    SELECT j.jobTitle
+    FROM jobs j
+    LEFT JOIN applicant a ON j.jobID = a.jobID AND a.userID = ?
+    WHERE a.jobID IS NULL;
+    """
+    cursor.execute(query,(testUserID,))
+    result = cursor.fetchall()
+    jobTitles = [title[0] for title in result] #unpack tuple into array
+
+    # call noApplication(user_id) and store returned values
+    try:
+        funcTitles = noApplications(testUserID)
+    except StopIteration: #ignore menu asking for input
+        pass
+
+    # split funcTitles
+    splitTitles = [line.split(".) ")[1] for line in funcTitles.split('\n')]
+
+    # check each value from db is inside object returned from noApplications()
+    for title in jobTitles:
+        assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
+
+def testListingNotAppliedJobsPass2(capsys):
+    from jobFunctions import noApplications
+    # test will grab a random userid from DB make a list of all jobIDs not applied for then check 
+    # noApplications takes in a userID, we need to find a random userID with an applied for job
+    cursor.execute("SELECT userID FROM users ORDER BY RANDOM() LIMIT 1")
+    results = cursor.fetchone()
+    testUserID = results[0]
+
+    # find all the job titles our test user is not applied to
+    query = """
+    SELECT j.jobTitle
+    FROM jobs j
+    LEFT JOIN applicant a ON j.jobID = a.jobID AND a.userID = ?
+    WHERE a.jobID IS NULL;
+    """
+    cursor.execute(query,(testUserID,))
+    result = cursor.fetchall()
+    jobTitles = [title[0] for title in result] #unpack tuple into array
+
+    # call noApplication(user_id) and store returned values
+    try:
+        funcTitles = noApplications(testUserID)
+    except StopIteration: #ignore menu asking for input
+        pass
+
+    # split funcTitles
+    splitTitles = [line.split(".) ")[1] for line in funcTitles.split('\n')]
+
+    # check each value from db is inside object returned from noApplications()
+    for title in jobTitles:
+        assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
+
+def testListingNotAppliedJobsPass3(capsys):
+    from jobFunctions import noApplications
+    # test will grab a random userid from DB make a list of all jobIDs not applied for then check 
+    # noApplications takes in a userID, we need to find a random userID with an applied for job
+    cursor.execute("SELECT userID FROM users ORDER BY RANDOM() LIMIT 1")
+    results = cursor.fetchone()
+    testUserID = results[0]
+
+    # find all the job titles our test user is not applied to
+    query = """
+    SELECT j.jobTitle
+    FROM jobs j
+    LEFT JOIN applicant a ON j.jobID = a.jobID AND a.userID = ?
+    WHERE a.jobID IS NULL;
+    """
+    cursor.execute(query,(testUserID,))
+    result = cursor.fetchall()
+    jobTitles = [title[0] for title in result] #unpack tuple into array
+
+    # call noApplication(user_id) and store returned values
+    try:
+        funcTitles = noApplications(testUserID)
+    except StopIteration: #ignore menu asking for input
+        pass
+
+    # split funcTitles
+    splitTitles = [line.split(".) ")[1] for line in funcTitles.split('\n')]
+
+    # check each value from db is inside object returned from noApplications()
+    for title in jobTitles:
+        assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
+
+def testListingNotAppliedJobsPass4(capsys):
+    from jobFunctions import noApplications
+    # test will grab a random userid from DB make a list of all jobIDs not applied for then check 
+    # noApplications takes in a userID, we need to find a random userID with an applied for job
+    cursor.execute("SELECT userID FROM users ORDER BY RANDOM() LIMIT 1")
+    results = cursor.fetchone()
+    testUserID = results[0]
+
+    # find all the job titles our test user is not applied to
+    query = """
+    SELECT j.jobTitle
+    FROM jobs j
+    LEFT JOIN applicant a ON j.jobID = a.jobID AND a.userID = ?
+    WHERE a.jobID IS NULL;
+    """
+    cursor.execute(query,(testUserID,))
+    result = cursor.fetchall()
+    jobTitles = [title[0] for title in result] #unpack tuple into array
+
+    # call noApplication(user_id) and store returned values
+    try:
+        funcTitles = noApplications(testUserID)
+    except StopIteration: #ignore menu asking for input
+        pass
+
+    # split funcTitles
+    splitTitles = [line.split(".) ")[1] for line in funcTitles.split('\n')]
+
+    # check each value from db is inside object returned from noApplications()
+    for title in jobTitles:
+        assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
+
+def testListingNotAppliedJobsPass5(capsys):
+    from jobFunctions import noApplications
+    # test will grab a random userid from DB make a list of all jobIDs not applied for then check 
+    # noApplications takes in a userID, we need to find a random userID with an applied for job
+    cursor.execute("SELECT userID FROM users ORDER BY RANDOM() LIMIT 1")
+    results = cursor.fetchone()
+    testUserID = results[0]
+
+    # find all the job titles our test user is not applied to
+    query = """
+    SELECT j.jobTitle
+    FROM jobs j
+    LEFT JOIN applicant a ON j.jobID = a.jobID AND a.userID = ?
+    WHERE a.jobID IS NULL;
+    """
+    cursor.execute(query,(testUserID,))
+    result = cursor.fetchall()
+    jobTitles = [title[0] for title in result] #unpack tuple into array
+
+    # call noApplication(user_id) and store returned values
+    try:
+        funcTitles = noApplications(testUserID)
+    except StopIteration: #ignore menu asking for input
+        pass
+
+    # split funcTitles
+    splitTitles = [line.split(".) ")[1] for line in funcTitles.split('\n')]
+
+    # check each value from db is inside object returned from noApplications()
+    for title in jobTitles:
+        assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
+
+def testDisplaySavedJobs(capsys): #in progress
+    from jobFunctions import saveJob, displaySavedJobs
+    # tests both saveJob() and displaySavedJobs()
+    # pick random userID for testing
+    cursor.execute("SELECT userID FROM users ORDER BY RANDOM() LIMIT 1")
+    testUserID = cursor.fetchone()[0]
+
+    # pick random jobID for testing
+    cursor.execute("SELECT jobID FROM jobs ORDER BY RANDOM() LIMIT 1")
+    testJobID = cursor.fetchone()[0]
+
+    # 2. Check if the savedJobs row exists
+    cursor.execute("SELECT 1 FROM savedJobs WHERE userID = ? AND jobID = ?", (testUserID, testJobID))
+    rowExists = cursor.fetchone() is not None
+
+    # 3. Insert a new row if it doesn't exist using saveJob()
+    if not rowExists:
+        saveJob(testUserID, testJobID)
+    
+    try:
+        # 4. Call displaySavedJobs and verify
+        savedJobs = displaySavedJobs(testUserID)
+        assert testJobID in savedJobs, f"Expected jobID {testJobID} not found for userID {testUserID}"
+    finally:
+        # 5. Cleanup - Delete the row if it was added during the test
+        if not rowExists:
+            cursor.execute("DELETE FROM savedJobs WHERE userID = ? AND jobID = ?", (testUserID, testJobID))
