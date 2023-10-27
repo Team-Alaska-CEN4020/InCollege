@@ -1,5 +1,6 @@
 import pytest
 import globalVars
+import random
 from jobFunctions import createJob
 from database import *
 
@@ -423,8 +424,8 @@ def testListingNotAppliedJobsPass5(capsys):
     # check each value from db is inside object returned from noApplications()
     for title in jobTitles:
         assert title in splitTitles, f"Job title {title} for userID: {testUserID} not found in returned items"
-"""
-def testDisplaySavedJobs(capsys): #in progress
+
+def testSavedJobs(capsys): #in progress
     from jobFunctions import saveJob, displaySavedJobs
     # tests both saveJob() and displaySavedJobs()
     # pick random userID for testing
@@ -432,23 +433,29 @@ def testDisplaySavedJobs(capsys): #in progress
     testUserID = cursor.fetchone()[0]
 
     # pick random jobID for testing
-    cursor.execute("SELECT jobID FROM jobs ORDER BY RANDOM() LIMIT 1")
+    cursor.execute("SELECT jobID, jobTitle FROM jobs ORDER BY RANDOM() LIMIT 1")
     testJobID = cursor.fetchone()[0]
+    
+    # create a randomized jobtitle to pass to saveJob
+    randomInt = random.randint(1000,9999)
+    testJobTitle = f"TEST TITLE {randomInt}"
 
-    # 2. Check if the savedJobs row exists
-    cursor.execute("SELECT 1 FROM savedJobs WHERE userID = ? AND jobID = ?", (testUserID, testJobID))
+    # check if the savedJobs row exists
+    cursor.execute(f"SELECT 1 FROM savedJobs WHERE userID = {testUserID} AND jobID = {testJobID}")
     rowExists = cursor.fetchone() is not None
 
-    # 3. Insert a new row if it doesn't exist using saveJob()
+    # insert a new row if it doesn't exist using saveJob()
     if not rowExists:
-        saveJob(testUserID, testJobID)
+        saveJob(testUserID, testJobID, testJobTitle)
     
+    # test displaySavedJobs
     try:
-        # 4. Call displaySavedJobs and verify
         savedJobs = displaySavedJobs(testUserID)
-        assert testJobID in savedJobs, f"Expected jobID {testJobID} not found for userID {testUserID}"
+        
+        # check if testJobTitle is found in saved jobs
+        assert (testJobTitle,) in savedJobs, f"Expected jobTitle '{testJobTitle}' not found for userID {testUserID}"
+    
     finally:
-        # 5. Cleanup - Delete the row if it was added during the test
         if not rowExists:
-            cursor.execute("DELETE FROM savedJobs WHERE userID = ? AND jobID = ?", (testUserID, testJobID))
-"""
+            cursor.execute("DELETE FROM savedJobs WHERE jobTitle = ?", (testJobTitle,))
+            conn.commit()  
