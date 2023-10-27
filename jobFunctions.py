@@ -74,7 +74,6 @@ def searchPostJob():
 			applications(globalVars.userID)
 			time.sleep(5)
 		elif uInput == '4':
-			print("Not Applied to jobs under construction")
 			spacer()
 			missingJobTitles = noApplications(globalVars.userID)
 			
@@ -152,12 +151,18 @@ def showJobDetails(ID_value):
 
 	return row_data
 
-def saveJob(user_ID, job_ID, job_Title):
-	try: 
+def saveJob(user_ID, job_ID, job_Title): 
+	cursor.execute("SELECT userID, jobID, COUNT(jobID) as job_count FROM savedJobs WHERE userID = ? and jobID = ? GROUP BY userID, jobID", (user_ID, job_ID))
+	result = cursor.fetchone()
+	job_count = result[0]
+
+	if job_count > 1:
+		print("You already have this job saved!")
+		time.sleep(3)
+		return
+	else:
 		cursor.execute("INSERT INTO savedJobs (userID, jobID, jobTitle) VALUES (?, ?, ?)", (user_ID, job_ID, job_Title))
 		connection.commit()
-	except sqlite3.Error as e:
-		print("error inserting data:", e)
 
 def displaySavedJobs(user_ID):
 	cursor.execute('SELECT jobTitle FROM savedJobs WHERE userID = ?', (user_ID,))
