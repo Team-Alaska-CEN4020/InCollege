@@ -5,16 +5,21 @@ from UI import *
 from friendFunctions import *
 from userSearch import *
 from jobFunctions import *
-conn = sqlite3.connect('your_database.db')
-cursor = conn.cursor()  # Create a cursor object to execute SQL commands
+#conn = sqlite3.connect('your_database.db')
+#cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 from profileFunctions import createProfile, displayProfile, editProfile
 
 
 def userHome():
-    from landing import startupLanding
-
     exitInput = 0
     while exitInput == 0:
+        cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+        userIDApplicationDel = cursor.fetchone()
+        if userIDApplicationDel:
+            print("A job you applied for has been deleted. ")
+            cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+            conn.commit()
+            time.sleep(3)
         spacer()
         header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")

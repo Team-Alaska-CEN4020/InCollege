@@ -4,9 +4,6 @@ from database import *
 from UI import *
 from datetime import datetime
 
-connection = sqlite3.connect('your_database.db')
-cursor = connection.cursor()
-
 def searchPostJob():
 	from loginLanding import userHome
 	exitInput = True
@@ -18,11 +15,9 @@ def searchPostJob():
 		print("(3) Jobs Applied To")
 		print("(4) Jobs Not Applied To")
 		print("(5) Jobs Saved")
+		print("(6) Delete a job poster. ")
 
 		uInput = input("Input Selection (Q to quit): ")
-		#if uInput == '1':
-		#	print("under construction right now")
-		#	exitInput = False
 		if  uInput == '1':
 			showJobApply()
 
@@ -52,8 +47,16 @@ def searchPostJob():
 			djInput = input("Please enter a job title you would like to delete or enter 0 to exit: ")
 			if djInput != '0':
 				deleteJob(globalVars.userID, djInput)
+				print("Saved job you chose has been deleted.")
+				time.sleep(2)
+			elif djInput == '0':
+				print("Going back to Job Search Menu.")
 			else:
 				print("Invalid Option. Exiting job search")
+
+		elif uInput == '6':
+			deleteJobPoster()
+			time.sleep(2)
 
 		elif uInput == 'Q':
 			exitInput = False
@@ -95,11 +98,39 @@ def createJob():
 		else: 
 			continue
 
+def deleteJobPoster():
+	cursor.execute("SELECT * FROM jobs")
+	jobData = cursor.fetchall()
+	header("Current jobs posted: ")
+	for job in jobData:
+		print(f"- {job[2]}. Job ID: {job[0]}")
+	
+	jobIDDel = input("Please enter the ID number of the job you want to delete: ") 
+	cursor.execute("SELECT * FROM jobs WHERE posterID = ? AND jobID = ?", (globalVars.userID, jobIDDel))
+	userPostedJob = cursor.fetchone()
+	if not userPostedJob:
+		print("You are not the owner of this job post. Please choose a job you posted to delete.")
+		return
+	cursor.execute("SELECT * FROM applicant WHERE jobID = ?", (jobIDDel))
+	applicantData = cursor.fetchall()
+	for applicant in applicantData:
+		cursor.execute("INSERT INTO deletedJobApplicants (userID, jobID, jobTitle) VALUES (?, ?, ?)",
+					(applicant[0], applicant[1], userPostedJob[2]))
+		conn.commit()
+
+	cursor.execute('DELETE FROM jobs WHERE posterID = ? and jobID = ?', (globalVars.userID, jobIDDel))
+	conn.commit()
+	cursor.execute('DELETE FROM applicant WHERE jobID = ?', (jobIDDel,))
+	conn.commit()
+	cursor.execute('DELETE FROM savedJobs WHERE jobID = ?', (jobIDDel,))
+	conn.commit()
+	print("The job post has been deleted. ")
+
 def showAllJobs():
-	query = f"SELECT jobTitle FROM jobs"
+	query = f"SELECT jobID, jobTitle FROM jobs"
 
 	cursor.execute(query)
-	titles = [row[0] for row in cursor.fetchall()]
+	titles = cursor.fetchall()
 
 	return titles
 
@@ -107,16 +138,16 @@ def showAllJobs():
 def showJobApply():
 	menuLooper = True
 	while menuLooper:
-		titles = showAllJobs()
+		jobData = showAllJobs()
 		spacer()
-		if titles:
+		if jobData:
 			print("Available Jobs:\n")
-			for i, title in enumerate(titles, start=1):
-				print(str(i)+ ".) "+ title)
+			for job in jobData:
+				print(f"- {job[1]}. Job ID: {job[0]}")
 		else:
 			print("No Jobs available")
 		
-		detailInput = int(input("Please select any number to find out more details on a job or input 0 to quit: "))
+		detailInput = int(input("Please select the job ID number to find out more details on the job or input 0 to quit: "))
 
 		if detailInput != 0:
 			detailData = showJobDetails(detailInput)
@@ -137,6 +168,7 @@ def showJobApply():
 					spacer()
 					print("Saving job!")
 					saveJob(globalVars.userID, detailData[0], detailData[1])
+					time.sleep(2)
 					return
 				elif applyInput == 3:
 					return
@@ -152,8 +184,6 @@ def showJobApply():
 
 #this function allows users to apply to jobs
 def jobApplication(job_ID):
-	#looper = True
-	#while looper:
 	cursor.execute("SELECT userID FROM applicant WHERE userID = ? AND jobID = ?", (globalVars.userID, job_ID))
 	applied_already = cursor.fetchone()
 	cursor.execute("SELECT posterID FROM jobs WHERE posterID = ? AND jobID = ?", (globalVars.userID, job_ID))
@@ -219,7 +249,7 @@ def saveJob(user_ID, job_ID, job_Title):
 		return
 	else:
 		cursor.execute("INSERT INTO savedJobs (userID, jobID, jobTitle) VALUES (?, ?, ?)", (user_ID, job_ID, job_Title))
-		connection.commit()
+		conn.commit()
 
 def displaySavedJobs(user_ID):
 	cursor.execute('SELECT jobTitle FROM savedJobs WHERE userID = ?', (user_ID,))
@@ -233,7 +263,7 @@ def displaySavedJobs(user_ID):
 
 def deleteJob(user_id, jobTitle):
 	cursor.execute('DELETE FROM savedJobs WHERE userID = ? and jobTitle = ?', (user_id, jobTitle))
-	connection.commit()
+	conn.commit()
 
 def applications(user_id):
 	query = """
@@ -242,7 +272,7 @@ def applications(user_id):
 			INNER JOIN jobs ON applicant.jobID = jobs.jobID
 			WHERE applicant.userID = ?"""
 	cursor.execute(query, (user_id,))
-	connection.commit()
+	conn.commit()
 
 	allJobsApps = [row[0] for row in cursor.fetchall()]
 
