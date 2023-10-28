@@ -4,9 +4,6 @@ from database import *
 from UI import *
 from datetime import datetime
 
-#connection = sqlite3.connect('your_database.db')
-#cursor = connection.cursor()
-
 def searchPostJob():
 	from loginLanding import userHome
 	exitInput = True

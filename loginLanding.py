@@ -11,16 +11,15 @@ from profileFunctions import createProfile, displayProfile, editProfile
 
 
 def userHome():
-    cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-    userIDApplicationDel = cursor.fetchone()
-    if userIDApplicationDel:
-        print("A job you applied for has been deleted. ")
-        cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-        conn.commit
-        time.sleep(3)
-
     exitInput = 0
     while exitInput == 0:
+        cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+        userIDApplicationDel = cursor.fetchone()
+        if userIDApplicationDel:
+            print("A job you applied for has been deleted. ")
+            cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+            conn.commit()
+            time.sleep(3)
         spacer()
         header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")
