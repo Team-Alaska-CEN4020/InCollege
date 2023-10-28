@@ -2,6 +2,7 @@ import globalVars
 import time
 from database import *
 from UI import *
+from datetime import datetime
 
 connection = sqlite3.connect('your_database.db')
 cursor = connection.cursor()
@@ -130,7 +131,7 @@ def showJobApply():
 
 				applyInput = int(input("Please enter 1 to apply to this job, 2 to save Job or 3 to exit: "))
 				if applyInput == 1:
-					print("Under construction")
+					jobApplication(detailData[0])
 					return
 				elif applyInput == 2:
 					spacer()
@@ -147,6 +148,56 @@ def showJobApply():
 		else:
 			print("Invalid Option.")
 			menuLooper = False
+
+
+#this function allows users to apply to jobs
+def jobApplication(job_ID):
+	#looper = True
+	#while looper:
+	cursor.execute("SELECT userID FROM applicant WHERE userID = ? AND jobID = ?", (globalVars.userID, job_ID))
+	applied_already = cursor.fetchone()
+	cursor.execute("SELECT posterID FROM jobs WHERE posterID = ? AND jobID = ?", (globalVars.userID, job_ID))
+	userPostedJob = cursor.fetchone()
+	if applied_already:
+		print("You have already applied for this job. Please choose a different job.")
+		time.sleep(2)
+		return
+	if userPostedJob:
+		print("You cannot apply for a job you posted. Please choose a different job.")
+		time.sleep(2)
+		return
+	counter1 = True
+	while counter1:
+		gradDate = input("Please enter your graduation date (mm/dd/yyyy): ")
+		if is_valid_date(gradDate):
+			break
+		else: 
+			print("Please enter your graduation date in the correct format (mm/dd/yyyy).")
+	counter2 = True
+	while counter2:
+		startDate = input("Please enter the date you can start working for this position (mm/dd/yyyy): ")
+		if is_valid_date(startDate):
+			break
+		else: 
+			print("Please enter your starting date in the correct format (mm/dd/yyyy).")
+	whyApply = input("Provide a paragraph explaining why you think that you would be a great fit for this position: ")
+
+	cursor.execute("INSERT INTO applicant (userID, jobID, firstName, lastName, gradDate, startDate, paragraph) VALUES (?, ?, ?, ?, ?, ?, ?)",
+					(globalVars.userID, job_ID, globalVars.userFirstName, globalVars.userLastName, gradDate, startDate, whyApply))
+	conn.commit()
+
+	print("Job has been successfully applied to!")
+	time.sleep(2)
+
+
+#checks whether the entered date is in the correct format (mm/dd/yyyy)
+def is_valid_date(input_string):
+    try:
+        # Attempt to parse the input string as a date with the format "mm/dd/yyyy"
+        datetime.strptime(input_string, "%m/%d/%Y")
+        return True  # Input string is a valid date in the required format
+    except ValueError:
+        return False  # Input string is not in the required format
 
 
 def showJobDetails(ID_value):
