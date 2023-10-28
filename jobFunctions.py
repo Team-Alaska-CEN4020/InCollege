@@ -98,7 +98,7 @@ def createJob():
 		else: 
 			continue
 
-#this functions allows users to delete a job they posted.
+#this functions allows users to delete a job they they posted
 def deleteJobPoster():
 	cursor.execute("SELECT * FROM jobs")
 	jobData = cursor.fetchall()
