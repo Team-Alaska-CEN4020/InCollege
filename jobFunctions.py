@@ -47,10 +47,6 @@ def searchPostJob():
 			djInput = input("Please enter a job title you would like to delete or enter 0 to exit: ")
 			if djInput != '0':
 				deleteJob(globalVars.userID, djInput)
-				print("Saved job you chose has been deleted.")
-				time.sleep(2)
-			elif djInput == '0':
-				print("Going back to Job Search Menu.")
 			else:
 				print("Invalid Option. Exiting job search")
 
