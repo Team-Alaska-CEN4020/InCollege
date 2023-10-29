@@ -1,6 +1,7 @@
 import pytest
 import globalVars
 import random
+import unittest
 from jobFunctions import createJob
 from database import *
 
@@ -56,7 +57,7 @@ def testListingAllJobsPass1(capsys):
         pass
     
     #check if the randomly pulled valid job is returned 
-    assert jobTitle in funcTitles
+    assert any(title for _, title in funcTitles if title == jobTitle)
 
 def testListingAllJobsPass2(capsys):
     from jobFunctions import showAllJobs
@@ -73,7 +74,7 @@ def testListingAllJobsPass2(capsys):
         pass
     
     #check if the randomly pulled valid job is returned 
-    assert jobTitle in funcTitles
+    assert any(title for _, title in funcTitles if title == jobTitle)
 
 def testListingAllJobsPass3(capsys):
     from jobFunctions import showAllJobs
@@ -90,7 +91,7 @@ def testListingAllJobsPass3(capsys):
         pass
     
     #check if the randomly pulled valid job is returned 
-    assert jobTitle in funcTitles
+    assert any(title for _, title in funcTitles if title == jobTitle)
 
 def testListingAllJobsPass4(capsys):
     from jobFunctions import showAllJobs
@@ -107,7 +108,7 @@ def testListingAllJobsPass4(capsys):
         pass
     
     #check if the randomly pulled valid job is returned 
-    assert jobTitle in funcTitles
+    assert any(title for _, title in funcTitles if title == jobTitle)
 
 def testListingAllJobsPass5(capsys):
     from jobFunctions import showAllJobs
@@ -124,7 +125,7 @@ def testListingAllJobsPass5(capsys):
         pass
     
     #check if the randomly pulled valid job is returned 
-    assert jobTitle in funcTitles
+    assert any(title for _, title in funcTitles if title == jobTitle)
 
 def testListingAppliedJobsPass1(capsys):
     from jobFunctions import applications
@@ -459,3 +460,73 @@ def testSavedJobs(capsys): #in progress
         if not rowExists:
             cursor.execute("DELETE FROM savedJobs WHERE jobTitle = ?", (testJobTitle,))
             conn.commit()  
+
+class TestDeleteJobPoster(unittest.TestCase):
+    from unittest.mock import patch
+    @patch('builtins.input', side_effect=['2'])  # Input a job ID that doesn't belong to the user
+    @patch('builtins.print')  # Mock the print function to capture the output
+
+        #To check if you cannot delete a job if you don't own the job which is jobs.posterID = users.userID 
+        
+    def test_delete_other_user_job(self, mock_print, mock_input):
+        from jobFunctions import deleteJobPoster
+        # Set the user ID and create a job owned by another user
+        user_id = 1  # Replace with your user ID
+        job_id = 2  # Replace with a job ID that doesn't belong to the user
+        expected_output = "You are not the owner of this job post. Please choose a job you posted to delete."
+
+        # Call the deleteJobPoster function
+        deleteJobPoster()
+
+        # Check that the function prints the expected output
+        assert expected_output in [call[0][0] for call in mock_print.call_args_list]
+
+# Test if user can successfully apply for a job
+
+def test_job_application_successful():
+    from unittest.mock import patch, call
+    from jobFunctions import jobApplication
+    job_ID = 4
+    globalVars.userID = 7
+
+    try:
+        with patch('builtins.input', side_effect=['01/01/2024', '01/01/2024', 'I am a great fit for this job']):
+            with patch('builtins.print') as mock_print:
+                with patch('time.sleep', lambda _: None):
+                    jobApplication(job_ID)
+
+        # Check that the function printed the appropriate message
+        mock_print.assert_any_call("Job has been successfully applied to!")
+
+    finally:
+        # local test cleanup
+        cursor.execute("DELETE FROM applicant WHERE userID=7") # just the ones from the test user
+        conn.commit()
+
+
+
+# Test if user gets the correct message when they've already applied for a job
+def test_job_application_already_applied():
+    from unittest.mock import patch, call
+    from jobFunctions import jobApplication
+    job_ID = 4
+    globalVars.userID = 1
+
+    # add a test application
+    try:
+        with patch('builtins.input', side_effect=['01/01/2024', '01/01/2024', 'I am a great fit for this job']):
+            with patch('builtins.print') as mock_print:
+                jobApplication(job_ID)
+    
+        # now check if the function will allow the same application, it should not.
+        with patch('builtins.input', side_effect=['01/01/2024', '01/01/2024', 'I am a great fit for this job']):
+            with patch('builtins.print') as mock_print:
+                jobApplication(job_ID)
+        
+        # Check that the function printed the appropriate message
+        mock_print.assert_any_call("You have already applied for this job. Please choose a different job.")
+    
+    finally:
+        # clean up DB from tests
+        cursor.execute("DELETE FROM applicant WHERE userID=7") # just the ones from the test user
+        conn.commit()
