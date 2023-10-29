@@ -4,16 +4,22 @@ from database import *
 from UI import *
 from friendFunctions import *
 from userSearch import *
-conn = sqlite3.connect('your_database.db')
-cursor = conn.cursor()  # Create a cursor object to execute SQL commands
+from jobFunctions import *
+#conn = sqlite3.connect('your_database.db')
+#cursor = conn.cursor()  # Create a cursor object to execute SQL commands
 from profileFunctions import createProfile, displayProfile, editProfile
 
 
 def userHome():
-    from landing import startupLanding
-
     exitInput = 0
     while exitInput == 0:
+        cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+        userIDApplicationDel = cursor.fetchone()
+        if userIDApplicationDel:
+            print("A job you applied for has been deleted. ")
+            cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+            conn.commit()
+            time.sleep(3)
         spacer()
         header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")
@@ -31,7 +37,7 @@ def userHome():
             # UI edited for Epic-5
             userProfile()
         elif uInput == '2':
-            searchForJob()
+            searchPostJob()
         elif uInput == '3':
             userSearch()
         elif uInput == '4':
@@ -52,10 +58,7 @@ def userHome():
 
 
 
-
-#################################################### Epic-5 ####################################################
 # Function to create a User Profile as a new user or existing user
-
 def userProfile():
     # Check if a profile exists for the logged-in user in the profiles table
     cursor.execute("SELECT * FROM profiles WHERE userID = ?",
@@ -103,39 +106,6 @@ def userProfile():
 
       #VISIT profileFunctions FOR MORE FUNCTIONS#
 
-#################################################### Epic-5^#####################################################
-
-
-# Option functions to fill out once we understand what we need to do for them
-def searchForJob():
-    # print("Searching for a job is under construction")
-    spacer()
-    header('Welcome to Job Search')
-    print("(1)  Post a Job")
-    uInput = input("Input Selection (Q to quit): ")
-
-    exitInput = 0
-    while exitInput == 0:
-        if uInput == '1':
-            print("\nEnter the following information about the job: ")
-            title = input("Enter the job title: ")
-            description = input("Enter the job description: ")
-            employer = input("Enter the employer: ")
-            location = input("Enter the location: ")
-            salary = input("Enter the job's salary: ")
-            firstname = input("Enter your first name: ")
-            lastname = input("Enter your last name: ")
-
-            storeJob(title, description, employer,
-                     location, salary, firstname, lastname)
-
-        elif uInput.upper() == 'Q':
-            exitInput = 1
-            spacer()
-
-        else:
-            print("Invalid Option Try again")
-
 
 def learnASkill():
     loopBreaker1 = True
@@ -169,19 +139,3 @@ def learnASkill():
         elif cont.lower() != "yes":
             loopBreaker1 = False
             exit(0)
-
-
-def storeJob(title, description, employer, location, salary, firstName, lastName):
-    cursor.execute("SELECT COUNT(*) FROM jobs")
-    job_count = cursor.fetchone()[0]
-
-    if job_count >= globalVars.maxJobPostings:
-        print("All permitted jobs have been created. Please come back later.")
-        userHome()
-
-    cursor.execute("INSERT INTO jobs (title, description, employer, location, salary, firstname, lastname) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                   (title, description, employer, location, salary, firstName, lastName))
-
-    conn.commit()
-    print("Job stored in database")
-    userHome()

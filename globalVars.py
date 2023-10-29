@@ -1,3 +1,6 @@
+#Global Variables 
+
+
 # User Information
 isLoggedIn = False
 userID = 0
@@ -13,4 +16,4 @@ userUniversity = None
 
 # Application Information and Limits
 maxActiveAccounts = 10
-maxJobPostings = 5
+maxJobPostings = 10
