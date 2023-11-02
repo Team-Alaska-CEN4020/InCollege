@@ -21,7 +21,11 @@ def userHome():
             cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
             conn.commit()
             time.sleep(3)
+            
         spacer()
+        checkUnreadStatusLogin(globalVars.userID)
+        spacer()
+        
         header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")
@@ -51,7 +55,7 @@ def userHome():
         elif uInput == '7':
             viewFriendRequests()
         elif uInput == '8':
-            messageMenu(globalVars.userID)
+            messageInbox(globalVars.userID)
         elif uInput.upper() == 'Q':
             exitInput=1
             spacer()

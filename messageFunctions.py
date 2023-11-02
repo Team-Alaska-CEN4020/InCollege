@@ -1,34 +1,7 @@
 # Welcome to the world of message functions
 from UI import *
 from database import *
-
-
-def messageMenu(userID):
-    loopBreak = True
-
-    while loopBreak:
-        spacer()
-        print("Welcome to your inbox!")
-        print("(1) Inbox")
-        checkUnreadStatus(userID)
-        uInput = input("Please select an option or input 0 to quit: ")
-
-        if uInput == '1':
-            messageInbox(userID)
-        elif uInput == '0':
-            loopBreak = False
-        else:
-            print("Invalid Input. Please Try again.")
-            loopBreak = False
-            
-
-def checkUnreadStatus(userID):
-    cursor.execute("SELECT COUNT(*) as unreadMessages FROM messages WHERE isUnread = 1 AND recieverUserID = ?", (userID,))
-    result = cursor.fetchone()
-    if result[0] >= 1:
-        print("(2) Unread Messages")
-    else:
-        return
+import time
 
 def messageInbox(userID):
     loopBreak = True
@@ -73,3 +46,22 @@ def messageInbox(userID):
                 elif mInput == 0:
                     loopBreak = False
 
+def checkUnreadStatusLogin(userID):
+    cursor.execute("SELECT COUNT(*) as unreadMessages FROM messages WHERE isUnread = 1 AND recieverUserID = ?", (userID,))
+    result = cursor.fetchone()
+    if result[0] >= 1:
+        print("***Please check your inbox! You have an unread message.***")
+        time.sleep(2)
+    else:
+        return
+    
+def checkUnreadStatus(userID):
+    cursor.execute("SELECT COUNT(*) as unreadMessages FROM messages WHERE isUnread = 1 AND recieverUserID = ?", (userID,))
+    result = cursor.fetchone()
+    if result[0] >= 1:
+        print("(2) Unread Messages")
+    else:
+        return
+
+def updateIfUnread(userID):
+    
