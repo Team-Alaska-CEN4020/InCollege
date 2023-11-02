@@ -5,7 +5,7 @@ import time
 
 def messageInbox(userID):
     loopBreak = True
-    cursor.execute("SELECT m.isUnread, u.firstName, m.subject, m.message FROM messages m JOIN users u ON m.senderUserID = u.userID WHERE m.recieverUserID = ? ORDER BY m.messageID ASC", (userID,))
+    cursor.execute("SELECT m.messageID, m.isUnread, u.firstName, m.subject, m.message FROM messages m JOIN users u ON m.senderUserID = u.userID WHERE m.recieverUserID = ? ORDER BY m.messageID ASC", (userID,))
 
     results = cursor.fetchall()
 
@@ -31,9 +31,14 @@ def messageInbox(userID):
 
                 if 1 <= mInput <= len(results):
                     selected_message = results[mInput - 1]
-                    sender_name = selected_message[1]
-                    subject = selected_message[2]
-                    message = selected_message[3]
+                    unread_status = selected_message[1]
+                    if unread_status == 1:
+                        cursor.execute("UPDATE messages SET isUnread = 0 WHERE messageID = ?", (selected_message[0],))
+                        conn.commit()
+                    sender_name = selected_message[2]
+                    subject = selected_message[3]
+                    message = selected_message[4]
+                    
                 
                     print(f"Sender: {sender_name}\nSubject: {subject}")
                     print(f"Message: {message}")
@@ -63,5 +68,4 @@ def checkUnreadStatus(userID):
     else:
         return
 
-def updateIfUnread(userID):
     

@@ -24,7 +24,6 @@ def userHome():
             
         spacer()
         checkUnreadStatusLogin(globalVars.userID)
-        spacer()
         
         header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")
