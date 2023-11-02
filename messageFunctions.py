@@ -12,9 +12,9 @@ def messageInbox(userID):
     spacer()
     while loopBreak:
         for idx, row in enumerate(results, start=1):
-            is_unread = "Unread" if row[0] == 1 else "Read"
-            sender_user_id = row[1]
-            subject = row[2]
+            is_unread = "Unread" if row[1] == 1 else "Read"
+            sender_user_id = row[2]
+            subject = row[3]
         
             print(f"{idx}.) {is_unread} - Sender: {sender_user_id}, Subject: {subject}")
             print("\n")
