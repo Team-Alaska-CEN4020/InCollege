@@ -4,6 +4,10 @@ import pytest
 import globalVars
 from database import *
 
+# Define a custom check function
+def check_print(call, expected_str):
+	return any(expected_str in str(arg) for arg in call[0])
+
 def testMessageInboxLoggedLanding(capsys):
 	from loginLanding import userHome
 	testUsername = "TestBlankProfile"
@@ -40,9 +44,6 @@ def testMessageInboxLoggedLanding(capsys):
 	for call in mock_print.call_args_list:
 		print(call)
 
-	# Define a custom check function
-	def check_print(call, expected_str):
-		return any(expected_str in str(arg) for arg in call[0])
 
 	assert any(check_print(call, "Message Inbox") for call in mock_print.call_args_list)
 
