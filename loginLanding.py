@@ -1,148 +1,162 @@
+### Header ###
+import re
 import globalVars
 import time
 from database import *
 from UI import *
-from friendFunctions import *
-from userSearch import *
-from jobFunctions import *
-from profileFunctions import createProfile, displayProfile, editProfile
-from messageFunctions import *
+from loginLanding import *
 
-#conn = sqlite3.connect('your_database.db')
-#cursor = conn.cursor()  # Create a cursor object to execute SQL commands
+### Functions ###
 
-def userHome():
-    exitInput = 0
-    while exitInput == 0:
-        cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-        userIDApplicationDel = cursor.fetchone()
-        if userIDApplicationDel:
-            print("A job you applied for has been deleted. ")
-            cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-            conn.commit()
-            time.sleep(3)
-            
-        spacer()
-        checkUnreadStatusLogin(globalVars.userID)
-        
-        header(f"Welcome {globalVars.userFirstName}!")
-        print("Please select the number of the service you would like to use:")
-        print("(1)  Your InCollege Profile")
-        print("(2)  Search for a job / internship")
-        print("(3)  Find someone you know")
-        print("(4)  Learn a new skill")
-        print("(5)  Show My Network")
-        print("(6)  Send Friend Request")
-        print("(7)  Pending Friend Requests")
-        print("(8)  Message Inbox")
+def deleteUser():
+  from landing import startupLanding
 
-        uInput = input("Input Selection (Q to quit and return): ")
+  username = input("\nEnter the username you want to delete: ")
+  cursor.execute("SELECT username FROM users WHERE username=?", (username,))
+  existing_user = cursor.fetchone()
 
-        if uInput == '1':  
-            # UI edited for Epic-5
-            userProfile()
-        elif uInput == '2':
-            searchPostJob()
-        elif uInput == '3':
-            userSearch()
-        elif uInput == '4':
-            learnASkill()
-        elif uInput == '5':
-            getFriends()
-        elif uInput == '6':
-            userSearch()
-        elif uInput == '7':
-            viewFriendRequests()
-        elif uInput == '8':
-            messageInbox(globalVars.userID)
-        elif uInput.upper() == 'Q':
-            exitInput=1
-            spacer()
+  if existing_user:
+    cursor.execute("DELETE FROM users WHERE username=?", (username,))
+    conn.commit()
+    print(f"User {username} has been deleted.")
+    startupLanding()
+
+  else:
+    print(f"User {username} not found in the database.")
+    startupLanding()
+
+
+def createUser():
+    # Check if the maximum number of accounts has been reached
+    cursor.execute("SELECT COUNT(*) FROM users")
+    account_count = cursor.fetchone()[0]
+
+    if account_count >= globalVars.maxActiveAccounts:
+        print("All permitted accounts have been created. Please come back later.")
+        choice = input("Do you want to delete an existing account? (yes/no): ")
+        if choice.lower() == "yes":
+            deleteUser()
+        else:
+            print("Please come back later.")
+            userHome()
+        return
+
+    # This pattern ensures that our password will be: minimum of 8 characters, max of 12     
+    # characters, 1 capital letter, 1 digit, 1 special character
+    regexPattern = r'^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,12}$'
+
+    username = input("\nPlease enter a username: ")
+    cursor.execute("SELECT username FROM users WHERE username=?", (username,))
+    existing_user = cursor.fetchone()  # Check if the username already exists in the database
+    if existing_user:
+        print("Username already exists. Please choose a different username.")
+        username = input("Please enter a username: ")
+
+    counter1 = True
+    while counter1: 
+        password = input("Enter a password: ")
+        #compares password input with regexPattern
+        if re.match(regexPattern, password):
+            storePassword = password
+            break
+        else:
+            print("Invalid password type. Please enter a password that has a minimum of 8 characters, maximum of 12 characters, at least one capital letter, one digit, one special character")
+
+    firstName = input("Please enter your first name: ")
+    lastName = input("Please enter your last name: ")
+    major = input("Enter your major: ")
+    uni= input("Enter your univeristy: ")
+
+    # default user account settings to store into users entry on DB
+    defaultEmail = True
+    defaultSMS = True
+    defaultAdTarget = True
+    defaultLanguage = 0
+
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor , userUniversity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni))
+    conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
+    print("Congratulations! Your account has been successfully registered.")
+
+    #updating global user variables
+    globalVars.isLoggedIn = True
+    globalVars.username = username
+    globalVars.userFirstName = firstName
+    globalVars.userLastName = lastName
+    globalVars.userMajor = major
+    globalVars.userUniversity = uni
+
+    # user tier functionality
+    globalVars.userTier = userTierSelect()
+
+    userHome()
+
+
+def UserLogin():
+    while True: 
+        username = input("\nPlease enter your username: ")
+
+        cursor.execute("SELECT * FROM users WHERE username=?", (username,))
+        # Retrieve user data from the database
+        user_data = cursor.fetchone()  
+
+        if not user_data:  # If the username is not found in the database
+            print("The username you have entered does not exist. Please try again.")
+            continue
+        globalVars.currentUser = username
+
+        # Get the correct password from the retrieved data
+        correct_password = user_data[2]  
+        counter = True
+        while counter:
+            password = input("Please enter your password: ")
+            # Check if the entered password matches the correct password
+            if password == correct_password:  
+                print("You have successfully logged in.")
+                counter = False
+
+                #update the global user variables and settings
+                globalVars.isLoggedIn = True
+                globalVars.userID = user_data[0]
+                globalVars.username = user_data[1]
+                globalVars.userFirstName = user_data[3]
+                globalVars.userLastName = user_data[4]
+                globalVars.userSettingMarketingEmail = user_data[5]
+                globalVars.userSettingMarketingSMS = user_data[6]
+                globalVars.userSettingAdvertisementTargeted = user_data[7]
+                globalVars.userSettingLanguage = user_data[8]
+                globalVars.userMajor = user_data[10]
+
+                userHome()
+            else:
+                print("Incorrect username/password. Please try again.")
+                continue
+        break
+
+def userTierSelect():
+    from billing import creditCardSetup
+    from datetime import date
+    selection = None
+    print("Would you like to become an InCollege Plus Member?")
+    print("For only $10 a month you get the following:")
+    # Plus member benifit list
+    print("*\tForge new connections with the ability to message")
+    print(" \tany member without having to friend them.")
+
+    while selection == None:
+        input = ("Would you like to become a Plus Member? (y/n): ")
+
+        if input.upper() == 'Y':
+            creditCardSetup() #placeholder
+            selection = 1
+            subDate = date.today()
+        elif input.upper() == 'N':
+            selection = 0
         else:
             print("Invalid Option. Try Again")
-            spacer()
+            time.sleep(1)
 
+        # update user record for tier
+        cursor.execute ("UPDATE users SET userTier = ?, subsriptionDate = ?,  WHERE username = ?",(selection, subDate, globalVars.username))
+        conn.commit
 
-
-
-# Function to create a User Profile as a new user or existing user
-def userProfile():
-    # Check if a profile exists for the logged-in user in the profiles table
-    cursor.execute("SELECT * FROM profiles WHERE userID = ?",
-                   (globalVars.userID,))
-    existing_profile = cursor.fetchone()
-
-    # Check if an experience exists for the logged-in user in the experience table
-    cursor.execute("SELECT * FROM experience WHERE userID = ?",
-                   (globalVars.userID,))
-    experience_existing = cursor.fetchone()
-
-    # Check if an education exists for the logged-in user in the education table
-    cursor.execute("SELECT * FROM education WHERE userID = ?",
-                   (globalVars.userID,))
-    education_existing = cursor.fetchone()
-
-    if (not existing_profile) or (not experience_existing) or (not education_existing):
-        # If no profile exists, create one
-        #If no education or experience exists then users get to continue from where they left off
-        createProfile()
-    else:
-        menuLooper = True
-        while menuLooper:
-            spacer()
-            header(f'Welcome, {globalVars.userFirstName}!')
-
-            print("1. Display Your Profile")
-            print("2. Edit Your Profile")
-            print("3. Go Back")
-
-            option = input("Select an option (1/2/3): ")
-
-            if option == '1':
-                # Display the user's profile
-                displayProfile()
-            elif option == '2':
-                # Edit the user's profile
-                editProfile()
-            elif option == '3':
-                # Go back to the main menu
-                menuLooper = False
-            else:
-                print("Invalid option. Please choose a valid option.")
-                
-
-      #VISIT profileFunctions FOR MORE FUNCTIONS#
-
-
-def learnASkill():
-    loopBreaker1 = True
-    while loopBreaker1:
-        print("\nPlease select any of following skills:")
-        print("1. Web Development ")
-        print("2. Leadership ")
-        print("3. Time management ")
-        print("4. Data Literacy ")
-        print("5. Interview Prep ")
-        print("6. Return to Welcome Screen ")
-        UserOption = int(input("Please select your option: "))
-        if UserOption == 1:
-            print("Web Development is under construction")
-        elif UserOption == 2:
-            print("Leadership is under construction")
-        elif UserOption == 3:
-            print("Time management is under construction")
-        elif UserOption == 4:
-            print("Data literacy is under construction")
-        elif UserOption == 5:
-            print("Interview prep is under construction")
-        elif UserOption == 6:
-            userHome()
-        else:
-            print("Invalid input.")
-
-        cont = input("Would you like to continue (yes/no): ")
-        if cont.lower() == "yes":
-            continue
-        elif cont.lower() != "yes":
-            loopBreaker1 = False
-            exit(0)
+        return selection
