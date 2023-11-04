@@ -53,7 +53,7 @@ def getFriendsList(userID):
         cursor.execute("SELECT u.username FROM users AS u JOIN friends AS f ON u.userID = f.friendUserID WHERE f.userID = ? and f.friendshipStatus = 1 and f.isDeleted = 0",(userID))
     except Exception as e:
         print(f"Error occurred while finding friends: {e}")
-    if not cursor.fetchone():
+    if not cursor.fetchall():
         print("It looks like you havn't made any friends yet.")
         time.sleep(2)
         return
