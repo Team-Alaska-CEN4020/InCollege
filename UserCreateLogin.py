@@ -66,16 +66,59 @@ def createUser():
     lastName = input("Please enter your last name: ")
     major = input("Enter your major: ")
     uni= input("Enter your univeristy: ")
-    
+    print("InCollege now offers Plus Membership services for only $10/month that will allow you to message all the people on this platform without having to add them to your friend's list")
+    membership = input("1) standard account (free)\n2) plus membership ($10/month)\nPlease select one of the options: ")
+
+    membership = "YourMembership"
+    card_name = "YourCardName"
+    card_num = "YourCardNumber"
+    SCV = "YourSCV" 
+    expiration = "YourExpirationDate"
+    zip_code = "YourZipCode"
+
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor, userUniversity, userMembership, userCardName, userCardNum, userSCV, ExpirationDate, ZipCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni, membership, card_name, card_num, SCV, expiration, zip_code))
+
+    # Close the database connection
+    conn.close()
+
+    '''
+    while True:
+        if membership == "1":
+            break
+        elif membership == "2":
+            card_name = input("Enter the name on your card: ")
+            card_num = input("Enter the number of your card: ")
+            SCV = input("Enter the SVC number on the back of your card: ")
+            expiration = input("Enter the expiration date on your card (mm/yy): ")
+            zip_code = input("Enter the billing zip code: ")
+            print("You are now a Plus member of InCollege!")
+            break
+        else:
+            membership = input("Invalid input. Please enter 1 or 2: ")
+    '''
+
+
+    if membership == "1":
+        pass
+    elif membership == "2":
+        card_name = input("Enter the name on your card: ")
+        card_num = input("Enter the number of your card: ")
+        SCV = input("Enter the SVC number on the back of your card: ")
+        expiration = input("Enter the expiration date on your card (mm/yy): ")
+        zip_code = input("Enter the billing zip code: ")
+        print("You are now a Plus member of InCollege!")
+   
     # default user account settings to store into users entry on DB
     defaultEmail = True
     defaultSMS = True
     defaultAdTarget = True
     defaultLanguage = 0
-  
-    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor , userUniversity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni))
+
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor , userUniversity, userMembership, userCardName, userCardNum, userSCV, ExpirationDate, ZipCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni, membership, card_name, card_num, SCV, expiration, zip_code))
+
     conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
     print("Congratulations! Your account has been successfully registered.")
+
     
     #updating global user variables
     globalVars.isLoggedIn = True
@@ -84,10 +127,7 @@ def createUser():
     globalVars.userLastName = lastName
     globalVars.userMajor = major
     globalVars.userUniversity = uni
-
-    # user tier functionality
-    globalVars.userTier = userTierSelect()
-
+    
     userHome()
 
 
@@ -131,32 +171,3 @@ def UserLogin():
                 print("Incorrect username/password. Please try again.")
                 continue
         break
-
-def userTierSelect():
-    from billing import creditCardSetup
-    from datetime import date
-    selection = None
-    print("Would you like to become an InCollege Plus Member?")
-    print("For only $10 a month you get the following:")
-    # Plus member benifit list
-    print("*\tForge new connections with the ability to message")
-    print(" \tany member without having to friend them.")
-
-    while selection == None:
-        input = ("Would you like to become a Plus Member? (y/n): ")
-
-        if input.upper() == 'Y':
-            creditCardSetup() #placeholder
-            selection = 1
-            subDate = date.today()
-        elif input.upper() == 'N':
-            selection = 0
-        else:
-            print("Invalid Option. Try Again")
-            time.sleep(1)
-        
-        # update user record for tier
-        cursor.execute ("UPDATE users SET userTier = ?, subsriptionDate = ?,  WHERE username = ?",(selection, subDate, globalVars.username))
-        conn.commit
-
-        return selection
