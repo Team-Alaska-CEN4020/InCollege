@@ -84,7 +84,10 @@ def createUser():
     globalVars.userLastName = lastName
     globalVars.userMajor = major
     globalVars.userUniversity = uni
-    
+
+    # user tier functionality
+    globalVars.userTier = userTierSelect()
+
     userHome()
 
 
@@ -128,3 +131,32 @@ def UserLogin():
                 print("Incorrect username/password. Please try again.")
                 continue
         break
+
+def userTierSelect():
+    from billing import creditCardSetup
+    from datetime import date
+    selection = None
+    print("Would you like to become an InCollege Plus Member?")
+    print("For only $10 a month you get the following:")
+    # Plus member benifit list
+    print("*\tForge new connections with the ability to message")
+    print(" \tany member without having to friend them.")
+
+    while selection == None:
+        input = ("Would you like to become a Plus Member? (y/n): ")
+
+        if input.upper() == 'Y':
+            creditCardSetup() #placeholder
+            selection = 1
+            subDate = date.today()
+        elif input.upper() == 'N':
+            selection = 0
+        else:
+            print("Invalid Option. Try Again")
+            time.sleep(1)
+        
+        # update user record for tier
+        cursor.execute ("UPDATE users SET userTier = ?, subsriptionDate = ?,  WHERE username = ?",(selection, subDate, globalVars.username))
+        conn.commit
+
+        return selection
