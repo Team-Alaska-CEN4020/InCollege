@@ -9,7 +9,6 @@ def messageInbox(userID):
 
     results = cursor.fetchall()
 
-
     spacer()
     while loopBreak:
         for idx, row in enumerate(results, start=1):
