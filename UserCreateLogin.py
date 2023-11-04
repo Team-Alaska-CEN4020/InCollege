@@ -66,48 +66,7 @@ def createUser():
     lastName = input("Please enter your last name: ")
     major = input("Enter your major: ")
     uni= input("Enter your univeristy: ")
-    print("InCollege now offers Plus Membership services for only $10/month that will allow you to message all the people on this platform without having to add them to your friend's list")
-    membership = input("1) standard account (free)\n2) plus membership ($10/month)\nPlease select one of the options: ")
-
-    membership = "YourMembership"
-    card_name = "YourCardName"
-    card_num = "YourCardNumber"
-    SCV = "YourSCV" 
-    expiration = "YourExpirationDate"
-    zip_code = "YourZipCode"
-
-    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor, userUniversity, userMembership, userCardName, userCardNum, userSCV, ExpirationDate, ZipCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni, membership, card_name, card_num, SCV, expiration, zip_code))
-
-    # Close the database connection
-    conn.close()
-
-    '''
-    while True:
-        if membership == "1":
-            break
-        elif membership == "2":
-            card_name = input("Enter the name on your card: ")
-            card_num = input("Enter the number of your card: ")
-            SCV = input("Enter the SVC number on the back of your card: ")
-            expiration = input("Enter the expiration date on your card (mm/yy): ")
-            zip_code = input("Enter the billing zip code: ")
-            print("You are now a Plus member of InCollege!")
-            break
-        else:
-            membership = input("Invalid input. Please enter 1 or 2: ")
-    '''
-
-
-    if membership == "1":
-        pass
-    elif membership == "2":
-        card_name = input("Enter the name on your card: ")
-        card_num = input("Enter the number of your card: ")
-        SCV = input("Enter the SVC number on the back of your card: ")
-        expiration = input("Enter the expiration date on your card (mm/yy): ")
-        zip_code = input("Enter the billing zip code: ")
-        print("You are now a Plus member of InCollege!")
-   
+    
     # default user account settings to store into users entry on DB
     defaultEmail = True
     defaultSMS = True
