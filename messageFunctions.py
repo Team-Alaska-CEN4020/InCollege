@@ -9,6 +9,7 @@ def messageInbox(userID):
 
     results = cursor.fetchall()
 
+
     spacer()
     while loopBreak:
         for idx, row in enumerate(results, start=1):
@@ -18,11 +19,17 @@ def messageInbox(userID):
         
             print(f"{idx}.) {is_unread} - Sender: {sender_user_id}, Subject: {subject}")
             print("\n")
-        userInput = input("Type 1 to type a new message or 2 to continue: ")
+        userInput = input("Type 1 to type a new message or 2 to check your inbox: ")
         if userInput == '1':
             spacer()
             print("Creating a message Under construction")
         elif userInput == '2':
+            #check if there are any messages
+            if not results:
+                print("Your inbox is currently empty.")
+                time.sleep(2)
+                return
+
             mInput = int(input("Select a number to the message you would like to read or select 0 to quit: "))
             if mInput == 0:
                 loopBreak = False
