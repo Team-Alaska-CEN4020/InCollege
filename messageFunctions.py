@@ -23,6 +23,7 @@ def messageInbox(userID):
         if userInput == '1':
             spacer()
             print("Creating a message Under construction")
+            getFriendsList(globalVars.userID)
         elif userInput == '2':
             #check if there are any messages
             if not results:
@@ -75,4 +76,8 @@ def checkUnreadStatus(userID):
     else:
         return
 
-    
+def sendMessagePrompt ():
+    print("take in stuff")
+
+def sendMessage():
+    print("do stuff with inputs")
