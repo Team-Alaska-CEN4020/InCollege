@@ -55,7 +55,7 @@ def testSendMessageStandard():
 	globalVars.userSettingMarketingSMS = user_data_a[6]
 	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
 	globalVars.userSettingLanguage = user_data_a[8]
-	globalVars.userMajor = user_data_a[10]
+	globalVars.userMajor = user_data_a[11]
 
 	testUserName_b = "TestEditProfile"
 	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
@@ -112,7 +112,7 @@ def testSendMessagePlus():
 	globalVars.userSettingMarketingSMS = user_data_a[6]
 	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
 	globalVars.userSettingLanguage = user_data_a[8]
-	globalVars.userMajor = user_data_a[10]
+	globalVars.userMajor = user_data_a[11]
 
 	testUserName_b = "TestBlankProfile"
 	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))

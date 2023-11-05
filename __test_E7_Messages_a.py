@@ -28,7 +28,7 @@ def testMessageInboxLoggedLanding():
 	globalVars.userSettingMarketingSMS = user_data[6]
 	globalVars.userSettingAdvertisementTargeted = user_data[7]
 	globalVars.userSettingLanguage = user_data[8]
-	globalVars.userMajor = user_data[10]
+	globalVars.userMajor = user_data[11]
 
 	user_inputs = [
 		"Q",	#enter Q to quit and return to main menu
@@ -72,7 +72,7 @@ def testUnreadMessageNotifier():
 	globalVars.userSettingMarketingSMS = user_data_a[6]
 	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
 	globalVars.userSettingLanguage = user_data_a[8]
-	globalVars.userMajor = user_data_a[10]
+	globalVars.userMajor = user_data_a[11]
 
 	testUserName_b = "TestEditProfile"
 	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
@@ -128,7 +128,7 @@ def testMessageInboxHasMessages():
 	globalVars.userSettingMarketingSMS = user_data_a[6]
 	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
 	globalVars.userSettingLanguage = user_data_a[8]
-	globalVars.userMajor = user_data_a[10]
+	globalVars.userMajor = user_data_a[11]
 
 	testUserName_b = "TestEditProfile"
 	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
@@ -177,7 +177,7 @@ def testMessageInboxEmpty():
 	globalVars.userSettingMarketingSMS = user_data_a[6]
 	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
 	globalVars.userSettingLanguage = user_data_a[8]
-	globalVars.userMajor = user_data_a[10]
+	globalVars.userMajor = user_data_a[11]
 
 	user_inputs = [
 		"2",	#enter 2 to continue
@@ -193,3 +193,63 @@ def testMessageInboxEmpty():
 	
 	assert any(check_print(call, "inbox is currently empty") for call in mock_print.call_args_list)
 
+def testMessageReply():
+	from messageFunctions import replyMessagePrompt
+	testUserName = "testBot"
+	testPassword = "Password123$"
+	fName = "Test"
+	lName = "Bot"
+	testMajor = "Testing"
+	testUniversity = "University of Testing"
+	cursor.execute("""INSERT INTO users (username, password, firstName, lastName, userUniversity, userMajor) VALUES (?, ?, ?, ?, ?, ?)""",(testUserName, testPassword, fName, lName, testUniversity, testMajor))
+	conn.commit()
+
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	testUserName_b = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
+	# Retrieve test user data from the database
+	user_data_b = cursor.fetchone()
+
+	subject = "whatever"
+	message= "im almost done"
+	cursor.execute("""INSERT INTO messages (senderUserID, recieverUserID, subject, message) VALUES (?, ?, ?, ?)""",(user_data_a[0], user_data_b[0], subject, message))
+	conn.commit()
+
+	user_inputs = [
+		"bloop", #enter subject
+		"i am tired lol", #enter message
+		"2", #2 to continue
+		"Q", #Q to quit login home page
+		"Q", #Q to exit program
+	]
+
+	#test function with mocked data
+	with patch('builtins.input', side_effect=user_inputs):
+		with patch('builtins.print') as mock_print:
+			try:
+				replyMessagePrompt(user_data_b[0])
+			except StopIteration:
+				pass
+
+	assert any(check_print(call, "Message Sent") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE userID=? AND username=?",(globalVars.userID, globalVars.username))
+	cursor.execute("DELETE FROM messages WHERE senderUserID=? AND recieverUserID=?",(user_data_a[0], user_data_b[0]))
+	cursor.execute("DELETE FROM messages WHERE senderUserID=? AND recieverUserID=?",(user_data_b[0], user_data_a[0]))
+	conn.commit()
