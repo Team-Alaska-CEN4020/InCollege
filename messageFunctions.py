@@ -5,7 +5,7 @@ import time
 
 def messageInbox(userID):
     loopBreak = True
-    cursor.execute("SELECT m.messageID, m.isUnread, u.firstName, m.subject, m.message FROM messages m JOIN users u ON m.senderUserID = u.userID WHERE m.recieverUserID = ? ORDER BY m.messageID ASC", (userID,))
+    cursor.execute("SELECT m.messageID, m.isUnread, u.firstName, m.subject, m.message, m.senderUserID FROM messages m JOIN users u ON m.senderUserID = u.userID WHERE m.recieverUserID = ? ORDER BY m.messageID ASC", (userID,))
 
     results = cursor.fetchall()
 
@@ -45,6 +45,7 @@ def messageInbox(userID):
                     sender_name = selected_message[2]
                     subject = selected_message[3]
                     message = selected_message[4]
+                    recievedFromID= selected_message[5]
                     
                 
                     print(f"Sender: {sender_name}\nSubject: {subject}")
@@ -54,7 +55,7 @@ def messageInbox(userID):
                 
                 mInput = int(input("Type 1 to reply or 0 to return to original menu: "))
                 if mInput == 1:
-                    replyMessagePrompt()
+                    replyMessagePrompt(recievedFromID)
                 elif mInput == 0:
                     loopBreak = False
 
@@ -102,6 +103,14 @@ def sendMessagePrompt (friends):
 
 def sendMessage(rec, sub, mes):
     cursor.execute("INSERT INTO messages (senderUserID, recieverUserID, subject, message) VALUES (?,?,?,?)",(globalVars.userID, rec, sub, mes))
+    conn.commit()
 
-def replyMessagePrompt():
-    print("replying now")
+def replyMessagePrompt(recID):
+    print(recID)
+    subject = input("Enter the subject line of your message: \n")
+    message = input("Enter your message (do not use enter): \n")
+    
+    print("Sending Message Now")
+    sendMessage(recID, subject, message)
+    time.sleep(3)
+    print("Message Sent")
