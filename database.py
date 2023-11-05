@@ -61,3 +61,5 @@ def getFriendsList(userID):
     else:
         for friend in friends:
             print(f"- {friend[0]}")
+    friendsList = [friend[0] for friend in friends]    
+    return friendsList

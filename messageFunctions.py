@@ -21,8 +21,8 @@ def messageInbox(userID):
         userInput = input("Type 1 to type a new message or 2 to check your inbox: ")
         if userInput == '1':
             spacer()
-            print("Creating a message Under construction")
-            getFriendsList(globalVars.userID)
+            friends = getFriendsList(globalVars.userID)
+            sendMessagePrompt(friends)
         elif userInput == '2':
             #check if there are any messages
             if not results:
@@ -75,8 +75,33 @@ def checkUnreadStatus(userID):
     else:
         return
 
-def sendMessagePrompt ():
-    print("take in stuff")
+def sendMessagePrompt (friends):
+    reciever = input("Username of who you would like to send it to: ")
+    
+    #debug
+    print("Debug - Friends List:", friends)
+    print("Debug - Reciever:", reciever)
+    print("Debug - User Tier:", globalVars.userTier)
 
-def sendMessage():
-    print("do stuff with inputs")
+    if reciever not in friends and globalVars.userTier == 0: #normal users check
+        print("Debug - Inside normal user check")
+        print("Unable to send a message to that user")
+        time.sleep(1)
+        print("Try asking them to be friends first!")
+        time.sleep(1)
+        return
+    elif globalVars.userTier == 1: #plus member check
+        print("Debug - Inside plus member check")
+        cursor.execute("SELECT userID FROM users WHERE username =?",(reciever,))
+        results = cursor.fetchone()
+        if not results:
+            print("Sorry, no such user found. Please Try Again")
+            time.sleep(2)
+            return
+    print("Debug - Proceeding to subject input")
+    subject = input("Enter the subject line of your message: \n")
+    message = input("Enter your message (do not use enter): \n")
+    sendMessage(reciever, subject, message)
+
+def sendMessage(rec, sub, mes):
+        print("sending message")

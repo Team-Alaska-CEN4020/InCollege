@@ -123,7 +123,8 @@ def UserLogin():
                 globalVars.userSettingMarketingSMS = user_data[6]
                 globalVars.userSettingAdvertisementTargeted = user_data[7]
                 globalVars.userSettingLanguage = user_data[8]
-                globalVars.userMajor = user_data[10]
+                globalVars.userMajor = user_data[11]
+                globalVars.userTier = user_data[12]
 
                 userHome()
             else:
