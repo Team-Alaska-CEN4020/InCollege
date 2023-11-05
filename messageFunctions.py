@@ -98,10 +98,15 @@ def sendMessagePrompt (friends):
             print("Sorry, no such user found. Please Try Again")
             time.sleep(2)
             return
+        recID = results[0]
     print("Debug - Proceeding to subject input")
     subject = input("Enter the subject line of your message: \n")
     message = input("Enter your message (do not use enter): \n")
-    sendMessage(reciever, subject, message)
+    
+    print("Sending Message Now")
+    sendMessage(recID, subject, message)
+    time.sleep(3)
+    print("Message Sent")
 
 def sendMessage(rec, sub, mes):
-        print("sending message")
+    cursor.execute("INSERT INTO messages (senderUserID, recieverUserID, subject, message) VALUES (?,?,?,?)",(globalVars.userID, rec, sub, mes))
