@@ -49,17 +49,20 @@ def updateFriendDisconnect(friendID):
 def getFriendsList(userID):
     import time
     print("Friends List: ")
+    friends = []
     try:
         cursor.execute("SELECT u.username FROM users AS u JOIN friends AS f ON u.userID = f.friendUserID WHERE f.userID = ? and f.friendshipStatus = 1 and f.isDeleted = 0",(userID,))
         friends = cursor.fetchall()    
     except Exception as e:
         print(f"Error occurred while finding friends: {e}")
+    
     if not friends:
         print("It looks like you havn't made any friends yet.")
         time.sleep(2)
-        return
+        return []
     else:
         for friend in friends:
             print(f"- {friend[0]}")
-    friendsList = [friend[0] for friend in friends] or []
+
+    friendsList = [friend[0] for friend in friends]
     return friendsList

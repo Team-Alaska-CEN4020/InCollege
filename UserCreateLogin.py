@@ -158,6 +158,6 @@ def userTierSelect():
 
         # update user record for tier
         cursor.execute ("UPDATE users SET userTier = ?, subscriptionDate = ? WHERE username = ?",(selection, subDate, globalVars.username))
-        conn.commit
+        conn.commit()
 
         return selection

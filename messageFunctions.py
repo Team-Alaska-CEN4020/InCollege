@@ -78,6 +78,7 @@ def checkUnreadStatus(userID):
 
 def sendMessagePrompt (friends):
     receiver = input("Username of who you would like to send it to: ")
+    print(f"tier: {globalVars.userTier}")
     if receiver not in friends and globalVars.userTier == 0: #normal users check
         print("Unable to send a message to that user")
         time.sleep(1)
@@ -92,7 +93,7 @@ def sendMessagePrompt (friends):
             time.sleep(2)
             return
         recID = results[0]
-    cursor.execute("SELECT userID FROM users WHERE username =?",(reciever,))
+    cursor.execute("SELECT userID FROM users WHERE username =?",(receiver,))
     results = cursor.fetchone()
     if not results:
         print("Sorry, no such user found. Please Try Again")
@@ -112,7 +113,6 @@ def sendMessage(rec, sub, mes):
     conn.commit()
 
 def replyMessagePrompt(recID):
-    print(recID)
     subject = input("Enter the subject line of your message: \n")
     message = input("Enter your message (do not use enter): \n")
     
