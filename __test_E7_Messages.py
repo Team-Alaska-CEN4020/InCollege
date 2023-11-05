@@ -244,6 +244,9 @@ def testSendMessageStandard():
 	globalVars.userMajor = user_data_a[10]
 
 	testUserName_b = "TestEditProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
+	# Retrieve test user data from the database
+	user_data_b = cursor.fetchone()
 	user_inputs = [
 		testUserName_b,	#enter username of friend
 		"Bloop",	#enter subject
@@ -263,4 +266,8 @@ def testSendMessageStandard():
 			except StopIteration:
 				pass
 
-	assert any(check_print(call, "Incollege Plus Member") for call in mock_print.call_args_list)
+	assert any(check_print(call, "Message Sent") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM messages WHERE senderUserID=? AND recieverUserID=?",(globalVars.userID, user_data_b[0]))
+	conn.commit()
