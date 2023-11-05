@@ -44,12 +44,10 @@ def userSearchName():
     else:
         foundID = user[0]
         print(firstName + " " + lastName + " is an inCollege member!")
-    
-    if globalVars.isLoggedIn == True and globalVars.userID != user[0]:
-        uInput = input("Would you like to add them as a friend? (Y/N): ")
+        if globalVars.isLoggedIn == True and globalVars.userID != user[0]:
+            uInput = input("Would you like to add them as a friend? (Y/N): ")
         if uInput.upper() == 'Y':
             friendRequest(foundID)
-
     time.sleep(3)
 
 def userSearchUni():
