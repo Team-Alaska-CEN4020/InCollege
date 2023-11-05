@@ -193,3 +193,33 @@ def testMessageInboxEmpty():
 				pass
 	
 	assert any(check_print(call, "inbox is currently empty") for call in mock_print.call_args_list)
+
+def tesNewUserImprovement():
+	from UserCreateLogin import createUser
+
+	testUserName = "testDummy"
+	user_inputs = [
+		testUserName,	#enter username
+		"Password123$",	#enter password
+		"Test",	#enter first name
+		"Dummy",	#enter last name
+		"Testing",	#enter major
+		"University of Dummies",	#enter university
+		"Y",	#want to become plus user
+		"Q",	#Q to quit login home page
+		"Q",	#Q to exit program
+	]
+
+	#test function with mocked data
+	with patch('builtins.input', side_effect=user_inputs):
+		with patch('builtins.print') as mock_print:
+			try:
+				createUser()
+			except StopIteration:
+				pass
+
+	assert any(check_print(call, "Incollege Plus Member") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE username=?",(testUserName))
+	conn.commit()
