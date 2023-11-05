@@ -72,10 +72,11 @@ def createUser():
     defaultSMS = True
     defaultAdTarget = True
     defaultLanguage = 0
-  
+
     cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor , userUniversity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni))
     conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
     print("Congratulations! Your account has been successfully registered.")
+
     
     #updating global user variables
     globalVars.isLoggedIn = True
@@ -84,7 +85,9 @@ def createUser():
     globalVars.userLastName = lastName
     globalVars.userMajor = major
     globalVars.userUniversity = uni
-    
+    #user tier functionality
+    globalVars.userTier = userTierSelect()
+
     userHome()
 
 
@@ -121,10 +124,40 @@ def UserLogin():
                 globalVars.userSettingMarketingSMS = user_data[6]
                 globalVars.userSettingAdvertisementTargeted = user_data[7]
                 globalVars.userSettingLanguage = user_data[8]
-                globalVars.userMajor = user_data[10]
+                globalVars.userMajor = user_data[11]
+                globalVars.userTier = user_data[12]
 
                 userHome()
             else:
                 print("Incorrect username/password. Please try again.")
                 continue
         break
+
+def userTierSelect():
+    from billing import creditCardSetup
+    from datetime import date
+    selection = None
+    print("Would you like to become an InCollege Plus Member?")
+    print("For only $10 a month you get the following:")
+    # Plus member benifit list
+    print("*\tForge new connections with the ability to message")
+    print(" \tany member without having to friend them.")
+
+    while selection == None:
+        userInput = input("Would you like to become a Plus Member? (y/n): ")
+        subDate = date.today()
+        if userInput.upper() == 'Y':
+            creditCardSetup() #placeholder
+            selection = 1
+        elif userInput.upper() == 'N':
+            selection = 0
+            subDate = None
+        else:
+            print("Invalid Option. Try Again")
+            time.sleep(1)
+
+        # update user record for tier
+        cursor.execute ("UPDATE users SET userTier = ?, subscriptionDate = ? WHERE username = ?",(selection, subDate, globalVars.username))
+        conn.commit()
+
+        return selection

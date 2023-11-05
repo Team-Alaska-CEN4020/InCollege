@@ -32,10 +32,11 @@ def userSearch():
 def userSearchName():
     spacer()
     header('Search By Name')
-    firstName = input("\nEnter a first name to search: ").capitalize()
-    lastName = input("Enter a last name: ").capitalize()
+    firstName = input("\nEnter a first name to search: ")
+    lastName = input("Enter a last name: ")
+    #do not use .capitalize(), it converts a last name such as BlankProfile to Blankprofile
     
-    cursor.execute("SELECT userID, firstName, LastName FROM users WHERE firstName=? AND lastName=? AND isDeleted=0",(firstName, lastName))
+    cursor.execute("SELECT userID, firstName, lastName FROM users WHERE firstName=? AND lastName=? AND isDeleted=0",(firstName, lastName))
     user = cursor.fetchone()
     print("\n")
     header('Search Results')
@@ -44,12 +45,10 @@ def userSearchName():
     else:
         foundID = user[0]
         print(firstName + " " + lastName + " is an inCollege member!")
-    
-    if globalVars.isLoggedIn == True and globalVars.userID != user[0]:
-        uInput = input("Would you like to add them as a friend? (Y/N): ")
-        if uInput.upper() == 'Y':
-            friendRequest(foundID)
-
+        if globalVars.isLoggedIn == True and globalVars.userID != user[0]:
+            uInput = input("Would you like to add them as a friend? (Y/N): ")
+            if uInput.upper() == 'Y':
+                friendRequest(foundID)
     time.sleep(3)
 
 def userSearchUni():
@@ -99,6 +98,7 @@ def userSearchMajor():
 
     resultIDs = {}
     for row in results:
+        resultIDs[row[0]] = row
         print("ID:        \t", row[0])
         print("First Name:\t", row[1])
         print("Last Name: \t", row[2])

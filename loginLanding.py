@@ -5,10 +5,11 @@ from UI import *
 from friendFunctions import *
 from userSearch import *
 from jobFunctions import *
+from profileFunctions import createProfile, displayProfile, editProfile
+from messageFunctions import *
+
 #conn = sqlite3.connect('your_database.db')
 #cursor = conn.cursor()  # Create a cursor object to execute SQL commands
-from profileFunctions import createProfile, displayProfile, editProfile
-
 
 def userHome():
     exitInput = 0
@@ -20,7 +21,10 @@ def userHome():
             cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
             conn.commit()
             time.sleep(3)
+            
         spacer()
+        checkUnreadStatusLogin(globalVars.userID)
+        
         header(f"Welcome {globalVars.userFirstName}!")
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")
@@ -30,6 +34,7 @@ def userHome():
         print("(5)  Show My Network")
         print("(6)  Send Friend Request")
         print("(7)  Pending Friend Requests")
+        print("(8)  Message Inbox")
 
         uInput = input("Input Selection (Q to quit and return): ")
 
@@ -48,6 +53,8 @@ def userHome():
             userSearch()
         elif uInput == '7':
             viewFriendRequests()
+        elif uInput == '8':
+            messageInbox(globalVars.userID)
         elif uInput.upper() == 'Q':
             exitInput=1
             spacer()
