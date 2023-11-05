@@ -32,10 +32,11 @@ def userSearch():
 def userSearchName():
     spacer()
     header('Search By Name')
-    firstName = input("\nEnter a first name to search: ").capitalize()
-    lastName = input("Enter a last name: ").capitalize()
+    firstName = input("\nEnter a first name to search: ")
+    lastName = input("Enter a last name: ")
+    #do not use .capitalize(), it converts a last name such as BlankProfile to Blankprofile
     
-    cursor.execute("SELECT userID, firstName, LastName FROM users WHERE firstName=? AND lastName=? AND isDeleted=0",(firstName, lastName))
+    cursor.execute("SELECT userID, firstName, lastName FROM users WHERE firstName=? AND lastName=? AND isDeleted=0",(firstName, lastName))
     user = cursor.fetchone()
     print("\n")
     header('Search Results')
@@ -97,6 +98,7 @@ def userSearchMajor():
 
     resultIDs = {}
     for row in results:
+        resultIDs[row[0]] = row
         print("ID:        \t", row[0])
         print("First Name:\t", row[1])
         print("Last Name: \t", row[2])

@@ -223,3 +223,44 @@ def tesNewUserImprovement():
 	#tear down
 	cursor.execute("DELETE FROM users WHERE username=?",(testUserName))
 	conn.commit()
+
+def testSendMessageStandard():
+	from messageFunctions import sendMessagePrompt
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[10]
+
+	testUserName_b = "TestEditProfile"
+	user_inputs = [
+		testUserName_b,	#enter username of friend
+		"Bloop",	#enter subject
+		"I am sleepy",	#enter message
+		"2",	#continue
+		"0",	#exit message Inbox
+		"Q",	#Q to quit login home page
+		"Q",	#Q to exit program
+	]
+
+	#test function with mocked data
+	with patch('builtins.input', side_effect=user_inputs):
+		with patch('builtins.print') as mock_print:
+			try:
+				friends = getFriendsList(globalVars.userID)
+				sendMessagePrompt(friends)
+			except StopIteration:
+				pass
+
+	assert any(check_print(call, "Incollege Plus Member") for call in mock_print.call_args_list)
