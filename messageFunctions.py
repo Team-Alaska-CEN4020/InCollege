@@ -54,7 +54,7 @@ def messageInbox(userID):
                 
                 mInput = int(input("Type 1 to reply or 0 to return to original menu: "))
                 if mInput == 1:
-                    print("Reply function is under construction")
+                    replyMessagePrompt()
                 elif mInput == 0:
                     loopBreak = False
 
@@ -77,21 +77,14 @@ def checkUnreadStatus(userID):
 
 def sendMessagePrompt (friends):
     reciever = input("Username of who you would like to send it to: ")
-    
-    #debug
-    print("Debug - Friends List:", friends)
-    print("Debug - Reciever:", reciever)
-    print("Debug - User Tier:", globalVars.userTier)
 
     if reciever not in friends and globalVars.userTier == 0: #normal users check
-        print("Debug - Inside normal user check")
         print("Unable to send a message to that user")
         time.sleep(1)
         print("Try asking them to be friends first!")
         time.sleep(1)
         return
     elif globalVars.userTier == 1: #plus member check
-        print("Debug - Inside plus member check")
         cursor.execute("SELECT userID FROM users WHERE username =?",(reciever,))
         results = cursor.fetchone()
         if not results:
@@ -99,7 +92,6 @@ def sendMessagePrompt (friends):
             time.sleep(2)
             return
         recID = results[0]
-    print("Debug - Proceeding to subject input")
     subject = input("Enter the subject line of your message: \n")
     message = input("Enter your message (do not use enter): \n")
     
@@ -110,3 +102,6 @@ def sendMessagePrompt (friends):
 
 def sendMessage(rec, sub, mes):
     cursor.execute("INSERT INTO messages (senderUserID, recieverUserID, subject, message) VALUES (?,?,?,?)",(globalVars.userID, rec, sub, mes))
+
+def replyMessagePrompt():
+    print("replying now")
