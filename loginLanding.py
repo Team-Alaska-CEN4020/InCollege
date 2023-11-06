@@ -35,6 +35,7 @@ def userHome():
         print("(6)  Send Friend Request")
         print("(7)  Pending Friend Requests")
         print("(8)  Message Inbox")
+        print("(9)  View Your Notifications")
 
         uInput = input("Input Selection (Q to quit and return): ")
 
@@ -55,6 +56,8 @@ def userHome():
             viewFriendRequests()
         elif uInput == '8':
             messageInbox(globalVars.userID)
+        elif uInput == '9':
+            ViewYourNotifications()
         elif uInput.upper() == 'Q':
             exitInput=1
             spacer()
@@ -146,3 +149,7 @@ def learnASkill():
         elif cont.lower() != "yes":
             loopBreaker1 = False
             exit(0)
+
+
+def ViewYourNotifications():
+    pass
