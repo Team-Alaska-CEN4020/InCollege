@@ -28,24 +28,7 @@ def userHome():
         
         header(f"Welcome {globalVars.userFirstName}!")
 
-        print("Take a look at what you missed!")
-
-        def ViewYourNotifications():
-            NotifyNeedToApply()
-            print("\n")
-            NofifyNoProfile()
-            print("\n")
-            NotifyUnreadMessage()
-            print("\n")
-            NotifyNewStudentJoin()
-            print("\n")
-            NotifyAppliedJobCount()
-            print("\n")
-            NotifyNewJobPostings()
-            print("\n")
-            NotifyJobDeleted()
-            print("\n")
-        
+        print("Here's a quick look at what you missed!")
         ViewYourNotifications()
 
         print("Please select the number of the service you would like to use:")

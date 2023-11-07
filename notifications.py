@@ -25,3 +25,19 @@ def NotifyNewJobPostings():
 def NotifyJobDeleted():
     print("TODO: when in the jobs section, user sees any jobs that have been deleted since last login")
     print("A job that you applied for has been deleted <Job Title>")
+
+def ViewYourNotifications():
+    NotifyNeedToApply()
+    print("\n")
+    NofifyNoProfile()
+    print("\n")
+    NotifyUnreadMessage()
+    print("\n")
+    NotifyNewStudentJoin()
+    print("\n")
+    NotifyAppliedJobCount()
+    print("\n")
+    NotifyNewJobPostings()
+    print("\n")
+    NotifyJobDeleted()
+    print("\n")
