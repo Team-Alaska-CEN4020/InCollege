@@ -7,6 +7,7 @@ from userSearch import *
 from jobFunctions import *
 from profileFunctions import createProfile, displayProfile, editProfile
 from messageFunctions import *
+from notifications import *
 
 #conn = sqlite3.connect('your_database.db')
 #cursor = conn.cursor()  # Create a cursor object to execute SQL commands
@@ -26,6 +27,27 @@ def userHome():
         checkUnreadStatusLogin(globalVars.userID)
         
         header(f"Welcome {globalVars.userFirstName}!")
+
+        print("Take a look at what you missed!")
+
+        def ViewYourNotifications():
+            NotifyNeedToApply()
+            print("\n")
+            NofifyNoProfile()
+            print("\n")
+            NotifyUnreadMessage()
+            print("\n")
+            NotifyNewStudentJoin()
+            print("\n")
+            NotifyAppliedJobCount()
+            print("\n")
+            NotifyNewJobPostings()
+            print("\n")
+            NotifyJobDeleted()
+            print("\n")
+        
+        ViewYourNotifications()
+
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")
         print("(2)  Search for a job / internship")
@@ -35,7 +57,7 @@ def userHome():
         print("(6)  Send Friend Request")
         print("(7)  Pending Friend Requests")
         print("(8)  Message Inbox")
-        print("(9)  View Your Notifications")
+        
 
         uInput = input("Input Selection (Q to quit and return): ")
 
@@ -149,7 +171,3 @@ def learnASkill():
         elif cont.lower() != "yes":
             loopBreaker1 = False
             exit(0)
-
-
-def ViewYourNotifications():
-    pass
