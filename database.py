@@ -66,3 +66,14 @@ def getFriendsList(userID):
 
     friendsList = [friend[0] for friend in friends]
     return friendsList
+
+def dateCompare(date1In, date2In):
+    import datetime
+    format = "%Y-%m-%d %H:%M:%S.%f"
+    
+    #make the dates comparable
+    date1 = datetime.strptime(date1In, format)
+    date2 = datetime.strptime(date2In, format)
+
+    #check if date1 is older than date2, 1 if true, 0 if false
+    return 1 if date1 < date2 else 0
