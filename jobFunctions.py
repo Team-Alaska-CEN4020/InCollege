@@ -15,7 +15,7 @@ def searchPostJob():
 		print("(3) Jobs Applied To")
 		print("(4) Jobs Not Applied To")
 		print("(5) Jobs Saved")
-		print("(6) Delete a job poster. ")
+		print("(6) Delete a job post. ")
 
 		uInput = input("Input Selection (Q to quit): ")
 		if  uInput == '1':
@@ -51,7 +51,7 @@ def searchPostJob():
 				print("Invalid Option. Exiting job search")
 
 		elif uInput == '6':
-			deleteJobPoster()
+			deleteJobPost()
 			time.sleep(2)
 
 		elif uInput == 'Q':
@@ -81,22 +81,22 @@ def createJob():
 		employerName = input("Enter the name of the company for the job: ")
 		location = input("Enter the location for the job: ")
 		salary = float(input("Enter the yearly salary for the job: "))
+		datePosted = datetime.now()
 
-		cursor.execute("INSERT INTO jobs (posterID, jobTitle, jobDescription, employer, location, salary, posterFirstName, posterLastName) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-					(globalVars.userID, title, description, employerName, location, salary, globalVars.userFirstName, globalVars.userLastName))
+		cursor.execute("INSERT INTO jobs (posterID, jobTitle, jobDescription, employer, location, salary, posterFirstName, posterLastName, datePosted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					(globalVars.userID, title, description, employerName, location, salary, globalVars.userFirstName, globalVars.userLastName, datePosted))
 		conn.commit()
 
 		print("Your job has been posted to the job Board!")
 		continuePosting = input("Would you like to post more jobs? (Y/N): ")
 		if continuePosting.upper() != 'Y':
-			time.sleep(2)
 			loopBreaker = False
 		else: 
 			continue
 
 #this functions allows users to delete a job they they posted
-def deleteJobPoster():
-	cursor.execute("SELECT * FROM jobs")
+def deleteJobPost():
+	cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID,))
 	jobData = cursor.fetchall()
 	header("Current jobs posted: ")
 	for job in jobData:
@@ -108,23 +108,19 @@ def deleteJobPoster():
 	if not userPostedJob:
 		print("You are not the owner of this job post. Please choose a job you posted to delete.")
 		return
-	cursor.execute("SELECT * FROM applicant WHERE jobID = ?", (jobIDDel))
-	applicantData = cursor.fetchall()
-	for applicant in applicantData:
-		cursor.execute("INSERT INTO deletedJobApplicants (userID, jobID, jobTitle) VALUES (?, ?, ?)",
-					(applicant[0], applicant[1], userPostedJob[2]))
-		conn.commit()
+	deleteDate = datetime.now()
+	cursor.execute("UPDATE applicant SET isDeleted = 1, dateDeleted = ? WHERE jobID = ?",(deleteDate, jobIDDel,))
+	conn.commit()
 
-	cursor.execute('DELETE FROM jobs WHERE posterID = ? and jobID = ?', (globalVars.userID, jobIDDel))
+	cursor.execute("UPDATE jobs SET isDeleted = 1, dateDeleted = ? WHERE jobID = ?", (deleteDate, jobIDDel,))
 	conn.commit()
-	cursor.execute('DELETE FROM applicant WHERE jobID = ?', (jobIDDel,))
-	conn.commit()
-	cursor.execute('DELETE FROM savedJobs WHERE jobID = ?', (jobIDDel,))
+
+	cursor.execute("UPDATE savedJobs SET isDeleted = 1, dateDeleted = ? WHERE jobID = ?", (deleteDate, jobIDDel,))
 	conn.commit()
 	print("The job post has been deleted. ")
 
 def showAllJobs():
-	query = f"SELECT jobID, jobTitle FROM jobs"
+	query = f"SELECT jobID, jobTitle FROM jobs WHERE isDeleted = 0"
 
 	cursor.execute(query)
 	titles = cursor.fetchall()
@@ -208,9 +204,9 @@ def jobApplication(job_ID):
 		else: 
 			print("Please enter your starting date in the correct format (mm/dd/yyyy).")
 	whyApply = input("Provide a paragraph explaining why you think that you would be a great fit for this position: ")
-
-	cursor.execute("INSERT INTO applicant (userID, jobID, firstName, lastName, gradDate, startDate, paragraph) VALUES (?, ?, ?, ?, ?, ?, ?)",
-					(globalVars.userID, job_ID, globalVars.userFirstName, globalVars.userLastName, gradDate, startDate, whyApply))
+	applicationDate = datetime.now()
+	cursor.execute("INSERT INTO applicant (userID, jobID, firstName, lastName, gradDate, startDate, paragraph, dateApplied) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+					(globalVars.userID, job_ID, globalVars.userFirstName, globalVars.userLastName, gradDate, startDate, whyApply, applicationDate))
 	conn.commit()
 
 	print("Job has been successfully applied to!")
@@ -249,7 +245,7 @@ def saveJob(user_ID, job_ID, job_Title):
 		conn.commit()
 
 def displaySavedJobs(user_ID):
-	cursor.execute('SELECT jobTitle FROM savedJobs WHERE userID = ?', (user_ID,))
+	cursor.execute('SELECT jobTitle FROM savedJobs WHERE userID = ? and isDeleted = 0', (user_ID,))
 	saved_jobs = cursor.fetchall()
 	if saved_jobs:
 		for i, title in enumerate(saved_jobs, start=1):
@@ -267,7 +263,7 @@ def applications(user_id):
 			SELECT jobs.jobTitle
 			FROM applicant
 			INNER JOIN jobs ON applicant.jobID = jobs.jobID
-			WHERE applicant.userID = ?"""
+			WHERE applicant.userID = ? AND applicant.isDeleted = 0"""
 	cursor.execute(query, (user_id,))
 	conn.commit()
 
@@ -288,7 +284,7 @@ def noApplications(user_id):
 			) AND jobs.jobID IN (
 				SELECT jobID
 				FROM jobs
-			)
+			) AND jobs.isDeleted = 0
 		"""
 	
 	cursor.execute(query, (user_id,))
