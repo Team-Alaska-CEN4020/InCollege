@@ -9,20 +9,15 @@ from profileFunctions import createProfile, displayProfile, editProfile
 from messageFunctions import *
 from notifications import *
 
-#conn = sqlite3.connect('your_database.db')
-#cursor = conn.cursor()  # Create a cursor object to execute SQL commands
-
 def userHome():
     exitInput = 0
     while exitInput == 0:
-        #notification panels
         spacer()
-        
-        
         header(f"Welcome {globalVars.userFirstName}!")
-
+        # notification panels
         LoginNotificationPanel()
 
+        # menu
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")
         print("(2)  Search for a job / internship")
@@ -33,11 +28,9 @@ def userHome():
         print("(7)  Pending Friend Requests")
         print("(8)  Message Inbox")
         
-
         uInput = input("Input Selection (Q to quit and return): ")
 
         if uInput == '1':  
-            # UI edited for Epic-5
             userProfile()
         elif uInput == '2':
             searchPostJob()
@@ -53,16 +46,12 @@ def userHome():
             viewFriendRequests()
         elif uInput == '8':
             messageInbox(globalVars.userID)
-        elif uInput == '9':
-            ViewYourNotifications()
         elif uInput.upper() == 'Q':
             exitInput=1
             spacer()
         else:
             print("Invalid Option. Try Again")
             spacer()
-
-
 
 
 # Function to create a User Profile as a new user or existing user
