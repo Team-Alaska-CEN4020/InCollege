@@ -166,3 +166,75 @@ def testCreateJob():
 	#tear down
 	cursor.execute("DELETE FROM jobs WHERE posterID=? AND jobTitle=?",(globalVars.userID, title,))
 	conn.commit()
+
+
+def testApplicantTable():
+	from datetime import datetime
+	from jobFunctions import jobApplication
+
+	testUserName_a = "TestEditProfile" #test job poster
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+
+	title="test job"
+	description="test description"
+	employerName="Test employer"
+	location="test location"
+	salary= 67000.0
+	datePosted=datetime.now()
+	cursor.execute("INSERT INTO jobs (posterID, jobTitle, jobDescription, employer, location, salary, posterFirstName, posterLastName, datePosted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					(user_data_a[0], title, description, employerName, location, salary, user_data_a[3], user_data_a[4], datePosted))
+	conn.commit()
+
+	testUserName_b = "TestBlankProfile" #test applicant
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
+	# Retrieve test user data from the database
+	user_data_b = cursor.fetchone()
+
+	# Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_b[0]
+	globalVars.username = user_data_b[1]
+	globalVars.userFirstName = user_data_b[3]
+	globalVars.userLastName = user_data_b[4]
+	globalVars.userSettingMarketingEmail = user_data_b[5]
+	globalVars.userSettingMarketingSMS = user_data_b[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_b[7]
+	globalVars.userSettingLanguage = user_data_b[8]
+	globalVars.userMajor = user_data_b[11]
+
+	gradDate="05/15/2024"
+	startDate="11/25/2023"
+	whyApply="Because I can lol"
+	user_inputs = [
+		gradDate, #enter graduation date
+		startDate, #enter date you can start working
+		whyApply, #enter why you want to apply
+	]
+
+	cursor.execute("SELECT jobID FROM jobs WHERE posterID=? AND jobTitle=?", (user_data_a[0],title,))
+	testJobID = cursor.fetchone()[0]
+
+	#test function with mocked data
+	with patch('builtins.input', side_effect=user_inputs):
+		try:
+			jobApplication(testJobID)	
+		except StopIteration:
+			pass
+
+	#testLoginDate only stores the current date in YYYY-MM-DD format without the time
+	testJobAppliedDate = datetime.now().strftime("%Y-%m-%d")
+
+	cursor.execute("SELECT dateApplied FROM applicant WHERE userID = ? AND jobID = ?",(globalVars.userID, testJobID,))
+	jobAppliedDate = cursor.fetchone()[0][:10] #[:10] allows the loginDate to only store the first 10 characters, i.e.,YYYY-MM-DD
+
+	# Assert that testLoginDate and loginDate are equal
+	assert testJobAppliedDate == jobAppliedDate, "\nJob creation dates are not equal\n"
+
+	#tear down
+	cursor.execute("DELETE FROM jobs WHERE posterID=? AND jobTitle=?",(user_data_a[0], title,))
+	cursor.execute("DELETE FROM applicant WHERE userID=? AND jobID=?",(globalVars.userID, testJobID,))
+	conn.commit()
+
+
