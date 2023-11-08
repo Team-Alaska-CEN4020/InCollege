@@ -20,6 +20,9 @@ def LoginNotificationPanel():
     checkUnreadStatusLogin(user)
     #NotifyNewStudentJoin(user, lastLogin)
 
+    header("                                       ")
+    print("")
+
 def JobsNotificationPanel():
     print("TODO: here is where all the job section related notifcations will go")
     NotifyAppliedJobCount()
