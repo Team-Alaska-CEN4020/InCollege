@@ -1,7 +1,7 @@
 import globalVars
-import time
 from UI import *
 from database import *
+from datetime import datetime, timedelta
 
 def LoginNotificationPanel():
     from messageFunctions import checkUnreadStatusLogin
@@ -15,11 +15,13 @@ def LoginNotificationPanel():
     lastLogin = result[0]
 
     # call notifications
-    #NotifyNeedToApply(user)
+    NotifyNeedToApply(user)
     #NotifyNoProfile(user)
     checkUnreadStatusLogin(user)
     #NotifyNewStudentJoin(user, lastLogin)
-
+    
+    # UI padding
+    print("")
     header("                                       ")
     print("")
 
@@ -30,8 +32,31 @@ def JobsNotificationPanel():
     NotifyJobDeleted()
 
 def NotifyNeedToApply(user):
-    print(f"TODO: alerts at login that its been >7days since user's last application {user}")
-    print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
+    try:
+        #set application age limit
+        appAgeMax = 7
+
+        #get latest apply date for user
+        cursor.execute("SELECT dateApplied FROM applicant WHERE userID = ? ORDER BY dateApplied DESC LIMIT 1", (user))
+        result = cursor.fetchone()
+
+        #check if there even is a latest date
+        if result is None:
+            return None
+        else:
+            #if there is then generate and format a date to compare against latest apply date
+            today = datetime.now()
+            appDateMax = today + timedelta(days=appAgeMax)
+            formattedDate = appDateMax.strftime("%Y-%m-%d %H:%M:%S.%f")
+
+            #check dates to see if latest apply date is older than appAgeMax
+            if dateCompare(formattedDate, result[0]) == 1:
+                print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
+            else:
+                return None
+            
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def NotifyNoProfile(user):
     # check DB if profile exists
