@@ -16,7 +16,7 @@ def LoginNotificationPanel():
 
     # call notifications
     NotifyNeedToApply(user)
-    #NotifyNoProfile(user)
+    NotifyNoProfile(user)
     checkUnreadStatusLogin(user)
     #NotifyNewStudentJoin(user, lastLogin)
     
