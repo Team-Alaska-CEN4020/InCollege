@@ -4,16 +4,31 @@ from database import *
 def LoginNotificationPanel():
     from messageFunctions import checkUnreadStatusLogin
     print("TODO: here is where all the notifications needed for the login landing will go")
-    checkUnreadStatusLogin(globalVars.userID)
+    
+    # get info on current user
+    user = globalVars.userID
+    cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (user))
+    result = cursor.fetchone()
+    lastLogin = result[0]
+
+    # call notifications
+    NotifyNeedToApply(user)
+    NotifyNoProfile(user)
+    checkUnreadStatusLogin(user)
+    NotifyNewStudentJoin(user, lastLogin)
+
 
 def JobsNotificationPanel():
     print("TODO: here is where all the job section related notifcations will go")
+    NotifyAppliedJobCount()
+    NotifyNewJobPostings()
+    NotifyJobDeleted()
 
 def NotifyNeedToApply():
     print("TODO: alerts at login that its been >7days since user's last application")
     print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
 
-def NofifyNoProfile():
+def NotifyNoProfile():
     print("TODO: alerts at login that user has no profile")
     print("Don't forget to create a profile")
 
@@ -37,10 +52,12 @@ def NotifyJobDeleted():
     print("TODO: when in the jobs section, user sees any jobs that have been deleted since last login")
     print("A job that you applied for has been deleted <Job Title>")
 
+#we dont need this anymore after discussing that there will be no page of notifications, 
+#they will simply show up at login or at arrival to jobs section
 def ViewYourNotifications():
     NotifyNeedToApply()
     print("\n")
-    NofifyNoProfile()
+    NotifyNoProfile()
     print("\n")
     NotifyUnreadMessage()
     print("\n")
