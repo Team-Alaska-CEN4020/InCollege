@@ -69,8 +69,14 @@ def NotifyNoProfile(user):
         print(f"An error occurred: {e}")
 
 def NotifyNewStudentJoin(user, lastLogin):
-    print(f"TODO: alert at login with a list of new student {user} have joined since last login {lastLogin}")
-    print("<first name> <last name> x has joined InCollege")
+    cursor.execute("SELECT firstName, lastName FROM users WHERE createDate > ? AND userID <> ?", (lastLogin, user,))
+    newUsers = cursor.fetchall()
+
+    if newUsers:
+        for user in newUsers:
+            print(f"{user[0]} {user[1]} has joined InCollege")
+    else:
+        return None
 
 def NotifyAppliedJobCount():
     print("TODO: when in the jobs section, user sees below message with x replaced with actual number")
