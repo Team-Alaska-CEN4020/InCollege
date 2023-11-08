@@ -1,3 +1,12 @@
+import globalVars
+from database import *
+
+def LoginNotificationPanel():
+    print("TODO: here is where all the notifications needed for the login landing will go")
+
+def JobsNotificationPanel():
+    print("TODO: here is where all the job section related notifcations will go")
+
 def NotifyNeedToApply():
     print("TODO: alerts at login that its been >7days since user's last application")
     print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")

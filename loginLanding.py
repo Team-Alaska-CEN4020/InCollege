@@ -15,13 +15,14 @@ from notifications import *
 def userHome():
     exitInput = 0
     while exitInput == 0:
-        cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-        userIDApplicationDel = cursor.fetchone()
-        if userIDApplicationDel:
-            print("A job you applied for has been deleted. ")
-            cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-            conn.commit()
-            time.sleep(3)
+        #commenting out as functionality has been replalced in epic 8
+        #cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+        #userIDApplicationDel = cursor.fetchone()
+        #if userIDApplicationDel:
+        #    print("A job you applied for has been deleted. ")
+        #    cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
+        #    conn.commit()
+        #    time.sleep(3)
             
         spacer()
         checkUnreadStatusLogin(globalVars.userID)
