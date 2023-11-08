@@ -1,9 +1,11 @@
 import globalVars
+from UI import *
 from database import *
 
 def LoginNotificationPanel():
     from messageFunctions import checkUnreadStatusLogin
-    print("TODO: here is where all the notifications needed for the login landing will go")
+    
+    header("Notifications:")
     
     # get info on current user
     user = globalVars.userID
@@ -28,9 +30,16 @@ def NotifyNeedToApply():
     print("TODO: alerts at login that its been >7days since user's last application")
     print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
 
-def NotifyNoProfile():
-    print("TODO: alerts at login that user has no profile")
-    print("Don't forget to create a profile")
+def NotifyNoProfile(UserID):
+    # check DB if profile exists
+    try:
+        cursor.execute("SELECT profileID FROM profiles WHERE userid=?", (UserID,))
+        result = cursor.fetchone()
+        if result is None:
+            print("Don't forget to create a profile")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 
 def NotifyUnreadMessage():
     print("TODO: alert at login that user has an unread message")
