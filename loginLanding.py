@@ -21,8 +21,7 @@ def userHome():
         
         header(f"Welcome {globalVars.userFirstName}!")
 
-        print("Here's a quick look at what you missed!")
-        ViewYourNotifications()
+        LoginNotificationPanel()
 
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")

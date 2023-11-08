@@ -5,7 +5,7 @@ from database import *
 def LoginNotificationPanel():
     from messageFunctions import checkUnreadStatusLogin
     
-    header("Notifications:")
+    header("Here's a quick look at what you missed!\n")
     
     # get info on current user
     user = globalVars.userID
