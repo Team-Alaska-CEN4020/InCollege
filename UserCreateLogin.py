@@ -127,6 +127,10 @@ def UserLogin():
                 globalVars.userMajor = user_data[11]
                 globalVars.userTier = user_data[12]
 
+                #update login dates
+                LoginDatesUpdate()
+
+                #move to logged in home menu
                 userHome()
             else:
                 print("Incorrect username/password. Please try again.")
@@ -161,3 +165,18 @@ def userTierSelect():
         conn.commit()
 
         return selection
+
+def LoginDatesUpdate():
+    import time
+    
+    #get the user's old "current" date
+    cursor.execute("SELECT currentLoginDate FROM users WHERE userID = ?",(globalVars.userID,))
+    result = cursor.fetchone()
+    oldDate = result[0]
+    
+    #set the new current date
+    newDate = datetime.now()
+
+    #place old "current" into "last" and new "current" into "current"
+    cursor.execute("UPDATE users SET currentLoginDate = ?, lastLoginDate = ? WHERE userID = ?", (newDate, oldDate, globalVars.userID))
+    conn.commit()
