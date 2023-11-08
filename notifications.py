@@ -18,7 +18,7 @@ def LoginNotificationPanel():
     NotifyNeedToApply(user)
     NotifyNoProfile(user)
     checkUnreadStatusLogin(user)
-    #NotifyNewStudentJoin(user, lastLogin)
+    NotifyNewStudentJoin(user, lastLogin)
     
     # UI padding
     print("")
