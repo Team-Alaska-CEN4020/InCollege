@@ -63,7 +63,7 @@ def checkUnreadStatusLogin(userID):
     cursor.execute("SELECT COUNT(*) as unreadMessages FROM messages WHERE isUnread = 1 AND recieverUserID = ?", (userID,))
     result = cursor.fetchone()
     if result[0] >= 1:
-        print("***Please check your inbox! You have an unread message.***")
+        print("You have messages waiting for you")
         time.sleep(2)
     else:
         return

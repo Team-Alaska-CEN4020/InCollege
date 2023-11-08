@@ -2,7 +2,9 @@ import globalVars
 from database import *
 
 def LoginNotificationPanel():
+    from messageFunctions import checkUnreadStatusLogin
     print("TODO: here is where all the notifications needed for the login landing will go")
+    checkUnreadStatusLogin(globalVars.userID)
 
 def JobsNotificationPanel():
     print("TODO: here is where all the job section related notifcations will go")
