@@ -110,8 +110,14 @@ def NotifyNewJobPostings(user, lastLogin):
     
 
 def NotifyJobDeleted():
-    print("TODO: when in the jobs section, user sees any jobs that have been deleted since last login")
-    print("A job that you applied for has been deleted <Job Title>")
+    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 0 AND datePosted > ? AND posterID <> ?", (lastLogin,user,))
+    deleted_job = cursor.fetchall()
+
+    if deleted_job:
+        for jobs in deleted_job:
+            print(f"A new job, {jobs[0]} has been posted")
+    else:
+        return None
 
 
 def notify_deleted_job():
