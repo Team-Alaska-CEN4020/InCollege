@@ -26,10 +26,11 @@ def LoginNotificationPanel():
     print("")
 
 def JobsNotificationPanel():
-    print("TODO: here is where all the job section related notifcations will go")
+    #print("TODO: here is where all the job section related notifcations will go")
     NotifyAppliedJobCount()
     NotifyNewJobPostings()
     NotifyJobDeleted()
+    send_notification()
 
 def NotifyNeedToApply(user):
     try:
@@ -89,3 +90,33 @@ def NotifyNewJobPostings():
 def NotifyJobDeleted():
     print("TODO: when in the jobs section, user sees any jobs that have been deleted since last login")
     print("A job that you applied for has been deleted <Job Title>")
+
+
+def check_deleted_jobs():
+    # Connect to the database
+    conn = sqlite3.connect('your_database.db')
+    cursor = conn.cursor()
+
+    # Replace 'user_id' with the actual user's ID
+    user_id = 'your_user_id'
+
+    # Retrieve the list of job applications for the user
+    cursor.execute("SELECT jobID FROM applicant WHERE userID = ?", (user_id,))
+    job_ids = cursor.fetchall()
+
+    for job_id in job_ids:
+        # Check if the job has been deleted in the jobs table
+        cursor.execute("SELECT title, is_deleted FROM jobs WHERE jobID = ?", job_id)
+        job_info = cursor.fetchone()
+        if job_info and job_info[1] == 1:
+            # Job is deleted, send a notification
+            job_title = job_info[0]
+            send_notification(user_id, job_title)
+
+    # Close the database connection
+    conn.close()
+
+# Function to send a notification (you can customize this based on your notification method)
+def send_notification(user_id, job_title):
+    message = f"A job that you applied for has been deleted: {job_title}"
+    # Use your preferred notification method here (e.g., email, SMS, push notification)
