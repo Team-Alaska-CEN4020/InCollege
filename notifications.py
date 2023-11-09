@@ -35,7 +35,7 @@ def JobsNotificationPanel():
     lastLogin = result[0]
 
     # call notificaions
-    NotifyAppliedJobCount()
+    NotifyAppliedJobCount(user)
     NotifyNewJobPostings(user, lastLogin)
     NotifyJobDeleted(user)
     #send_notification()
@@ -91,8 +91,8 @@ def NotifyNewStudentJoin(user, lastLogin):
     else:
         return None
 
-def NotifyAppliedJobCount():
-    print("TODO: when in the jobs section, user sees below message with x replaced with actual number")
+def NotifyAppliedJobCount(user):
+    # given a userID, just print how many jobs it has applied for
     print("You have currently applied for x jobs")
 
 def NotifyNewJobPostings(user, lastLogin):
@@ -101,7 +101,7 @@ def NotifyNewJobPostings(user, lastLogin):
     # I have the lastLogin also as an input
 
     # query all jobs and filter out the ones posted after last login. Only need the job titles
-    cursor.execute("SELECT jobTitle FROM jobs WHERE datePosted > ? AND posterID <> ?", (lastLogin,user,))
+    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 0 AND datePosted > ? AND posterID <> ?", (lastLogin,user,))
     newJobs = cursor.fetchall()
 
     # print all the jobs in the right format
