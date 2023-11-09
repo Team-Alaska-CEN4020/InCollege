@@ -237,4 +237,65 @@ def testApplicantTable():
 	cursor.execute("DELETE FROM applicant WHERE userID=? AND jobID=?",(globalVars.userID, testJobID,))
 	conn.commit()
 
+# Define a custom check function
+def check_print(call, expected_str):
+	return any(expected_str in str(arg) for arg in call[0])
 
+def testUnreadMessageNotifier():
+	#goal of this test is to check whether a user with unread messages gets a notification upon logging
+	#in indicating that they have unread messages
+	
+	from loginLanding import userHome
+	from notifications import LoginNotificationPanel
+
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	testUserName_b = "TestEditProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_b,))
+	# Retrieve test user data from the database
+	user_data_b = cursor.fetchone()
+
+	subject = "Test"
+	message = "Testing Unread Identifier"
+	cursor.execute("""INSERT INTO messages (senderUserID, recieverUserID, subject, message) VALUES (?, ?, ?, ?)""",(user_data_b[0], globalVars.userID, subject, message))
+	conn.commit()
+
+	user_inputs = [
+		"Q",	#enter Q to quit and return to main menu
+		"Q",	#enter Q to exit
+	]
+
+
+	#test function with mocked data
+	with patch('builtins.input', side_effect=user_inputs):
+		with patch('builtins.print') as mock_print:
+			try:
+				LoginNotificationPanel()
+			except StopIteration:
+				pass
+
+	# Print out all captured calls to inspect
+	for call in mock_print.call_args_list:
+		print(call)
+
+
+	assert any(check_print(call, "messages waiting") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM messages WHERE senderUserID=? AND recieverUserID=?",(user_data_b[0], globalVars.userID,))
+	conn.commit()
