@@ -2,6 +2,7 @@ import globalVars
 from UI import *
 from database import *
 from datetime import datetime, timedelta
+from jobFunctions import *
 
 def LoginNotificationPanel():
     from messageFunctions import checkUnreadStatusLogin
@@ -26,11 +27,14 @@ def LoginNotificationPanel():
     print("")
 
 def JobsNotificationPanel():
+    user = globalVars.userID
+    cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID))
+    result = cursor.fetchone()
     #print("TODO: here is where all the job section related notifcations will go")
     NotifyAppliedJobCount()
     NotifyNewJobPostings()
-    NotifyJobDeleted()
-    send_notification()
+    NotifyJobDeleted(user)
+    #send_notification()
 
 def NotifyNeedToApply(user):
     try:
@@ -93,30 +97,46 @@ def NotifyJobDeleted():
 
 
 def check_deleted_jobs():
-    # Connect to the database
-    conn = sqlite3.connect('your_database.db')
-    cursor = conn.cursor()
-
-    # Replace 'user_id' with the actual user's ID
-    user_id = 'your_user_id'
-
     # Retrieve the list of job applications for the user
-    cursor.execute("SELECT jobID FROM applicant WHERE userID = ?", (user_id,))
-    job_ids = cursor.fetchall()
-
-    for job_id in job_ids:
+    cursor.execute("SELECT jobID FROM applicant WHERE userID = ?", (globalVars.userID))
+    jobData = cursor.fetchall()
+    for job in jobData:
         # Check if the job has been deleted in the jobs table
-        cursor.execute("SELECT title, is_deleted FROM jobs WHERE jobID = ?", job_id)
+        cursor.execute("SELECT title, is_deleted FROM jobs WHERE jobID = ?", job)
         job_info = cursor.fetchone()
         if job_info and job_info[1] == 1:
             # Job is deleted, send a notification
             job_title = job_info[0]
-            send_notification(user_id, job_title)
+            print(f"A job that you applied for has been deleted: {job_title}")
+            #send_notification(globalVars.userID, job_title)
 
-    # Close the database connection
-    conn.close()
-
+'''
 # Function to send a notification (you can customize this based on your notification method)
 def send_notification(user_id, job_title):
     message = f"A job that you applied for has been deleted: {job_title}"
     # Use your preferred notification method here (e.g., email, SMS, push notification)
+
+def deleteJobPost():
+	cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID,))
+	jobData = cursor.fetchall()
+	header("Current jobs posted: ")
+	for job in jobData:
+		print(f"- {job[2]}. Job ID: {job[0]}")
+	
+	jobIDDel = input("Please enter the ID number of the job you want to delete: ") 
+	cursor.execute("SELECT * FROM jobs WHERE posterID = ? AND jobID = ?", (globalVars.userID, jobIDDel))
+	userPostedJob = cursor.fetchone()
+	if not userPostedJob:
+		print("You are not the owner of this job post. Please choose a job you posted to delete.")
+		return
+	deleteDate = datetime.now()
+	cursor.execute("UPDATE applicant SET isDeleted = 1, dateDeleted = ? WHERE jobID = ?",(deleteDate, jobIDDel,))
+	conn.commit()
+
+	cursor.execute("UPDATE jobs SET isDeleted = 1, dateDeleted = ? WHERE jobID = ?", (deleteDate, jobIDDel,))
+	conn.commit()
+
+	cursor.execute("UPDATE savedJobs SET isDeleted = 1, dateDeleted = ? WHERE jobID = ?", (deleteDate, jobIDDel,))
+	conn.commit()
+	print("The job post has been deleted. ")
+'''

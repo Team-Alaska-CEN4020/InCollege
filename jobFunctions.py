@@ -3,6 +3,10 @@ import time
 from database import *
 from UI import *
 from datetime import datetime
+from notifications import JobsNotificationPanel
+
+header("Here's a quick look at what you missed!")
+JobsNotificationPanel()
 
 def searchPostJob():
 	from loginLanding import userHome
