@@ -24,17 +24,25 @@ def LoginNotificationPanel():
     # UI padding
     print("")
     header("                                       ")
-    print("")
 
 def JobsNotificationPanel():
+    header("Here's a quick look at what you missed!")
+
+    # get info on current user
     user = globalVars.userID
-    cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID))
+    cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (user,))
     result = cursor.fetchone()
-    #print("TODO: here is where all the job section related notifcations will go")
+    lastLogin = result[0]
+
+    # call notificaions
     NotifyAppliedJobCount()
-    NotifyNewJobPostings()
+    NotifyNewJobPostings(user, lastLogin)
     NotifyJobDeleted(user)
     #send_notification()
+
+    # UI padding
+    print("")
+    header("                                       ")
 
 def NotifyNeedToApply(user):
     try:
@@ -87,9 +95,22 @@ def NotifyAppliedJobCount():
     print("TODO: when in the jobs section, user sees below message with x replaced with actual number")
     print("You have currently applied for x jobs")
 
-def NotifyNewJobPostings():
-    print("TODO: when in the jobs section, see a list of all new postings since last logged in")
-    print("A new job <job title> has been posted.")
+def NotifyNewJobPostings(user, lastLogin):
+    # given a userID and last login date, this should print out all the jobs posted since last login
+    # I have the user ID as an input
+    # I have the lastLogin also as an input
+
+    # query all jobs and filter out the ones posted after last login. Only need the job titles
+    cursor.execute("SELECT jobTitle FROM jobs WHERE datePosted > ? AND posterID <> ?", (lastLogin,user,))
+    newJobs = cursor.fetchall()
+
+    # print all the jobs in the right format
+    if newJobs:
+        for jobs in newJobs:
+            print(f"A new job, {jobs[0]} has been posted")
+    else:
+        return None
+    
 
 def NotifyJobDeleted():
     print("TODO: when in the jobs section, user sees any jobs that have been deleted since last login")
