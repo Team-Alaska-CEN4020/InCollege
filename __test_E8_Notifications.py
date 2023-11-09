@@ -3,6 +3,10 @@ import pytest
 import globalVars
 from database import *
 
+# Define a custom check function
+def check_print(call, expected_str):
+	return any(expected_str in str(arg) for arg in call[0])
+
 
 def testLoginDateTrack():
 	from datetime import datetime
@@ -237,15 +241,11 @@ def testApplicantTable():
 	cursor.execute("DELETE FROM applicant WHERE userID=? AND jobID=?",(globalVars.userID, testJobID,))
 	conn.commit()
 
-# Define a custom check function
-def check_print(call, expected_str):
-	return any(expected_str in str(arg) for arg in call[0])
 
 def testUnreadMessageNotifier():
 	#goal of this test is to check whether a user with unread messages gets a notification upon logging
 	#in indicating that they have unread messages
 	
-	from loginLanding import userHome
 	from notifications import LoginNotificationPanel
 
 	testUserName_a = "TestBlankProfile"
@@ -275,19 +275,12 @@ def testUnreadMessageNotifier():
 	cursor.execute("""INSERT INTO messages (senderUserID, recieverUserID, subject, message) VALUES (?, ?, ?, ?)""",(user_data_b[0], globalVars.userID, subject, message))
 	conn.commit()
 
-	user_inputs = [
-		"Q",	#enter Q to quit and return to main menu
-		"Q",	#enter Q to exit
-	]
-
-
 	#test function with mocked data
-	with patch('builtins.input', side_effect=user_inputs):
-		with patch('builtins.print') as mock_print:
-			try:
-				LoginNotificationPanel()
-			except StopIteration:
-				pass
+	with patch('builtins.print') as mock_print:
+		try:
+			LoginNotificationPanel()
+		except StopIteration:
+			pass
 
 	# Print out all captured calls to inspect
 	for call in mock_print.call_args_list:
@@ -299,3 +292,61 @@ def testUnreadMessageNotifier():
 	#tear down
 	cursor.execute("DELETE FROM messages WHERE senderUserID=? AND recieverUserID=?",(user_data_b[0], globalVars.userID,))
 	conn.commit()
+
+
+
+def testNewUserNotifier():
+	from notifications import NotifyNewStudentJoin
+	from datetime import datetime
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	#create a dummy test user for testing purporses
+	testDummy = "testBot"
+	testPassword = "Password123$"
+	fName = "Test"
+	lName = "Bot"
+	testMajor = "Testing"
+	testUniversity = "University of Testing"
+	testDateCreated = datetime.now()
+	cursor.execute("""INSERT INTO users (username, password, firstName, lastName, userUniversity, userMajor, currentLoginDate, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",(testDummy, testPassword, fName, lName, testUniversity, testMajor, testDateCreated, testDateCreated))
+	conn.commit()
+
+	#mock parameters to pass
+	# get info on current user
+	cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (globalVars.userID,))
+	result = cursor.fetchone()
+	lastLogin = result[0]
+	#test function with mocked parameters
+	with patch('builtins.print') as mock_print:
+		try:
+			NotifyNewStudentJoin(globalVars.userID,lastLogin)
+		except StopIteration:
+			pass
+
+	# Print out all captured calls to inspect
+	for call in mock_print.call_args_list:
+		print(call)
+
+
+	assert any(check_print(call, "joined InCollege") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE username = ?",(testDummy,))
+	conn.commit()
+
+
