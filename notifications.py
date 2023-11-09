@@ -37,7 +37,7 @@ def NotifyNeedToApply(user):
         appAgeMax = 7
 
         #get latest apply date for user
-        cursor.execute("SELECT dateApplied FROM applicant WHERE userID = ? ORDER BY dateApplied DESC LIMIT 1", (user))
+        cursor.execute("SELECT dateApplied FROM applicant WHERE userID = ? ORDER BY dateApplied DESC LIMIT 1", (user,))
         result = cursor.fetchone()
 
         #check if there even is a latest date
