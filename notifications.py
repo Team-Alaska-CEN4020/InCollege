@@ -35,9 +35,9 @@ def JobsNotificationPanel():
     lastLogin = result[0]
 
     # call notificaions
-    NotifyAppliedJobCount()
+    NotifyAppliedJobCount(user)
     NotifyNewJobPostings(user, lastLogin)
-    NotifyJobDeleted(user)
+    NotifyJobDeleted(user, lastLogin)
     #send_notification()
 
     # UI padding
