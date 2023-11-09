@@ -89,8 +89,14 @@ def NotifyNewStudentJoin(user, lastLogin):
         return None
 
 def NotifyAppliedJobCount(user):
-    # given a userID, just print how many jobs it has applied for
-    print("You have currently applied for x jobs")
+    # given a userID, just print how many jobs they have applied for
+    
+    #query and store the count of jobs for the given user
+    cursor.execute("SELECT COUNT(jobID) AS jobCount FROM applicant WHERE isDeleted = 0 AND userID = ?", (user,))
+    jobCount = cursor.fetchone()
+
+    #print the amount of jobs user applied for
+    print(f"You have currently applied for {jobCount[0]} jobs")
 
 def NotifyNewJobPostings(user, lastLogin):
     # given a userID and last login date, this should print out all the jobs posted since last login
