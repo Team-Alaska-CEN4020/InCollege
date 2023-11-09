@@ -33,8 +33,7 @@ def userHome():
         if uInput == '1':  
             userProfile()
         elif uInput == '2':
-            #header("Here's a quick look at what you missed!")
-            #JobsNotificationPanel()
+            JobsNotificationPanel()
             searchPostJob()
         elif uInput == '3':
             userSearch()

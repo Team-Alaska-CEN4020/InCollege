@@ -26,6 +26,9 @@ def LoginNotificationPanel():
     header("                                       ")
 
 def JobsNotificationPanel():
+
+    header("Here's a quick look at what you missed!")
+
     user = globalVars.userID
     cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID))
     result = cursor.fetchone()
@@ -115,17 +118,20 @@ def NotifyNewJobPostings(user, lastLogin):
         return None
     
 
-def NotifyJobDeleted():
-    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 0 AND datePosted > ? AND posterID <> ?", (lastLogin,user,))
+def NotifyJobDeleted(user, lastLogin):
+    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 1 AND dataDeleted > ? AND posterID <> ?", (lastLogin,user,))
     deleted_job = cursor.fetchall()
 
     if deleted_job:
         for jobs in deleted_job:
-            print(f"A new job, {jobs[0]} has been posted")
+            print(f'The job "{jobs[0]}" that you applied for has been deleted.')
     else:
         return None
 
 
+
+
+'''
 def notify_deleted_job():
     # Retrieve the list of job applications for the user
     cursor.execute("SELECT applicant.jobID, jobs.title FROM applicant JOIN jobs ON applicant.jobID = jobs.jobID WHERE applicant.userID = ?", (globalVars.userID,))
@@ -144,7 +150,6 @@ def notify_deleted_job():
         # send_notification(globalVars.userID, job_title)
 
 
-'''
 def check_deleted_jobs():
     # Retrieve the list of job applications for the user
     cursor.execute("SELECT jobID FROM applicant WHERE userID = ?", (globalVars.userID))
