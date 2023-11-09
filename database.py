@@ -68,7 +68,7 @@ def getFriendsList(userID):
     return friendsList
 
 def dateCompare(date1In, date2In):
-    import datetime
+    from datetime import datetime
     format = "%Y-%m-%d %H:%M:%S.%f"
     
     #make the dates comparable
