@@ -27,9 +27,9 @@ def LoginNotificationPanel():
     print("")
 
 def JobsNotificationPanel():
-    user = globalVars.userID
-    cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID))
-    result = cursor.fetchone()
+    #user = globalVars.userID
+    #cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (globalVars.userID))
+    #result = cursor.fetchone()
     #print("TODO: here is where all the job section related notifcations will go")
     NotifyAppliedJobCount()
     NotifyNewJobPostings()
@@ -96,6 +96,25 @@ def NotifyJobDeleted():
     print("A job that you applied for has been deleted <Job Title>")
 
 
+def notify_deleted_job():
+    # Retrieve the list of job applications for the user
+    cursor.execute("SELECT applicant.jobID, jobs.title FROM applicant JOIN jobs ON applicant.jobID = jobs.jobID WHERE applicant.userID = ?", (globalVars.userID,))
+    jobData = cursor.fetchall()
+
+    for job in jobData:
+        job_id, job_title = job
+
+    # Check if the job has been deleted in the jobs table
+    cursor.execute("SELECT isDeleted FROM jobs WHERE jobID = ?", (job_id,))
+    is_deleted = cursor.fetchone()
+
+    if is_deleted and is_deleted[0] == 1:
+        # Job is deleted, send a notification
+        print(f"A job that you applied for has been deleted: {job_title}")
+        # send_notification(globalVars.userID, job_title)
+
+
+'''
 def check_deleted_jobs():
     # Retrieve the list of job applications for the user
     cursor.execute("SELECT jobID FROM applicant WHERE userID = ?", (globalVars.userID))
@@ -110,7 +129,7 @@ def check_deleted_jobs():
             print(f"A job that you applied for has been deleted: {job_title}")
             #send_notification(globalVars.userID, job_title)
 
-'''
+
 # Function to send a notification (you can customize this based on your notification method)
 def send_notification(user_id, job_title):
     message = f"A job that you applied for has been deleted: {job_title}"
