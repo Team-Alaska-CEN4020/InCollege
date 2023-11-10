@@ -63,7 +63,7 @@ def NotifyNeedToApply(user):
             formattedDate = appDateMax.strftime("%Y-%m-%d %H:%M:%S.%f")
 
             #check dates to see if latest apply date is older than appAgeMax
-            if dateCompare(formattedDate, result[0]) == 1:
+            if dateCompare(result[0], formattedDate) == 1:
                 print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
                 time.sleep(1)
             else:
@@ -111,11 +111,9 @@ def NotifyNewJobPostings(user, lastLogin):
     # I have the lastLogin also as an input
 
     # query all jobs and filter out the ones posted after last login. Only need the job titles
-    
-    print(f"Last login date passed to NotifyNewJobPostings: {lastLogin}")  #debug print
     cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 0 AND datePosted > ? AND posterID != ?", (lastLogin,user,))
     newJobs = cursor.fetchall()
-    print(f"Last login date retrieved: {lastLogin}") #debug print
+
     # print all the jobs in the right format
     if newJobs:
         for jobs in newJobs:
