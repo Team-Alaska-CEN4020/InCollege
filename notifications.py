@@ -54,11 +54,12 @@ def NotifyNeedToApply(user):
 
         #check if there even is a latest date
         if result is None:
-            return None
+            print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
+            time.sleep(1)
         else:
             #if there is then generate and format a date to compare against latest apply date
             today = datetime.now()
-            appDateMax = today + timedelta(days=appAgeMax)
+            appDateMax = today - timedelta(days=appAgeMax)
             formattedDate = appDateMax.strftime("%Y-%m-%d %H:%M:%S.%f")
 
             #check dates to see if latest apply date is older than appAgeMax
