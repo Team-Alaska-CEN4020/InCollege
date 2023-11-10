@@ -34,6 +34,7 @@ def userHome():
             userProfile()
         elif uInput == '2':
             JobsNotificationPanel()
+            time.sleep(3)
             searchPostJob()
         elif uInput == '3':
             userSearch()

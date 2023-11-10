@@ -58,7 +58,7 @@ def searchPostJob():
 			deleteJobPost()
 			time.sleep(2)
 
-		elif uInput == 'Q':
+		elif uInput.upper() == 'Q':
 			exitInput = False
 		else:
 			print("Invalid Option. Try again")

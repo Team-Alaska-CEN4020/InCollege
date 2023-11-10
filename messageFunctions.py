@@ -64,7 +64,6 @@ def checkUnreadStatusLogin(userID):
     result = cursor.fetchone()
     if result[0] >= 1:
         print("You have messages waiting for you")
-        time.sleep(2)
     else:
         return
     
