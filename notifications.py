@@ -30,7 +30,7 @@ def JobsNotificationPanel():
     header("Here's a quick look at what you missed!")
 
     user = globalVars.userID
-    cursor.execute("SELECT * FROM jobs WHERE isDeleted = 0 AND posterID = ?", (user,))
+    cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (user,))
     result = cursor.fetchone()
     lastLogin = result[0]
 
@@ -83,7 +83,7 @@ def NotifyNoProfile(user):
         print(f"An error occurred: {e}")
 
 def NotifyNewStudentJoin(user, lastLogin):
-    cursor.execute("SELECT firstName, lastName FROM users WHERE createDate > ? AND userID <> ?", (lastLogin, user,))
+    cursor.execute("SELECT firstName, lastName FROM users WHERE createDate > ? AND userID != ?", (lastLogin, user,))
     newUsers = cursor.fetchall()
 
     if newUsers:
@@ -110,9 +110,11 @@ def NotifyNewJobPostings(user, lastLogin):
     # I have the lastLogin also as an input
 
     # query all jobs and filter out the ones posted after last login. Only need the job titles
-    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 0 AND datePosted > ? AND posterID <> ?", (lastLogin,user,))
+    
+    print(f"Last login date passed to NotifyNewJobPostings: {lastLogin}")  #debug print
+    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 0 AND datePosted > ? AND posterID != ?", (lastLogin,user,))
     newJobs = cursor.fetchall()
-
+    print(f"Last login date retrieved: {lastLogin}") #debug print
     # print all the jobs in the right format
     if newJobs:
         for jobs in newJobs:
