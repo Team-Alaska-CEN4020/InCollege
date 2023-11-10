@@ -69,7 +69,7 @@ def createJob():
 	loopBreaker = True
 	while loopBreaker: 
 		spacer()
-		cursor.execute("SELECT COUNT(jobID) FROM jobs")
+		cursor.execute("SELECT COUNT(jobID) FROM jobs WHERE isDeleted = 0")
 		job_count = cursor.fetchone()[0]
 	
 		print(f"JobID count : {job_count}")
