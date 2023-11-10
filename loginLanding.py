@@ -7,25 +7,17 @@ from userSearch import *
 from jobFunctions import *
 from profileFunctions import createProfile, displayProfile, editProfile
 from messageFunctions import *
-
-#conn = sqlite3.connect('your_database.db')
-#cursor = conn.cursor()  # Create a cursor object to execute SQL commands
+from notifications import *
 
 def userHome():
     exitInput = 0
     while exitInput == 0:
-        cursor.execute("SELECT * FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-        userIDApplicationDel = cursor.fetchone()
-        if userIDApplicationDel:
-            print("A job you applied for has been deleted. ")
-            cursor.execute("DELETE FROM deletedJobApplicants WHERE userID = ?", (globalVars.userID,))
-            conn.commit()
-            time.sleep(3)
-            
         spacer()
-        checkUnreadStatusLogin(globalVars.userID)
-        
         header(f"Welcome {globalVars.userFirstName}!")
+        # notification panels
+        LoginNotificationPanel()
+
+        # menu
         print("Please select the number of the service you would like to use:")
         print("(1)  Your InCollege Profile")
         print("(2)  Search for a job / internship")
@@ -35,13 +27,14 @@ def userHome():
         print("(6)  Send Friend Request")
         print("(7)  Pending Friend Requests")
         print("(8)  Message Inbox")
-
+        
         uInput = input("Input Selection (Q to quit and return): ")
 
         if uInput == '1':  
-            # UI edited for Epic-5
             userProfile()
         elif uInput == '2':
+            JobsNotificationPanel()
+            time.sleep(3)
             searchPostJob()
         elif uInput == '3':
             userSearch()
@@ -61,8 +54,6 @@ def userHome():
         else:
             print("Invalid Option. Try Again")
             spacer()
-
-
 
 
 # Function to create a User Profile as a new user or existing user

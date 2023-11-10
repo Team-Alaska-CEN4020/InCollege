@@ -72,8 +72,9 @@ def createUser():
     defaultSMS = True
     defaultAdTarget = True
     defaultLanguage = 0
+    dateCreated = datetime.now()
 
-    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor , userUniversity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni))
+    cursor.execute("INSERT INTO users (username, password, firstName, lastName, marketingEmail, marketingSMS, adsTargeted, language, userMajor , userUniversity, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (username, storePassword, firstName, lastName, defaultEmail, defaultSMS, defaultAdTarget, defaultLanguage, major, uni, dateCreated))
     conn.commit()  # Insert the new user into the 'users' table and commit the changes to the database
     print("Congratulations! Your account has been successfully registered.")
 
@@ -127,6 +128,10 @@ def UserLogin():
                 globalVars.userMajor = user_data[11]
                 globalVars.userTier = user_data[12]
 
+                #update login dates
+                LoginDatesUpdate()
+
+                #move to logged in home menu
                 userHome()
             else:
                 print("Incorrect username/password. Please try again.")
@@ -161,3 +166,18 @@ def userTierSelect():
         conn.commit()
 
         return selection
+
+def LoginDatesUpdate():
+    import time
+    
+    #get the user's old "current" date
+    cursor.execute("SELECT currentLoginDate FROM users WHERE userID = ?",(globalVars.userID,))
+    result = cursor.fetchone()
+    oldDate = result[0]
+    
+    #set the new current date
+    newDate = datetime.now()
+
+    #place old "current" into "last" and new "current" into "current"
+    cursor.execute("UPDATE users SET currentLoginDate = ?, lastLoginDate = ? WHERE userID = ?", (newDate, oldDate, globalVars.userID))
+    conn.commit()
