@@ -1,6 +1,7 @@
 from unittest.mock import patch
 import pytest
 import globalVars
+import time
 from database import *
 
 # Define a custom check function
@@ -116,7 +117,7 @@ def testJobDelete():
 	conn.commit()
 
 
-def testCreateJob():
+def testCreateJob(): # Needs work
 	from datetime import datetime
 	from jobFunctions import createJob
 
@@ -349,4 +350,255 @@ def testNewUserNotifier():
 	cursor.execute("DELETE FROM users WHERE username = ?",(testDummy,))
 	conn.commit()
 
+def testNoProfileNotifier():
+	from notifications import NotifyNoProfile
+	from datetime import datetime, timedelta
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
 
+	#create a dummy test user for testing purporses
+	testDummy = "testBot"
+	testPassword = "Password123$"
+	fName = "Test"
+	lName = "Bot"
+	testMajor = "Testing"
+	testUniversity = "University of Testing"
+	testDateCreated = datetime.now()
+	cursor.execute("""INSERT INTO users (username, password, firstName, lastName, userUniversity, userMajor, currentLoginDate, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",(testDummy, testPassword, fName, lName, testUniversity, testMajor, testDateCreated, testDateCreated))
+	conn.commit()
+
+	#test function with mocked parameters
+	with patch('builtins.print') as mock_print:
+		try:
+			NotifyNoProfile(globalVars.userID)
+		except StopIteration:
+			pass
+
+	# Print out all captured calls to inspect
+	for call in mock_print.call_args_list:
+		print(call)
+
+	assert any(check_print(call, "Don't forget to create a profile") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE username = ?",(testDummy,))
+	conn.commit()
+
+def testApplyNotifier(): # Needs work
+	from notifications import NotifyNeedToApply
+	from datetime import datetime, timedelta
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	testUser = "TestUser"
+	applyDates = datetime.now() - timedelta(days=8)
+	formattedDate = applyDates.strftime("%Y-%m-%d %H:%M:%S.%f")
+
+	cursor.execute("INSERT INTO applicant (userID, dateApplied) VALUES (?,?)", (testUser, formattedDate,))
+	conn.commit
+
+	#test function with mocked parameters
+	with patch('builtins.print') as mock_print:
+		try:
+			NotifyNeedToApply(testUser)
+		except StopIteration:
+			pass
+
+	assert any(check_print(call, "Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE username = ?",(testUser,))
+	conn.commit()
+
+def testNewJobNotifier():
+	from notifications import NotifyAppliedJobCount
+	from datetime import datetime, timedelta
+
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	#create a dummy test user for testing purporses
+	testDummy = "testBot"
+	testPassword = "Password123$"
+	fName = "Test"
+	lName = "Bot"
+	testMajor = "Testing"
+	testUniversity = "University of Testing"
+	testDateCreated = datetime.now()
+	cursor.execute("""INSERT INTO users (username, password, firstName, lastName, userUniversity, userMajor, currentLoginDate, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",(testDummy, testPassword, fName, lName, testUniversity, testMajor, testDateCreated, testDateCreated))
+	conn.commit()
+
+	#test function with mocked parameters
+	with patch('builtins.print') as mock_print:
+		try:
+			NotifyAppliedJobCount(globalVars.userID)
+		except StopIteration:
+			pass
+
+	# Print out all captured calls to inspect
+	for call in mock_print.call_args_list:
+		print(call)
+
+	assert any(check_print(call, "You have currently applied for 0 jobs") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE username = ?",(testDummy,))
+	conn.commit()
+
+def testNewJobNotifier(): # Needs work
+	from notifications import NotifyNewJobPostings
+	from datetime import datetime
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	#create a dummy test user for testing purporses
+	testDummy = "testBot"
+	testPassword = "Password123$"
+	fName = "Test"
+	lName = "Bot"
+	testMajor = "Testing"
+	testUniversity = "University of Testing"
+	testDateCreated = datetime.now()
+	cursor.execute("""INSERT INTO users (username, password, firstName, lastName, userUniversity, userMajor, currentLoginDate, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",(testDummy, testPassword, fName, lName, testUniversity, testMajor, testDateCreated, testDateCreated))
+	conn.commit()
+
+	#mock parameters to pass
+	# get info on current user
+	cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (globalVars.userID,))
+	result = cursor.fetchone()
+	lastLogin = result[0]
+
+	cursor.execute("INSERT INTO jobs (jobTitle, datePosted, posterID) VALUES ('Job1', ?, 'Poster1')", (datetime.now(), ))
+	conn.commit()
+
+	#test function with mocked parameters
+	with patch('builtins.print') as mock_print:
+		try:
+			NotifyNewJobPostings(testDummy,lastLogin)
+		except StopIteration:
+			pass
+
+	# Print out all captured calls to inspect
+	for call in mock_print.call_args_list:
+		print(call)
+
+	assert any(check_print(call, "A new job, Job1 has been posted") for call in mock_print.call_args_list)
+
+	#tear down
+	cursor.execute("DELETE FROM users WHERE username = ?",(testDummy,))
+	cursor.execute("DELETE FROM jobs WHERE jobTitle = 'Job1'")
+	conn.commit()
+
+def testDeleteJobNotifier():
+	from notifications import NotifyJobDeleted
+	from datetime import datetime
+	testUserName_a = "TestBlankProfile"
+	cursor.execute("SELECT * FROM users WHERE username=?", (testUserName_a,))
+	# Retrieve test user data from the database
+	user_data_a = cursor.fetchone()
+    
+    # Update the global user variables and settings
+	globalVars.isLoggedIn = True
+	globalVars.userID = user_data_a[0]
+	globalVars.username = user_data_a[1]
+	globalVars.userFirstName = user_data_a[3]
+	globalVars.userLastName = user_data_a[4]
+	globalVars.userSettingMarketingEmail = user_data_a[5]
+	globalVars.userSettingMarketingSMS = user_data_a[6]
+	globalVars.userSettingAdvertisementTargeted = user_data_a[7]
+	globalVars.userSettingLanguage = user_data_a[8]
+	globalVars.userMajor = user_data_a[11]
+
+	#create a dummy test user for testing purporses
+	testDummy = "testBot"
+	testPassword = "Password123$"
+	fName = "Test"
+	lName = "Bot"
+	testMajor = "Testing"
+	testUniversity = "University of Testing"
+	testDateCreated = datetime.now()
+	cursor.execute("""INSERT INTO users (username, password, firstName, lastName, userUniversity, userMajor, currentLoginDate, createDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",(testDummy, testPassword, fName, lName, testUniversity, testMajor, testDateCreated, testDateCreated))
+	conn.commit()
+
+	#mock parameters to pass
+	# get info on current user
+	cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (globalVars.userID,))
+	result = cursor.fetchone()
+	lastLogin = result[0]
+
+	cursor.execute("INSERT INTO jobs (jobTitle, isDeleted, dateDeleted) VALUES ('DeletedJob', 1, ?)", (datetime.now(),))
+	cursor.execute("INSERT INTO applicant (userID, jobID) VALUES (?, (SELECT jobID FROM jobs WHERE jobTitle = 'DeletedJob'))", (testDummy,))
+	conn.commit
+
+	#test function with mocked parameters
+	with patch('builtins.print') as mock_print:
+		try:
+			NotifyJobDeleted(testDummy,lastLogin)
+		except StopIteration:
+			pass
+	
+	# Print out all captured calls to inspect
+	for call in mock_print.call_args_list:
+		print(call)
+
+	assert any(check_print(call, 'The job "DeletedJob" that you applied for has been deleted.') for call in mock_print.call_args_list)
+
+	cursor.execute("DELETE FROM users WHERE username = ?",(testDummy,))
+	cursor.execute("DELETE FROM jobs WHERE jobTitle = 'DeletedJob'")
+	conn.commit()
