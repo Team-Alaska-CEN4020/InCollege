@@ -123,7 +123,7 @@ def NotifyNewJobPostings(user, lastLogin):
     
 
 def NotifyJobDeleted(user, lastLogin):
-    cursor.execute("SELECT jobTitle FROM jobs WHERE isDeleted = 1 AND dateDeleted > ? AND posterID <> ?", (lastLogin,user,))
+    cursor.execute("SELECT jobs.jobTitle FROM jobs JOIN applicant ON jobs.jobID = applicant.jobID WHERE jobs.isDeleted = 1 AND jobs.dateDeleted >? AND applicant.userID=?", (lastLogin,user,))
     deleted_job = cursor.fetchall()
 
     if deleted_job:
