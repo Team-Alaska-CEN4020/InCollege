@@ -154,6 +154,7 @@ def Languages():
         if uInput == 'N' or uInput == 'n':
             return
         if uInput == 'Y' or uInput == 'y':
+            print("Language has been changed.")
             globalVars.userSettingLanguage ^= 1
             cursor.execute("UPDATE users SET language = ? WHERE username = ?",(globalVars.userSettingLanguage, globalVars.username,))
             conn.commit()
