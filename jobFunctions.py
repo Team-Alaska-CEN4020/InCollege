@@ -259,7 +259,7 @@ def displaySavedJobs(user_ID):
 	return saved_jobs
 
 def deleteJob(user_id, jobTitle):
-	cursor.execute('DELETE FROM savedJobs WHERE userID = ? and jobTitle = ?', (user_id, jobTitle))
+	cursor.execute('UPDATE savedJobs SET isDeleted = 1 WHERE userID = ? and jobTitle = ?', (user_id, jobTitle))
 	conn.commit()
 
 def applications(user_id):
