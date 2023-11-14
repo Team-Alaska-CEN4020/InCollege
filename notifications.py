@@ -13,7 +13,11 @@ def LoginNotificationPanel():
     user = globalVars.userID
     cursor.execute("SELECT lastLoginDate FROM users WHERE userID = ?", (user,))
     result = cursor.fetchone()
-    lastLogin = result[0]
+    lastLogin = None
+    if not result:
+        lastLogin = datetime.now()
+    else:
+        lastLogin = result[0]
 
     # call notifications
     NotifyNeedToApply(user)
@@ -54,7 +58,7 @@ def NotifyNeedToApply(user):
 
         #check if there even is a latest date
         if result is None:
-            print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
+            print("Remember - you're going to want to have a job when you graduate. \n\t   Make sure that you start to apply for jobs today!")
             time.sleep(1)
         else:
             #if there is then generate and format a date to compare against latest apply date
@@ -64,7 +68,7 @@ def NotifyNeedToApply(user):
 
             #check dates to see if latest apply date is older than appAgeMax
             if dateCompare(result[0], formattedDate) == 1:
-                print("Remember - you're going to want to have a job when you graduate. Make sure that you start to apply for jobs today!")
+                print("Remember - you're going to want to have a job when you graduate. \n\t   Make sure that you start to apply for jobs today!")
                 time.sleep(1)
             else:
                 return None
